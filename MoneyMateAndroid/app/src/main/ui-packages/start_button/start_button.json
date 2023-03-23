@@ -1,0 +1,116 @@
+{
+  "name": "start_button",
+  "version": 32,
+  "source-key": {
+    "type": "figma",
+    "file": "OvGufZJyDHvIO7FsWCw6ss",
+    "node": "26:2",
+    "version": "3213660400",
+    "component-id": "577f2ba9412087b27e59a036a824321074d44d31"
+  },
+  "default": "StartButton",
+  "design": {
+    "atoms": [
+      {
+        "type": "group",
+        "id": "top_level",
+        "root": "true"
+      },
+      {
+        "type": "vector",
+        "id": "button"
+      },
+      {
+        "type": "text",
+        "id": "Text"
+      }
+    ],
+    "modes": {
+      "StartButton": {
+        "rules": [
+          {
+            "id": "top_level",
+            "is-structured": "false",
+            "children": [
+              "button",
+              "Text"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "button",
+            "border-radius": "25.0",
+            "drop-shadow": {
+              "color": {
+                "alpha": "0.4980392156862745",
+                "hue": "0.0",
+                "saturation": "0.0",
+                "value": "0.0"
+              },
+              "blur": "4.0",
+              "offset-x": "0.0",
+              "offset-y": "4.0",
+              "spread": "0.0",
+              "blend-mode": "normal"
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "button.svg"
+          },
+          {
+            "id": "Text",
+            "margin": {
+              "left": "47.0",
+              "top": "14.0",
+              "right": "47.0",
+              "bottom": "13.0"
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "color": {
+              "alpha": "1.0",
+              "hue": "0.0",
+              "saturation": "0.0",
+              "value": "1.0"
+            },
+            "text-content": "Get Started",
+            "overflow": "visible",
+            "max-lines": "-1",
+            "text-align-vertical": "center",
+            "text-size": "20.0",
+            "line-height": "1.5",
+            "typeface": "Poppins"
+          }
+        ]
+      }
+    }
+  },
+  "previews": [
+    {
+      "design": "StartButton",
+      "size": {
+        "width": 208.0,
+        "height": 57.0
+      }
+    }
+  ],
+  "adin-component-search-paths": [],
+  "image-search-paths": [],
+  "vector-search-paths": []
+}

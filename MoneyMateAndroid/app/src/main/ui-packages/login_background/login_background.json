@@ -1,0 +1,230 @@
+{
+  "name": "login_background",
+  "version": 32,
+  "source-key": {
+    "type": "figma",
+    "file": "OvGufZJyDHvIO7FsWCw6ss",
+    "node": "38:56",
+    "version": "3213660400",
+    "component-id": "f674d4c5a12591698732550b9d5209f96ac177b0"
+  },
+  "default": "LoginBackground",
+  "design": {
+    "atoms": [
+      {
+        "type": "group",
+        "id": "top_level",
+        "root": "true"
+      },
+      {
+        "type": "vector",
+        "id": "Ellipse 4"
+      },
+      {
+        "type": "vector",
+        "id": "Ellipse 5"
+      },
+      {
+        "type": "image",
+        "id": "coins 1"
+      },
+      {
+        "type": "image",
+        "id": "coins 2"
+      },
+      {
+        "type": "image",
+        "id": "LogoText 1"
+      },
+      {
+        "type": "vector",
+        "id": "Rectangle 1"
+      }
+    ],
+    "modes": {
+      "LoginBackground": {
+        "rules": [
+          {
+            "id": "top_level",
+            "is-structured": "false",
+            "children": [
+              "Ellipse 4",
+              "Ellipse 5",
+              "coins 1",
+              "coins 2",
+              "LogoText 1",
+              "Rectangle 1"
+            ],
+            "background-color": {
+              "alpha": "1.0",
+              "hue": "0.0",
+              "saturation": "0.0",
+              "value": "1.0"
+            }
+          },
+          {
+            "id": "Ellipse 4",
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "-122.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "0.0"
+              }
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "243.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "fixed",
+                "value": "243.0"
+              }
+            },
+            "vector-content": "ellipse_4.svg"
+          },
+          {
+            "id": "Ellipse 5",
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "-1.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "-121.0"
+              }
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "243.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "fixed",
+                "value": "243.0"
+              }
+            },
+            "vector-content": "ellipse_5.svg"
+          },
+          {
+            "id": "coins 1",
+            "opacity": "0.5",
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "-135.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "-30.0"
+              }
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "297.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "fixed",
+                "value": "304.0"
+              }
+            },
+            "image-content": "coins_1.png",
+            "scale": "cover"
+          },
+          {
+            "id": "coins 2",
+            "opacity": "0.5",
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "29.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "-75.0"
+              }
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "220.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "fixed",
+                "value": "225.1851806640625"
+              }
+            },
+            "image-content": "coins_1.png",
+            "scale": "cover"
+          },
+          {
+            "id": "LogoText 1",
+            "alignment": {
+              "horizontal": {
+                "attachment": "center",
+                "offset": "0.5"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "150.0"
+              }
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "241.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "fixed",
+                "value": "158.0"
+              }
+            },
+            "image-content": "logo_text_1.png",
+            "scale": "cover"
+          },
+          {
+            "id": "Rectangle 1",
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "0.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "398.0"
+              }
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "390.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "fixed",
+                "value": "446.0"
+              }
+            },
+            "vector-content": "rectangle_1.svg"
+          }
+        ]
+      }
+    }
+  },
+  "previews": [
+    {
+      "design": "LoginBackground",
+      "size": {
+        "width": 390.0,
+        "height": 844.0
+      }
+    }
+  ],
+  "adin-component-search-paths": [],
+  "image-search-paths": [],
+  "vector-search-paths": []
+}
