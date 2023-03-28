@@ -7,6 +7,8 @@ plugins {
     kotlin("plugin.spring") version "1.7.22"
 }
 
+
+
 group = "isel.pt"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
@@ -16,9 +18,23 @@ repositories {
 }
 
 dependencies {
+    //spring web
     implementation("org.springframework.boot:spring-boot-starter-web")
+    //postgres
+    implementation("org.postgresql:postgresql:42.5.4")
+    implementation("org.jdbi:jdbi3-postgres:3.37.1")
+    //jdbi
+    implementation("org.jdbi:jdbi3-core:3.37.1")
+    implementation("org.jdbi:jdbi3-sqlobject:3.23.0")
+    implementation("org.jdbi:jdbi3-spring5:3.23.0")
+    // Spring JDBC dependencies
+    implementation("org.springframework:spring-tx:5.3.14")
+    implementation("org.springframework:spring-jdbc:6.0.6")
+
+
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
