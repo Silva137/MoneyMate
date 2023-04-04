@@ -1,27 +1,32 @@
-package pt.isel.moneymate.welcome
+package pt.isel.moneymate.main
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import pt.isel.moneymate.home.HomeActivity
+import pt.isel.moneymate.profile.ProfileActivity
+import pt.isel.moneymate.statistics.StatisticsActivity
+import pt.isel.moneymate.theme.MoneyMateTheme
 import pt.isel.moneymate.transactions.TransactionsActivity
-import pt.isel.moneymate.transactions.TransactionsScreen
 
-class WelcomeActivity : ComponentActivity() {
+
+class MainActivity : ComponentActivity() {
     companion object {
         fun navigate(context: Context) {
             with(context) {
-                val intent = Intent(this, WelcomeActivity::class.java)
+                val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
             }
         }
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            WelcomeScreen()
+            MoneyMateTheme {
+                MainScreen()
+            }
         }
     }
 }

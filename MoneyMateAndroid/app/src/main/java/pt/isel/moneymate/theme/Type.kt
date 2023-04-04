@@ -1,4 +1,4 @@
-package pt.isel.moneymate.ui.theme
+package pt.isel.moneymate.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

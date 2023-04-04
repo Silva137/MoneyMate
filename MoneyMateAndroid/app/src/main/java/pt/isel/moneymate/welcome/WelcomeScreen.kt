@@ -21,8 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pt.isel.moneymate.R
 import pt.isel.moneymate.background.poppins
-import pt.isel.moneymate.ui.theme.green
-import pt.isel.moneymate.ui.theme.purple
+import pt.isel.moneymate.theme.green
+import pt.isel.moneymate.theme.purple
 
 @Composable
 fun WelcomeScreen() {

@@ -1,18 +1,16 @@
-package pt.isel.moneymate.welcome
+package pt.isel.moneymate.transactions
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import pt.isel.moneymate.transactions.TransactionsActivity
-import pt.isel.moneymate.transactions.TransactionsScreen
 
-class WelcomeActivity : ComponentActivity() {
+class TransactionsActivity: ComponentActivity() {
     companion object {
         fun navigate(context: Context) {
             with(context) {
-                val intent = Intent(this, WelcomeActivity::class.java)
+                val intent = Intent(this, TransactionsActivity::class.java)
                 startActivity(intent)
             }
         }
@@ -21,7 +19,7 @@ class WelcomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            WelcomeScreen()
+            TransactionsScreen()
         }
     }
 }
