@@ -5,15 +5,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
-import pt.isel.moneymate.bottomNav.BottomBar
+import pt.isel.moneymate.utils.BottomBar
 import pt.isel.moneymate.domain.Category
 import pt.isel.moneymate.domain.Transaction
 import pt.isel.moneymate.domain.TransactionType
@@ -21,8 +20,10 @@ import pt.isel.moneymate.home.HomeScreen
 import pt.isel.moneymate.profile.ProfileScreen
 import pt.isel.moneymate.statistics.StatisticsScreen
 import pt.isel.moneymate.transactions.TransactionsScreen
+
 import java.util.*
 
+@ExperimentalMaterialApi
 @Composable
 fun MainScreen() {
     var bottomState by remember { mutableStateOf("Home") }
@@ -58,6 +59,7 @@ fun MainScreen() {
     }
 }
 
+@ExperimentalMaterialApi
 @Preview
 @Composable
 fun MainScreenPreview() {

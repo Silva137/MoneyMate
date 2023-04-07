@@ -1,4 +1,4 @@
-package pt.isel.moneymate.bottomNav
+package pt.isel.moneymate.utils
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
