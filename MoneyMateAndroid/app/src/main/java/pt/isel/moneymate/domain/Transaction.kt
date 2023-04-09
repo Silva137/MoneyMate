@@ -1,13 +1,13 @@
 package pt.isel.moneymate.domain
 
-import java.util.*
+import java.time.LocalDateTime
 
 
 data class Transaction(
     val type: TransactionType,
     val description: String,
     val amount: Double,
-    val date: Date,
+    val date: LocalDateTime,
     val category: Category
 )
 

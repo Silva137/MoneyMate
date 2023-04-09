@@ -6,6 +6,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.runtime.rememberCoroutineScope
 
 class TransactionsActivity: ComponentActivity() {
     companion object {
@@ -17,11 +20,9 @@ class TransactionsActivity: ComponentActivity() {
         }
     }
 
-    @OptIn(ExperimentalMaterialApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            TransactionsScreen()
         }
     }
 }

@@ -1,5 +1,7 @@
 package isel.pt.moneymate.config
 
+import isel.pt.moneymate.repository.UsersRepository
+import isel.pt.moneymate.repository.mappers.UserMapper
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.postgres.PostgresPlugin
 import org.jdbi.v3.sqlobject.SqlObjectPlugin
@@ -31,5 +33,11 @@ class DatabaseConfiguration {
         return Jdbi.create(dataSource)
             .installPlugin(SqlObjectPlugin())
             .installPlugin(PostgresPlugin())
+    }
+
+    @Bean
+    fun usersRepository(jdbi: Jdbi): UsersRepository {
+        jdbi.registerRowMapper(UserMapper())
+        return jdbi.onDemand(UsersRepository::class.java)
     }
 }

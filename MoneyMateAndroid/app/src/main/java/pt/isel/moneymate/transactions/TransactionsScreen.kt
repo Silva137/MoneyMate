@@ -1,5 +1,6 @@
 package pt.isel.moneymate.transactions
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -7,13 +8,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,6 +22,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import pt.isel.moneymate.R
 import pt.isel.moneymate.background.poppins
@@ -32,14 +32,17 @@ import pt.isel.moneymate.domain.Transaction
 import pt.isel.moneymate.domain.TransactionType
 import pt.isel.moneymate.theme.expenseRed
 import pt.isel.moneymate.theme.incomeGreen
+import java.time.LocalDateTime
 import java.util.*
 
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TransactionsScreen(
     transactions: List<Transaction> = listOf(),
-    onTransactionClick: (Transaction) -> Unit = {},
-    onSearchClick: () -> Unit = {},
+    scope: CoroutineScope,
+    bottomSheetState: ModalBottomSheetState,
+    selectedTransaction: MutableState<Transaction?>,
 ) {
 
     Box(
@@ -81,8 +84,57 @@ fun TransactionsScreen(
             }
             TransactionsList(
                 transactions = transactions,
-                onTransactionClick = onTransactionClick,
+                scope = scope,
+                bottomSheetState = bottomSheetState,
+                selectedTransaction = selectedTransaction
             )
+        }
+    }
+}
+
+@Composable
+fun BottomSheetContent(selectedTransaction: MutableState<Transaction?>) {
+    var editedTransaction by remember { mutableStateOf(selectedTransaction.value) }
+
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text("Edit transaction")
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextField(
+            value = editedTransaction?.description.orEmpty(),
+            onValueChange = { editedTransaction = editedTransaction?.copy(description = it) },
+            label = { Text("Description") }
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextField(
+            value = editedTransaction?.amount?.toString().orEmpty(),
+            onValueChange = { editedTransaction = editedTransaction?.copy(amount = it.toDoubleOrNull() ?: 0.0) },
+            label = { Text("Amount") }
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Button(
+                onClick = { selectedTransaction.value = null },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Delete")
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Button(
+                onClick = {
+                    selectedTransaction.value = editedTransaction
+                },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Save")
+            }
         }
     }
 }
@@ -92,13 +144,15 @@ fun TransactionsScreen(
 @Composable
 fun TransactionsList(
     transactions: List<Transaction>,
-    onTransactionClick: (Transaction) -> Unit,
-) {
+    scope: CoroutineScope,
+    bottomSheetState: ModalBottomSheetState,
+    selectedTransaction: MutableState<Transaction?>
+    ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         items(transactions) { item ->
-            TransactionItem(item, onTransactionClick)
+            TransactionItem(item, scope, bottomSheetState,selectedTransaction)
         }
     }
 }
@@ -107,18 +161,24 @@ fun TransactionsList(
 @Composable
 fun TransactionItem(
     transaction: Transaction,
-    onTransactionClick: (Transaction) -> Unit = {},
+    scope: CoroutineScope,
+    bottomSheetState: ModalBottomSheetState,
+    selectedTransaction: MutableState<Transaction?>
 ) {
     val imageResource = if (transaction.type == TransactionType.EXPENSE) R.drawable.expense_item else R.drawable.income_item
     val isExpense = transaction.type == TransactionType.EXPENSE
-    val scope = rememberCoroutineScope()
 
 
     Box(
         modifier = Modifier
             .width(315.dp)
             .height(80.dp)
-            .clickable {TODO()}
+            .clickable {
+                selectedTransaction.value = transaction
+                scope.launch {
+                    bottomSheetState.show()
+                }
+            }
     ) {
         Image(
             painter = painterResource(id = imageResource),
@@ -175,6 +235,8 @@ fun TransactionItem(
 }
 
 
+@SuppressLint("UnrememberedMutableState")
+@OptIn(ExperimentalMaterialApi::class)
 @Preview
 @Composable
 fun TransactionItemPreview() {
@@ -183,11 +245,18 @@ fun TransactionItemPreview() {
         description = "none",
         category = Category("Food"),
         amount = 12.34,
-        date = Date()
+        date = LocalDateTime.now()
     )
-    TransactionsScreen(listOf(transaction))
+    TransactionsScreen(
+        transactions = listOf(transaction),
+        scope = MainScope(),
+        bottomSheetState = ModalBottomSheetState(ModalBottomSheetValue.Hidden),
+        selectedTransaction = mutableStateOf(null)
+    )
 }
 
+@SuppressLint("UnrememberedMutableState")
+@OptIn(ExperimentalMaterialApi::class)
 @Preview
 @Composable
 fun TransactionsListPreview() {
@@ -197,67 +266,71 @@ fun TransactionsListPreview() {
             description = "Lunch",
             category = Category("Food"),
             amount = 12.34,
-            date = Date()
+            date = LocalDateTime.now()
         ),
         Transaction(
             type = TransactionType.INCOME,
             description = "Salary",
             category = Category("Work"),
             amount = 5678.9,
-            date = Date()
+            date = LocalDateTime.now()
         ),
         Transaction(
             type = TransactionType.EXPENSE,
             description = "Movie ticket",
             category = Category("Entertainment"),
             amount = 9.99,
-            date = Date()
+            date = LocalDateTime.now()
         ),
         Transaction(
             type = TransactionType.EXPENSE,
             description = "Lunch",
             category = Category("Food"),
             amount = 12.34,
-            date = Date()
+            date = LocalDateTime.now()
         ),
         Transaction(
             type = TransactionType.INCOME,
             description = "Salary",
             category = Category("Work"),
             amount = 5678.9,
-            date = Date()
+            date = LocalDateTime.now()
         ),
         Transaction(
             type = TransactionType.EXPENSE,
             description = "Movie ticket",
             category = Category("Entertainment"),
             amount = 9.99,
-            date = Date()
+            date = LocalDateTime.now()
         ),
         Transaction(
             type = TransactionType.EXPENSE,
             description = "Lunch",
             category = Category("Food"),
             amount = 12.34,
-            date = Date()
+            date = LocalDateTime.now()
         ),
         Transaction(
             type = TransactionType.INCOME,
             description = "Salary",
             category = Category("Work"),
             amount = 5678.9,
-            date = Date()
+            date = LocalDateTime.now()
         ),
         Transaction(
             type = TransactionType.EXPENSE,
             description = "Movie ticket",
             category = Category("Entertainment"),
             amount = 9.99,
-            date = Date()
+            date = LocalDateTime.now()
         )
     )
-
-    TransactionsScreen(transactions = transactions, onTransactionClick = {})
+    TransactionsScreen(
+        transactions = transactions,
+        scope = MainScope(),
+        bottomSheetState = ModalBottomSheetState(ModalBottomSheetValue.Hidden),
+        selectedTransaction = mutableStateOf(null)
+    )
 }
 
 
