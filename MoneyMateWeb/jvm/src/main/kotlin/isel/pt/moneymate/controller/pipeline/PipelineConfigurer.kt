@@ -27,3 +27,4 @@ class PipelineConfigurer(
             .allowedOrigins("http://localhost:8080", "http://localhost")
     }
 }
+

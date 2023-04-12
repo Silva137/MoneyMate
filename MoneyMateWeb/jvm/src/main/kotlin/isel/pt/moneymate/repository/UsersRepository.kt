@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface UsersRepository {
-    @SqlUpdate("INSERT INTO MoneyMate.users (username, email, password_hash) VALUES (:username, :email, :passwordHash)")
-    fun register(@Bind("username") name: String, @Bind("email") email: String, @Bind("passwordHash") passwordHash: String)
+    @SqlUpdate("INSERT INTO MoneyMate.users (username, email, password) VALUES (:username, :email, :password)")
+    fun register(@Bind("username") name: String, @Bind("email") email: String, @Bind("password") password: String)
 
     @SqlQuery("SELECT * FROM MoneyMate.users WHERE id = :id")
     fun getUser(@Bind("id") id: Int): User

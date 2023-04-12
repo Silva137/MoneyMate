@@ -1,7 +1,11 @@
 package isel.pt.moneymate.config
 
+import isel.pt.moneymate.repository.CategoryRepository
 import isel.pt.moneymate.repository.UsersRepository
+import isel.pt.moneymate.repository.WalletRepository
+import isel.pt.moneymate.repository.mappers.CategoryMapper
 import isel.pt.moneymate.repository.mappers.UserMapper
+import isel.pt.moneymate.repository.mappers.WalletMapper
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.postgres.PostgresPlugin
 import org.jdbi.v3.sqlobject.SqlObjectPlugin
@@ -39,5 +43,16 @@ class DatabaseConfiguration {
     fun usersRepository(jdbi: Jdbi): UsersRepository {
         jdbi.registerRowMapper(UserMapper())
         return jdbi.onDemand(UsersRepository::class.java)
+    }
+
+    @Bean
+    fun walletRepository(jdbi: Jdbi): WalletRepository {
+        jdbi.registerRowMapper(WalletMapper(UserMapper()))
+        return jdbi.onDemand(WalletRepository::class.java)
+    }
+    @Bean
+    fun categoryRepository(jdbi: Jdbi): CategoryRepository {
+        jdbi.registerRowMapper(CategoryMapper(UserMapper()))
+        return jdbi.onDemand(CategoryRepository::class.java)
     }
 }

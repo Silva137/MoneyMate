@@ -13,7 +13,7 @@ class UserMapper : RowMapper<User> {
             rs.getInt("id"),
             rs.getString("username"),
             rs.getString("email"),
-            rs.getString("passwordHash"),
+            rs.getString("password"),
         )
     }
 }

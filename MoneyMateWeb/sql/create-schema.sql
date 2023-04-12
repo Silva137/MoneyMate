@@ -31,8 +31,8 @@ CREATE TABLE MoneyMate.wallet
 CREATE TABLE MoneyMate.category
 (
     id      SERIAL PRIMARY KEY,
-    name    VARCHAR(50) NOT NULL,
-    user_id INT         NOT NULL DEFAULT -1 REFERENCES MoneyMate.users,
+    name    VARCHAR(250) NOT NULL,
+    user_id INT         NOT NULL DEFAULT 0 REFERENCES MoneyMate.users,
     FOREIGN KEY (user_id) REFERENCES MoneyMate.users (id)
 
 );
