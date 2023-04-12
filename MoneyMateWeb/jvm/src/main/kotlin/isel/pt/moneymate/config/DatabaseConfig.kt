@@ -16,7 +16,6 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 import javax.sql.DataSource
 
-
 @Configuration
 class DatabaseConfiguration {
     @Bean

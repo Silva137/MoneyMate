@@ -20,8 +20,17 @@ dependencies {
     //spring
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+
+
     //postgres
     implementation("org.postgresql:postgresql:42.5.4")
+
+    //jwt
+
+    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+    implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
+    implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
     //jdbi
     implementation ("org.jdbi:jdbi3-core:3.23.0")
@@ -32,9 +41,6 @@ dependencies {
     // Spring JDBC dependencies
     implementation("org.springframework:spring-tx:5.3.14")
     implementation("org.springframework:spring-jdbc:6.0.6")
-
-
-
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")

@@ -1,5 +1,6 @@
 package isel.pt.moneymate.controller.models
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import isel.pt.moneymate.services.dtos.RegisterInputDTO
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
@@ -19,3 +20,20 @@ data class RegisterInputModel(
 ){
     fun toRegisterInputDTO() = RegisterInputDTO(username, email, password)
 }
+
+data class AuthenticationOutputModel(
+    @JsonProperty("token")
+    val token: String
+)
+
+
+data class LoginInputModel(
+    @field:NotBlank(message = "Email is required")
+    @field:Email(message = "Invalid email format")
+    val email: String,
+
+    @field:NotBlank(message = "Password is required")
+    @field:Size(min = 6, message = "Password must be at least 6 characters long")
+    val password: String
+)
+

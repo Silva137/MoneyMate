@@ -11,9 +11,12 @@ object Uris {
 
     const val HOME = "/"
 
+    object Authentication {
+        const val REGISTER = "/auth/register"
+        const val LOGIN = "/auth/login"
+    }
+
     object Users {
-        const val CREATE = "/users/register"
-        const val LOGIN = "/users/login"
         const val UPDATE = "/users"
         const val DELETE = "/users"
         const val GET_BY_ID = "/users/{id}"

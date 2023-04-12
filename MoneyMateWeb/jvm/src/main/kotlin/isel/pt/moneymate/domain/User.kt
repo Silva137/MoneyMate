@@ -1,8 +1,28 @@
 package isel.pt.moneymate.domain
 
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
+
 data class User(
     val id: Int,
-    val username: String,
+    val _username: String,
     val email: String,
-    val password: String,
-)
+    var passwordHash: String
+) : UserDetails {
+    override fun getUsername() = email
+
+    override fun getPassword() = passwordHash
+
+    override fun isEnabled() = true
+
+    override fun isCredentialsNonExpired() = true
+
+    override fun isAccountNonExpired() = true
+
+    override fun isAccountNonLocked() = true
+
+    override fun getAuthorities() = emptyList<GrantedAuthority>()
+}
+
+
+
