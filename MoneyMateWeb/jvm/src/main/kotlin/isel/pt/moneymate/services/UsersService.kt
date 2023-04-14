@@ -3,14 +3,18 @@ package isel.pt.moneymate.services
 import isel.pt.moneymate.config.JwtService
 import isel.pt.moneymate.controller.models.LoginInputModel
 import isel.pt.moneymate.controller.models.AuthenticationOutputModel
+import isel.pt.moneymate.controller.models.UserOutputModel
+import isel.pt.moneymate.controller.models.UsersOutputModel
 import isel.pt.moneymate.domain.User
 import isel.pt.moneymate.repository.UsersRepository
 import isel.pt.moneymate.services.dtos.RegisterInputDTO
+import isel.pt.moneymate.services.exceptions.NotFoundException
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import javax.naming.AuthenticationException
 
 
 @Service
@@ -41,14 +45,26 @@ class UsersService(
         return AuthenticationOutputModel(jwtToken)
     }
 
-    fun getUser(id: Int): User {
-        val user = usersRepository.getUser(id)
+
+    fun getUser(id: Int): UserOutputModel {
+        val user = usersRepository.getUser(id) ?: throw NotFoundException("User with id:$id not found")
+        return UserOutputModel(user._username, user.email)
+    }
+
+    fun getUsers(): UsersOutputModel {
+        val users = usersRepository.getAllUsers() ?: throw NotFoundException("No users found")
+        val usersInfo = users.map { UserOutputModel(it.username, it.email) }
+        return UsersOutputModel(usersInfo)
+    }
+
+    fun updateUser(id: Int, username: String) : UserOutputModel{
+        usersRepository.updateUsername(id, username)
+        val editedUser = usersRepository.getUser(id) ?: throw NotFoundException("User with id:$id not found")
+        return UserOutputModel(editedUser.username, editedUser.email)
+    }
+
+    /*fun getUserByToken(token: String): User {
+        val user = jwtService.getUserFromToken(token) ?: throw AuthenticationException("Invalid token")
         return user
-    }
-
-    fun getUsers(): List<User> {
-        return usersRepository.getAllUsers()
-    }
-
-
+    }*/
 }

@@ -2,6 +2,7 @@ package isel.pt.moneymate.controller
 
 import isel.pt.moneymate.controller.models.LoginInputModel
 import isel.pt.moneymate.controller.models.RegisterInputModel
+import isel.pt.moneymate.controller.models.UserEditInputModel
 import isel.pt.moneymate.services.UsersService
 import isel.pt.moneymate.utils.Uris
 import jakarta.validation.Valid
@@ -30,16 +31,29 @@ class UsersController(
             .body(loginData)
     }
 
-    @GetMapping("/users/{id}")
-    fun getUser(@PathVariable id : Int): ResponseEntity<*> {
+    @GetMapping(Uris.Users.GET_BY_ID)
+    fun getUserById(@PathVariable id : Int): ResponseEntity<*> {
         val user = usersService.getUser(id)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(user)
     }
 
-    @GetMapping("/test")
-    fun sayHello(): ResponseEntity<String?>? {
-        return ResponseEntity.ok("Hello from secured endpoint")
+    @GetMapping(Uris.Users.GET_ALL_USERS)
+    fun getUsers(): ResponseEntity<*> {
+        val users = usersService.getUsers()
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(users)
     }
+
+    @PatchMapping(Uris.Users.UPDATE)
+    fun updateUserName(@RequestBody userEditInput: UserEditInputModel, @PathVariable userId: Int): ResponseEntity<*> {
+        val editedUser = usersService.updateUser(userId, userEditInput.username)
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(editedUser)
+    }
+
+
 }

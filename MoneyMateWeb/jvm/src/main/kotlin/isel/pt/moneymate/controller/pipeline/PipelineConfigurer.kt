@@ -9,16 +9,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 @Configuration
 class PipelineConfigurer(
     //val authenticationInterceptor: AuthenticationInterceptor,
-    //val userArgumentResolver: UserArgumentResolver,
+    val userArgumentResolver: UserArgumentResolver,
 ) : WebMvcConfigurer {
 
     /*override fun addInterceptors(registry: InterceptorRegistry) {
         registry.addInterceptor(authenticationInterceptor)
-    }
+    }*/
 
     override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {
         resolvers.add(userArgumentResolver)
-    }*/
+    }
 
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")

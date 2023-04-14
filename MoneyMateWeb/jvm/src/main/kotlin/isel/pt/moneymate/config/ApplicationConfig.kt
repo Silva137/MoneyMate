@@ -1,6 +1,7 @@
 package isel.pt.moneymate.config
 
 import isel.pt.moneymate.repository.UsersRepository
+import isel.pt.moneymate.services.exceptions.NotFoundException
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -18,7 +19,8 @@ class ApplicationConfig(private val repository: UsersRepository) {
     @Bean
     fun userDetailsService(): UserDetailsService {
         return UserDetailsService { username ->
-            repository.getUserByEmail(username) ?: throw UsernameNotFoundException("User $username not found")
+            repository.getUserByEmail(username)
+                ?: throw NotFoundException("User with email:$username does not exist")
         }
     }
 

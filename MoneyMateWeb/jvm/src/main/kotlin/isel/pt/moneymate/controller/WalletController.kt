@@ -22,7 +22,7 @@ class WalletController(private val walletsService: WalletService) {
     }
 
     // TODO: Given autentication get the user wallets
-    @GetMapping(Uris.Wallets.GET_ALL_FROM_USER)
+    @GetMapping(Uris.Wallets.GET_WALLETS_OF_USER)
     fun getWallets(): ResponseEntity<*> {
         val wallets = walletsService.getWallets()
         return ResponseEntity

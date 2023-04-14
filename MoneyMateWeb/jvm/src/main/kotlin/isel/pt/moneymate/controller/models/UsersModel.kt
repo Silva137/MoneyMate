@@ -37,3 +37,22 @@ data class LoginInputModel(
     val password: String
 )
 
+data class UserOutputModel(
+    @field:NotBlank(message = "Username is required")
+    val username: String,
+    @field:NotBlank(message = "Email is required")
+    @field:Email(message = "Invalid email format")
+    val email: String
+)
+
+data class UsersOutputModel(
+    @field:NotBlank(message = "Username is required")
+    val users: List<UserOutputModel>,
+    val totalCount: Int = users.size
+)
+
+data class UserEditInputModel(
+    @field:NotBlank(message = "Username is required")
+    val username: String
+)
+

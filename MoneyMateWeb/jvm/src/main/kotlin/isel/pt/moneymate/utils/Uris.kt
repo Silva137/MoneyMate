@@ -1,8 +1,5 @@
 package isel.pt.moneymate.utils
 
-import org.springframework.web.util.UriTemplate
-import java.net.URI
-
 /**
  * The Uris of the API
  */
@@ -20,6 +17,7 @@ object Uris {
         const val UPDATE = "/users"
         const val DELETE = "/users"
         const val GET_BY_ID = "/users/{id}"
+        const val GET_ALL_USERS = "/users"
     }
 
     object Wallets {
@@ -31,7 +29,7 @@ object Uris {
          */
         const val CREATE = "/wallets"
 
-        const val GET_ALL_FROM_USER = "/wallets"
+        const val GET_WALLETS_OF_USER = "/wallets"
         const val GET_BY_ID = "/wallets/{walletId}"
 
         const val UPDATE_NAME = "/wallets/{walletId}"
