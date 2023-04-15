@@ -1,20 +1,18 @@
 package isel.pt.moneymate.services
 
 import isel.pt.moneymate.config.JwtService
-import isel.pt.moneymate.controller.models.LoginInputModel
 import isel.pt.moneymate.controller.models.AuthenticationOutputModel
+import isel.pt.moneymate.controller.models.LoginInputModel
 import isel.pt.moneymate.controller.models.UserOutputModel
 import isel.pt.moneymate.controller.models.UsersOutputModel
-import isel.pt.moneymate.domain.User
 import isel.pt.moneymate.repository.UsersRepository
-import isel.pt.moneymate.services.dtos.RegisterInputDTO
+import isel.pt.moneymate.services.dtos.UserDTO
 import isel.pt.moneymate.services.exceptions.NotFoundException
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import javax.naming.AuthenticationException
 
 
 @Service
@@ -26,10 +24,10 @@ class UsersService(
     private val authenticationManager: AuthenticationManager
 ) {
 
-    fun register(registerInputDTO: RegisterInputDTO): AuthenticationOutputModel {
-        val passwordHash = passwordEncoder.encode(registerInputDTO.password)
-        usersRepository.register(registerInputDTO.username, registerInputDTO.email, passwordHash)
-        val user = usersRepository.getUserByEmail(registerInputDTO.email) ?: throw Exception("User not found")
+    fun register(userDTO: UserDTO): AuthenticationOutputModel {
+        val passwordHash = passwordEncoder.encode(userDTO.password)
+        usersRepository.register(userDTO.username, userDTO.email, passwordHash)
+        val user = usersRepository.getUserByEmail(userDTO.email) ?: throw Exception("User not found")
         val jwtToken = jwtService.generateToken(user)
 
         return AuthenticationOutputModel(jwtToken)

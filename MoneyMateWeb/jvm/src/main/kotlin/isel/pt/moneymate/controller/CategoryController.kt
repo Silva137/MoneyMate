@@ -26,7 +26,7 @@ class CategoryController(private val categoryService : CategoryService) {
 
     @GetMapping(Uris.Category.GET_BY_ID)
     fun getCategoryById(@PathVariable categoryId: Int) : ResponseEntity<*>{
-        val category = categoryService.getCategoryById(categoryId = categoryId)
+        val category = categoryService.getCategoryById(categoryId)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(category)
@@ -40,7 +40,7 @@ class CategoryController(private val categoryService : CategoryService) {
     }
     @DeleteMapping(Uris.Category.DELETE_BY_ID)
     fun deleteCategory(@PathVariable categoryId: Int) : ResponseEntity<*>{
-        categoryService.deleteCategory(categoryId = categoryId)
+        categoryService.deleteCategory(categoryId)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body("Category ${categoryId} was deleted successfully!")

@@ -1,4 +1,4 @@
 package isel.pt.moneymate.services.dtos
-data class CreateCategoryDTO(
+data class CategoryDTO(
     val name: String
 )

@@ -2,8 +2,7 @@ package isel.pt.moneymate.services
 
 import isel.pt.moneymate.domain.Category
 import isel.pt.moneymate.repository.CategoryRepository
-import isel.pt.moneymate.services.dtos.CreateCategoryDTO
-import isel.pt.moneymate.utils.Uris
+import isel.pt.moneymate.services.dtos.CategoryDTO
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -11,8 +10,11 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(rollbackFor = [Exception::class])
 class CategoryService(private val categoryRepository : CategoryRepository) {
 
-    fun createCategory(categoryInput : CreateCategoryDTO): Int {
-        return categoryRepository.createCategory(name = categoryInput.name, userId = 1)
+    fun createCategory(categoryInput : CategoryDTO): Int {
+        return categoryRepository.createCategory(
+            categoryInput.name,
+            1
+        )
     }
 
     fun getCategories(): List<Category> {
@@ -20,15 +22,18 @@ class CategoryService(private val categoryRepository : CategoryRepository) {
     }
 
     fun getCategoryById(categoryId : Int) : Category? {
-        return categoryRepository.getCategoryById(categoryId = categoryId)
+        return categoryRepository.getCategoryById(categoryId)
     }
 
-    fun updateCategory(categoryInput : CreateCategoryDTO, categoryId: Int) : Category? {
-        categoryRepository.updateCategoryName(newName = categoryInput.name, categoryId = categoryId)
-        return getCategoryById(categoryId = categoryId)
+    fun updateCategory(categoryInput : CategoryDTO, categoryId: Int) : Category? {
+        categoryRepository.updateCategoryName(
+            categoryInput.name,
+            categoryId
+        )
+        return getCategoryById(categoryId)
     }
 
     fun deleteCategory(categoryId: Int){
-        categoryRepository.deleteCategoryById(categoryId = categoryId)
+        categoryRepository.deleteCategoryById(categoryId)
     }
 }

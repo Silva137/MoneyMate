@@ -43,40 +43,40 @@ object Uris {
     object Transactions {
 
         /**
-         * Create a Transaction:
-         * For a private Wallet
-         * For a shared Wallet
-         * For a shared Wallet Association (A transaction that represents a Shared Wallet Balance in a Private Wallet)
+         * Other Requests
          */
-        const val CREATE = "/transactions/wallets/{walletId}"
-
-        /**
-         * Obtain transactions of a wallet (Shared or Private):
-         *
-         * (PW Search):
-         * By date
-         * By price
-         * By category
-         *
-         * (SW Search):
-         * By user - Given a UserId and a WalletId
-         * By shared Wallet Association - Given a UserId and SharedWalletAssociatedID
-         *
-         * Ex: /transactions?walletId={id}&minPrice={min}&maxPrice={max}
-         */
-        const val GET_FROM_WALLET_OF_USER = "/transactions/wallets/{walletId}"
-
-        /**
-         * Obtain transactions of all the private Wallets of a User:
-         * By date
-         * By price
-         * By category
-         */
-        const val GET_FROM_ALL_PRIVATE_WALLETS_OF_USER = "/transactions"
-
+        const val CREATE = "/transactions/wallets/{walletId}/categories/{categoryId}"
         const val GET_BY_ID = "/transactions/{transactionId}"
         const val UPDATE = "/transactions/{transactionId}"
         const val DELETE_BY_ID = "/transactions/{transactionId}"
+
+        /**
+         * Requets of transactions Page (Common to both wallet types)
+         */
+        const val GET_ALL_OF_WALLET_ORDERED = "/transactions/wallets/{walletId}"
+        const val GET_AMOUNT_FROM_WALLET = "/transactions/wallets/{walletId}/amount"         // Soma do lucro ou da despesa
+
+        /**
+         * Requests of a PW Insights Page
+         */
+        const val GET_ALL_OF_PW_GIVEN_CATEGORY_BY_DATE = "/transactions/wallets/{walletId}/categories/{categoryId}"
+        const val GET_AMOUNTS_FROM_PW_BY_CATEGORY = "/transactions/wallets/{walletId}/categoryAmounts"
+
+        /**
+         * Requests of a SW Insights Page
+         */
+        const val GET_ALL_OF_SW_GIVEN_USER_BY_DATE = "/transactions/wallets/{walletId}/users/{userId}"
+        const val GET_AMOUNTS_FROM_SW_BY_USER = "/transactions/wallets/{walletId}/users/userAmounts"
+
+        /**
+         * Requests of overViewPage
+         */
+        const val GET_AMOUNT_FROM_WALLETS = "/transactions/amount}"         // Soma do lucro ou da despesa
+        const val GET_ALL_GIVEN_CATEGORY_BY_DATE = "/transactions/categories/{categoryId}"
+        const val GET_AMOUNTS_BY_CATEGORY = "/transactions/categoryAmounts"
+        const val GET_AMOUNT_BY_WALLETS = "/transactions/walletAmounts}"         // Soma do lucro ou da despesa
+
+        const val GET_ALL_FROM_ASSOCIATION = "/transactions/wallets/{walletId}"
     }
 
     object Category {
