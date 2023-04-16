@@ -11,6 +11,8 @@ object Uris {
     object Authentication {
         const val REGISTER = "/auth/register"
         const val LOGIN = "/auth/login"
+        const val LOGOUT = "/auth/logout"
+        const val REFRESH_TOKEN = "/auth/refresh-token"
     }
 
     object Users {

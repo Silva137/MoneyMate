@@ -43,8 +43,8 @@ interface TransactionRepository {
         """
         SELECT *
         FROM MoneyMate.wallet wallets
-        JOIN MoneyMate.transactions transactions ON wallets.id = transactions.wallet_id
-        WHERE wallets.id = :wallet_id
+        JOIN MoneyMate.transactions transactions ON wallets.wallet_id = transactions.wallet_id
+        WHERE wallets.wallet_id = :wallet_id
     """
     )
     fun getTransactionsByDate(@Bind("wallet_id") walletId: Int): List<Transaction>
@@ -53,22 +53,21 @@ interface TransactionRepository {
         """
         SELECT *
         FROM MoneyMate.wallet wallets
-        JOIN MoneyMate.transactions transactions ON wallets.id = transactions.wallet_id
-        WHERE wallets.id = :wallet_id
+        JOIN MoneyMate.transactions transactions ON wallets.wallet_id = transactions.wallet_id
+        WHERE wallets.wallet_id = :wallet_id
     """
     )
     fun getTransactionsByPrice(@Bind("wallet_id") walletId: Int): List<Transaction>
 
-    @SqlQuery(
-        """
+    @SqlQuery("""
         SELECT *
         FROM MoneyMate.wallet wallets
-        JOIN MoneyMate.transactions transactions ON wallets.id = transactions.wallet_id
-        WHERE wallets.id = :wallet_id
-    """
-    )
+        JOIN MoneyMate.transactions transactions ON wallets.wallet_id = transactions.wallet_id
+        WHERE wallets.wallet_id = :wallet_id
+    """)
     fun getTransactionsByCategory(@Bind("wallet_id") walletId: Int): List<Transaction>
 
+    /*
     fun getTransactionsGivenWalletsOfUser(userId: Int): List<Transaction> {
         TODO()
 
@@ -127,6 +126,8 @@ interface TransactionRepository {
     fun getAmountsFromAllWalletsByCategory(): Map<Int, Int> {
         TODO("Not yet implemented")
     }
+
+     */
 
 
 }

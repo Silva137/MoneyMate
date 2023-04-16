@@ -13,7 +13,7 @@ class WalletMapper(private val userMapper: UserMapper)  : RowMapper<Wallet> {
     override fun map(rs: ResultSet, ctx: StatementContext?): Wallet {
         val user = userMapper.map(rs, ctx)
         return Wallet(
-            rs.getInt("id"),
+            rs.getInt("wallet_id"),
             rs.getString("name"),
             user,
             rs.getDate("date_of_creation")

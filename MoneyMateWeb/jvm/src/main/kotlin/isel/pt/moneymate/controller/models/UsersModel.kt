@@ -22,8 +22,10 @@ data class RegisterInputModel(
 }
 
 data class AuthenticationOutputModel(
-    @JsonProperty("token")
-    val token: String
+    @JsonProperty("access_token")
+    val accessToken: String,
+    @JsonProperty("refresh_token")
+    val refreshToken: String
 )
 
 

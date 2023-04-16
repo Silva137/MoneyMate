@@ -11,7 +11,7 @@ interface UsersRepository {
     @SqlUpdate("INSERT INTO MoneyMate.users (username, email, password) VALUES (:username, :email, :password)")
     fun register(@Bind("username") name: String, @Bind("email") email: String, @Bind("password") passwordHash: String)
 
-    @SqlQuery("SELECT * FROM MoneyMate.users WHERE id = :id")
+    @SqlQuery("SELECT * FROM MoneyMate.users WHERE user_id = :id")
     fun getUser(@Bind("id") id: Int): User?
 
     @SqlQuery("SELECT * FROM MoneyMate.users")
@@ -23,7 +23,7 @@ interface UsersRepository {
     @SqlQuery("SELECT * FROM MoneyMate.users WHERE username = :username")
     fun getUserByUsername(@Bind("username") username: String): User?
 
-    @SqlUpdate("UPDATE MoneyMate.users SET username = :newUsername WHERE id = :id")
+    @SqlUpdate("UPDATE MoneyMate.users SET username = :newUsername WHERE user_id = :id")
     fun updateUsername(@Bind("id") id: Int, @Bind("newUsername") newUsername: String)
 
 }

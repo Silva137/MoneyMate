@@ -1,5 +1,9 @@
 package isel.pt.moneymate.config
 
+import isel.pt.moneymate.controller.pipeline.UserArgumentResolver
+import isel.pt.moneymate.domain.User
+import isel.pt.moneymate.exceptions.AuthenticationException
+import isel.pt.moneymate.repository.TokensRepository
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -15,8 +19,8 @@ import org.springframework.web.filter.OncePerRequestFilter
 class JwtAuthenticationFilter (
     private val jwtService: JwtService,
     private val userDetailsService: UserDetailsService,
-    //private val tokenRepository: TokenRepository
-)  : OncePerRequestFilter()  {
+    private val tokensRepository: TokensRepository,
+)  : OncePerRequestFilter() {
 
     override fun doFilterInternal(
         request: HttpServletRequest,
@@ -28,31 +32,30 @@ class JwtAuthenticationFilter (
             return
         }
 
-        val authHeader = request.getHeader("Authorization")
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response)
-            return
+        val authHeader = request.getHeader("Authorization") ?: throw AuthenticationException("Missing Authorization header")
+        if (!authHeader.startsWith("Bearer ")) {
+            throw AuthenticationException("Authorization header must be a Bearer token")
         }
 
         val jwt = authHeader.substring(7)
         val userEmail = jwtService.extractUsername(jwt)
         if (userEmail != null && SecurityContextHolder.getContext().authentication == null) {
             val userDetails = userDetailsService.loadUserByUsername(userEmail)
-            /*val isTokenValid = tokenRepository.findByToken(jwt)
-                .map { t -> !t.isExpired && !t.isRevoked }
-                .orElse(false)*/
+            val token = tokensRepository.findByToken(jwt)
+            val isTokenValid = token?.run { !expired && !revoked } ?: false
 
-            if (jwtService.isTokenValid(jwt, userDetails) /*&& isTokenValid*/) {
+            if (!jwtService.isTokenExpired(jwt) && isTokenValid) {
                 val authToken = UsernamePasswordAuthenticationToken(
                     userDetails,
                     null,
                     userDetails.authorities
                 )
-
                 authToken.details = WebAuthenticationDetailsSource().buildDetails(request)
                 SecurityContextHolder.getContext().authentication = authToken
             }
         }
+        UserArgumentResolver.addUserTo(userDetailsService.loadUserByUsername(userEmail) as User, request)
         filterChain.doFilter(request, response)
     }
 }
+

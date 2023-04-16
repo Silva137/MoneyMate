@@ -22,6 +22,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-security")
 
+    //gson
+    implementation ("com.google.code.gson:gson:2.8.9")
 
     //postgres
     implementation("org.postgresql:postgresql:42.5.4")

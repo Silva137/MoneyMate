@@ -20,8 +20,8 @@ class UserArgumentResolver : HandlerMethodArgumentResolver {
         webRequest: NativeWebRequest,
         binderFactory: WebDataBinderFactory?
     ): Any? {
-        val request = webRequest.getNativeRequest(HttpServletRequest::class.java) ?: throw IllegalStateException("TODO")
-        return getUserFrom(request) ?: throw IllegalStateException("TODO")
+        val request = webRequest.getNativeRequest(HttpServletRequest::class.java) ?: throw IllegalStateException("")
+        return getUserFrom(request) ?: throw IllegalStateException("User not found in Argument Resolver")
     }
 
     companion object {

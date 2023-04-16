@@ -36,7 +36,7 @@ class TransactionController(private val transactionService: TransactionService) 
             .body(transaction)
     }
 
-
+/*
     /**
      * Handles the request to get all transactions of a wallet of a user
      * ordered by price or date
@@ -243,5 +243,5 @@ class TransactionController(private val transactionService: TransactionService) 
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(transactions)
-    }
+    }*/
 }

@@ -1,4 +1,4 @@
-package isel.pt.moneymate.services.exceptions
+package isel.pt.moneymate.exceptions
 
 import org.springframework.http.MediaType
 

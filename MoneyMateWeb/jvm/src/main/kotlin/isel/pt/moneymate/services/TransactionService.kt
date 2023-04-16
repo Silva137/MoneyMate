@@ -22,6 +22,7 @@ class TransactionService(private val transactionRepository: TransactionRepositor
         )
     }
 
+    /*
     fun getTransactionById(transactionId: Int): Transaction {
         return transactionRepository.getTransactionById(transactionId)
     }
@@ -91,5 +92,5 @@ class TransactionService(private val transactionRepository: TransactionRepositor
 
     fun getAmountsFromAllWalletsByCategory(): Map<Int, Int> {
         return transactionRepository.getAmountsFromAllWalletsByCategory()
-    }
+    }*/
 }

@@ -10,7 +10,7 @@ class UserMapper : RowMapper<User> {
     @Throws(SQLException::class)
     override fun map(rs: ResultSet, ctx: StatementContext?): User {
         return User(
-            rs.getInt("id"),
+            rs.getInt("user_id"),
             rs.getString("username"),
             rs.getString("email"),
             rs.getString("password"),

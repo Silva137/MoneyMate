@@ -12,7 +12,7 @@ class CategoryMapper (private val userMapper: UserMapper)  : RowMapper<Category>
     override fun map(rs: ResultSet, ctx: StatementContext?): Category {
         val user = userMapper.map(rs, ctx)
         return Category(
-            rs.getInt("id"),
+            rs.getInt("category_id"),
             rs.getString("name"),
             user
         )

@@ -18,19 +18,19 @@ interface WalletRepository {
         """
         SELECT w.*, u.*
         FROM MoneyMate.wallet w
-        JOIN MoneyMate.users u ON w.user_id = u.id
+        JOIN MoneyMate.users u ON w.user_id = u.user_id
         WHERE w.user_id = :id
     """
     )
     fun getWallets(@Bind("id") userId: Int): List<Wallet>
 
-    @SqlUpdate("UPDATE MoneyMate.wallet SET name = :name WHERE id = :id ")
+    @SqlUpdate("UPDATE MoneyMate.wallet SET name = :name WHERE wallet_id = :id ")
     fun updateWallet( @Bind("name") newName: String, @Bind("id") walletId: Int)
 
-    @SqlQuery("SELECT w.*, u.*FROM MoneyMate.wallet w JOIN MoneyMate.users u ON w.user_id = u.id WHERE w.id = :id")
+    @SqlQuery("SELECT w.*, u.*FROM MoneyMate.wallet w JOIN MoneyMate.users u ON w.user_id = u.user_id WHERE w.wallet_id = :id")
     fun getWalletById(@Bind("id") walletId: Int): Wallet
 
-    @SqlUpdate("DELETE FROM MoneyMate.wallet WHERE id = :id")
+    @SqlUpdate("DELETE FROM MoneyMate.wallet WHERE wallet_id = :id")
     fun deleteWallet(@Bind("id") walletId: Int)
 }
 
