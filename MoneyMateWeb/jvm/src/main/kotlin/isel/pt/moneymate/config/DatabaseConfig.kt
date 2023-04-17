@@ -5,10 +5,7 @@ import isel.pt.moneymate.repository.TransactionRepository
 import isel.pt.moneymate.repository.TokensRepository
 import isel.pt.moneymate.repository.UsersRepository
 import isel.pt.moneymate.repository.WalletRepository
-import isel.pt.moneymate.repository.mappers.CategoryMapper
-import isel.pt.moneymate.repository.mappers.TokenMapper
-import isel.pt.moneymate.repository.mappers.UserMapper
-import isel.pt.moneymate.repository.mappers.WalletMapper
+import isel.pt.moneymate.repository.mappers.*
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.postgres.PostgresPlugin
 import org.jdbi.v3.sqlobject.SqlObjectPlugin
@@ -67,7 +64,13 @@ class DatabaseConfiguration {
 
     @Bean
     fun transactionRepository(jdbi: Jdbi): TransactionRepository {
-        //here goes the mapper
+        val userMapper = UserMapper()
+        val categoryMapper = CategoryMapper(userMapper)
+
+        jdbi.registerRowMapper(TransactionMapper(userMapper, categoryMapper))
+        jdbi.registerRowMapper(CategorySumsDtoMapper(categoryMapper))
+        jdbi.registerRowMapper(UserSumsDtoMapper(userMapper))
+
         return jdbi.onDemand(TransactionRepository::class.java)
     }
 }

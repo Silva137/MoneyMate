@@ -1,11 +1,11 @@
-package isel.pt.moneymate.controller
+package isel.pt.moneymate.http.controller
 
-import isel.pt.moneymate.controller.models.LoginInputModel
-import isel.pt.moneymate.controller.models.RegisterInputModel
-import isel.pt.moneymate.controller.models.UserEditInputModel
-import isel.pt.moneymate.domain.User
+
+import isel.pt.moneymate.http.models.users.LoginUserDTO
+import isel.pt.moneymate.http.models.users.CreateUserDTO
+import isel.pt.moneymate.http.models.users.UpdateUserDTO
 import isel.pt.moneymate.services.UsersService
-import isel.pt.moneymate.utils.Uris
+import isel.pt.moneymate.http.utils.Uris
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
@@ -20,7 +20,7 @@ class UsersController(
 ) {
 
     @PostMapping(Uris.Authentication.REGISTER)
-    fun register(@Valid @RequestBody userData : RegisterInputModel): ResponseEntity<*> {
+    fun register(@Valid @RequestBody userData : CreateUserDTO): ResponseEntity<*> {
         val registerData = usersService.register(userData)
         return ResponseEntity
             .status(HttpStatus.CREATED)
@@ -28,7 +28,7 @@ class UsersController(
     }
 
     @PostMapping(Uris.Authentication.LOGIN)
-    fun login(@Valid @RequestBody userData : LoginInputModel): ResponseEntity<*> {
+    fun login(@Valid @RequestBody userData : LoginUserDTO): ResponseEntity<*> {
         val loginData = usersService.login(userData)
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -60,7 +60,7 @@ class UsersController(
     }
 
     @PatchMapping(Uris.Users.UPDATE)
-    fun updateUserName(@RequestBody userEditInput: UserEditInputModel, @PathVariable userId: Int): ResponseEntity<*> {
+    fun updateUserName(@RequestBody userEditInput: UpdateUserDTO, @PathVariable userId: Int): ResponseEntity<*> {
         val editedUser = usersService.updateUser(userId, userEditInput.username)
         return ResponseEntity
             .status(HttpStatus.OK)

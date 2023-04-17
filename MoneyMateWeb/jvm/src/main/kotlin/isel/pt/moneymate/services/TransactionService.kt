@@ -1,8 +1,9 @@
 package isel.pt.moneymate.services
 
+import isel.pt.moneymate.controller.models.*
 import isel.pt.moneymate.domain.Transaction
+import isel.pt.moneymate.domain.User
 import isel.pt.moneymate.repository.TransactionRepository
-import isel.pt.moneymate.services.dtos.TransactionDTO
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -10,59 +11,65 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(rollbackFor = [Exception::class])
 class TransactionService(private val transactionRepository: TransactionRepository) {
 
-    fun createTransaction(userId: Int, walletId: Int, categoryId: Int, transactionDTO: TransactionDTO): Int {
+    fun createTransaction(
+        loggedUser: User,
+        walletId: Int,
+        categoryId: Int,
+        transactionData: CreateTransactionDTO
+    ): Int {
         return transactionRepository.createTransaction(
-            userId,
+            loggedUser.id,
             walletId,
             categoryId,
-            transactionDTO.amount,
-            transactionDTO.title,
-            transactionDTO.transactionType,
-            transactionDTO.periodical,
+            transactionData.amount,
+            transactionData.title,
+            transactionData.transactionType,
+            transactionData.periodical,
         )
     }
 
-    /*
-    fun getTransactionById(transactionId: Int): Transaction {
+    fun getTransactionById(transactionId: Int): Transaction? {
         return transactionRepository.getTransactionById(transactionId)
     }
 
-    fun updateTransaction(transactionDTO: TransactionDTO, walletId: Int): Transaction {
-        return transactionRepository.updateTransaction(
-            walletId,
-            transactionDTO.amount,
-            transactionDTO.title,
+    /**
+     * Todos os campos sao opcionais mas caso o utilizador nao insira sao
+     * submetidos os valores anteriores
+     */
+    fun updateTransaction(transactionId: Int, transactionData: UpdateTransactionDTO): Transaction? {
+        // Todo verificacao e excessao de parametros
+        transactionRepository.updateTransaction(
+            transactionId,
+            transactionData.categoryId,
+            transactionData.amount,
+            transactionData.title,
+            transactionData.transactionType,
         )
+        return getTransactionById(transactionId)
     }
 
     fun deleteTransaction(transactionId: Int){
         transactionRepository.deleteTransaction(transactionId)
     }
 
-    fun getTransactionsFromWalletOrdered(walletId: Int, criterion: String, order: Int): List<Transaction>? {
-        // Todo passar order asc ord desc
-        return when (criterion) {
-            "bydate" -> transactionRepository.getTransactionsByDate(walletId)
-            "byprice" -> transactionRepository.getTransactionsByPrice(walletId)
-            else -> null
-        }
+    fun getTransactionsFromWalletSortedBy(walletId: Int, criterion: String, order: String): List<Transaction>? {
+        // Todo verificacao e excessao de parametros
+        return transactionRepository.getTransactionsSortedBy(walletId, criterion, order)
     }
 
-    fun getSumsFromWallet(walletId: Int, criterion: String): Int {
-        return when (criterion) {
-            "+" -> transactionRepository.getPositiveSumsFromWallet(walletId)
-            "-" -> transactionRepository.getNegativeSumsFromWallet(walletId)
-            else -> 0
-        }
+    fun getSumsFromWallet(walletId: Int): List<Int> {
+        // Todo verificacao e excessao de parametros
+        return transactionRepository.getSumsFromWallet(walletId)
+
     }
 
-    /** ----------------------------------- PW --------------------------------   */
+    /** ----------------------------------- SW --------------------------------   */
 
-    fun getTransactionsFromPWGivenCategory(walletId: Int, categoryId: String): List<Transaction> {
+    fun getTransactionsFromPWGivenCategory(walletId: Int, categoryId: Int): List<Transaction> {
         return transactionRepository.getTransactionsFromPWGivenCategory(walletId, categoryId)
     }
 
-    fun getAmountsFromPwByCategory(walletId: Int): Map<Int,Int> {
+    fun getAmountsFromPwByCategory(walletId: Int): List<CategorySumsOutDto> {
         return transactionRepository.getAmountsFromPwByCategory(walletId)
     }
 
@@ -72,9 +79,14 @@ class TransactionService(private val transactionRepository: TransactionRepositor
         return transactionRepository.getTransactionsFromSwGivenUser(walletId, userId)
     }
 
-    fun getAmountsFromSwByUser(walletId: Int): Map<Int,Int> {
+    fun getAmountsFromSwByUser(walletId: Int): List<UserSumsOutDto> {
         return transactionRepository.getAmountsFromSwByUser(walletId)
     }
+
+
+
+    /*
+
 
     /** ----------------------------------- OverView --------------------------------   */
 
@@ -94,3 +106,22 @@ class TransactionService(private val transactionRepository: TransactionRepositor
         return transactionRepository.getAmountsFromAllWalletsByCategory()
     }*/
 }
+
+/*
+        return when (criterion) {
+            "bydate" ->
+                when (order){
+                    "asc" -> transactionRepository.getTransactionsByDateAsc(walletId)
+                    "desc" -> transactionRepository.getTransactionsByDateDesc(walletId)
+                    else -> null
+                }
+            "byprice" ->
+                when (order){
+                    "asc" -> transactionRepository.getTransactionsByPriceAsc(walletId)
+                    "desc" -> transactionRepository.getTransactionsByPriceDesc(walletId)
+                    else -> null
+            }
+            else -> null
+        }
+
+         */

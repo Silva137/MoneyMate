@@ -1,4 +1,4 @@
-package isel.pt.moneymate.controller.pipeline
+package isel.pt.moneymate.http.pipeline
 
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.*

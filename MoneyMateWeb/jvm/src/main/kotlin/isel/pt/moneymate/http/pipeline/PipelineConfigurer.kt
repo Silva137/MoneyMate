@@ -1,4 +1,4 @@
-package isel.pt.moneymate.controller.pipeline
+package isel.pt.moneymate.http.pipeline
 
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.method.support.HandlerMethodArgumentResolver

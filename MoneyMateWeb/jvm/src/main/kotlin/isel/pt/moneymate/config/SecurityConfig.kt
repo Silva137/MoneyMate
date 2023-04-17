@@ -1,6 +1,6 @@
 package isel.pt.moneymate.config
 
-import isel.pt.moneymate.utils.Uris
+import isel.pt.moneymate.http.utils.Uris
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationProvider

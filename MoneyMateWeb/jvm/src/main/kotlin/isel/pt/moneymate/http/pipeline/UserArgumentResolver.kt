@@ -1,4 +1,4 @@
-package isel.pt.moneymate.controller.pipeline
+package isel.pt.moneymate.http.pipeline
 
 import isel.pt.moneymate.domain.User
 import jakarta.servlet.http.HttpServletRequest

@@ -1,8 +1,8 @@
-package isel.pt.moneymate.controller
+package isel.pt.moneymate.http.controller
 
-import isel.pt.moneymate.controller.models.CategoryInputModel
+import isel.pt.moneymate.http.models.CategoryInputDTO
 import isel.pt.moneymate.services.CategoryService
-import isel.pt.moneymate.utils.Uris
+import isel.pt.moneymate.http.utils.Uris
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 class CategoryController(private val categoryService : CategoryService) {
     @PostMapping(Uris.Category.CREATE)
-    fun createCategory(@RequestBody categoryData: CategoryInputModel) : ResponseEntity<*> {
+    fun createCategory(@RequestBody categoryData: CategoryInputDTO) : ResponseEntity<*> {
         val category = categoryService.createCategory(categoryData.toCategoryInputDTO())
         return ResponseEntity
             .status(HttpStatus.CREATED)
@@ -32,7 +32,7 @@ class CategoryController(private val categoryService : CategoryService) {
             .body(category)
     }
     @PatchMapping(Uris.Category.UPDATE)
-    fun updateCategory(@RequestBody categoryData: CategoryInputModel,@PathVariable categoryId: Int): ResponseEntity<*> {
+    fun updateCategory(@RequestBody categoryData: CategoryInputDTO, @PathVariable categoryId: Int): ResponseEntity<*> {
         val category = categoryService.updateCategory(categoryData.toCategoryInputDTO(),categoryId)
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -43,6 +43,6 @@ class CategoryController(private val categoryService : CategoryService) {
         categoryService.deleteCategory(categoryId)
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body("Category ${categoryId} was deleted successfully!")
+            .body("Category $categoryId was deleted successfully!")
     }
 }

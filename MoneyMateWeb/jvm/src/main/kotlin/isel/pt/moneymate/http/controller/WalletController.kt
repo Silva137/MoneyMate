@@ -1,8 +1,8 @@
-package isel.pt.moneymate.controller
+package isel.pt.moneymate.http.controller
 
-import isel.pt.moneymate.controller.models.WalletInputModel
+import isel.pt.moneymate.http.models.WalletInputDTO
 import isel.pt.moneymate.services.WalletService
-import isel.pt.moneymate.utils.Uris
+import isel.pt.moneymate.http.utils.Uris
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -14,7 +14,7 @@ class WalletController(private val walletsService: WalletService) {
 
 
     @PostMapping(Uris.Wallets.CREATE)
-    fun createWallet(@Valid @RequestBody walletData: WalletInputModel): ResponseEntity<*> {
+    fun createWallet(@Valid @RequestBody walletData: WalletInputDTO): ResponseEntity<*> {
         val wallet = walletsService.createWallet(walletData.toWalletInputDTO())
         return ResponseEntity
             .status(HttpStatus.CREATED)
@@ -31,7 +31,7 @@ class WalletController(private val walletsService: WalletService) {
     }
 
     @PatchMapping(Uris.Wallets.UPDATE_NAME)
-    fun updateWalletName(@RequestBody walletName: WalletInputModel,  @PathVariable walletId: Int) : ResponseEntity<*> {
+    fun updateWalletName(@RequestBody walletName: WalletInputDTO, @PathVariable walletId: Int) : ResponseEntity<*> {
         val wallet = walletsService.updateWallet(walletName.toWalletInputDTO(),walletId)
         return ResponseEntity
             .status(HttpStatus.OK)

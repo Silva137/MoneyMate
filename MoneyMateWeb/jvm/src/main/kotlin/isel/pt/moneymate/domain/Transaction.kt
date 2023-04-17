@@ -1,15 +1,15 @@
 package isel.pt.moneymate.domain
 
-import java.time.LocalDateTime
+import java.sql.Date
 
 data class Transaction(
     val id: Int,
-    val user : User,
-    val amount: Long,
-    val type: TransactionType,
-    val category : Category,
-    val description: String,
-    val createdAt: LocalDateTime,
+    val user: User,
+    val amount: Int,
+    val type: Int,
+    val category: Category,
+    val title: String,
+    val createdAt: Date,
     //val periodicity: TransactionPeriodicity?
 )
 

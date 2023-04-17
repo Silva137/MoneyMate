@@ -1,4 +1,4 @@
-package isel.pt.moneymate.controller.models
+package isel.pt.moneymate.http.models
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import isel.pt.moneymate.services.dtos.UserDTO
@@ -6,7 +6,8 @@ import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
-data class RegisterInputModel(
+/*
+data class RegisterInputDTO(
     @field:NotBlank(message = "Username is required")
     val username: String,
 
@@ -21,15 +22,13 @@ data class RegisterInputModel(
     fun toRegisterInputDTO() = UserDTO(username, email, password)
 }
 
-data class AuthenticationOutputModel(
-    @JsonProperty("access_token")
-    val accessToken: String,
-    @JsonProperty("refresh_token")
-    val refreshToken: String
+
+data class UserEditInputDTO(
+    @field:NotBlank(message = "Username is required")
+    val username: String
 )
 
-
-data class LoginInputModel(
+data class LoginInputDTO(
     @field:NotBlank(message = "Email is required")
     @field:Email(message = "Invalid email format")
     val email: String,
@@ -39,7 +38,15 @@ data class LoginInputModel(
     val password: String
 )
 
-data class UserOutputModel(
+data class AuthenticationOutputDTO(
+    @JsonProperty("access_token")
+    val accessToken: String,
+    @JsonProperty("refresh_token")
+    val refreshToken: String
+)
+
+
+data class UserOutputDTO(
     @field:NotBlank(message = "Username is required")
     val username: String,
     @field:NotBlank(message = "Email is required")
@@ -47,14 +54,15 @@ data class UserOutputModel(
     val email: String
 )
 
-data class UsersOutputModel(
+data class UsersOutputDTO(
     @field:NotBlank(message = "Username is required")
-    val users: List<UserOutputModel>,
+    val users: List<UserOutputDTO>,
     val totalCount: Int = users.size
 )
 
-data class UserEditInputModel(
-    @field:NotBlank(message = "Username is required")
-    val username: String
-)
+ */
+
+
+
+
 

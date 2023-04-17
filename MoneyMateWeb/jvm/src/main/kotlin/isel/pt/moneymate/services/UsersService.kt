@@ -2,12 +2,12 @@ package isel.pt.moneymate.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import isel.pt.moneymate.config.JwtService
-import isel.pt.moneymate.controller.models.*
 import isel.pt.moneymate.domain.Token
 import isel.pt.moneymate.domain.User
 import isel.pt.moneymate.exceptions.AlreadyExistsException
 import isel.pt.moneymate.exceptions.InvalidLoginException
 import isel.pt.moneymate.exceptions.NotFoundException
+import isel.pt.moneymate.http.models.users.*
 import isel.pt.moneymate.repository.TokensRepository
 import isel.pt.moneymate.repository.UsersRepository
 import jakarta.servlet.http.HttpServletRequest
@@ -32,7 +32,7 @@ class UsersService(
 ) {
 
     //change model to dto
-    fun register(registerInputDTO: RegisterInputModel): AuthenticationOutputModel {
+    fun register(registerInputDTO: CreateUserDTO): AuthenticationOutDTO {
         if(usersRepository.getUserByUsername(registerInputDTO.username) != null)
             throw AlreadyExistsException("User with username ${registerInputDTO.username} already exists")
 
@@ -49,10 +49,10 @@ class UsersService(
         val refreshToken = jwtService.generateRefreshToken(savedUser)
         saveUserToken(savedUser, accessToken);
 
-        return AuthenticationOutputModel(accessToken, refreshToken)
+        return AuthenticationOutDTO(accessToken, refreshToken)
     }
 
-    fun login(loginInput: LoginInputModel): AuthenticationOutputModel {
+    fun login(loginInput: LoginUserDTO): AuthenticationOutDTO {
         try{
             authenticationManager.authenticate(
                 UsernamePasswordAuthenticationToken(loginInput.email, loginInput.password)
@@ -66,7 +66,7 @@ class UsersService(
         revokeAllUserTokens(user)
         saveUserToken(user, accessToken)
 
-        return AuthenticationOutputModel(accessToken, refreshToken)
+        return AuthenticationOutDTO(accessToken, refreshToken)
     }
 
     fun refreshToken(request: HttpServletRequest?, response: HttpServletResponse?) {
@@ -82,27 +82,27 @@ class UsersService(
                 val accessToken = jwtService.generateToken(user)
                 revokeAllUserTokens(user)
                 saveUserToken(user, accessToken)
-                val authResponse = AuthenticationOutputModel(accessToken, refreshToken)
+                val authResponse = AuthenticationOutDTO(accessToken, refreshToken)
                 ObjectMapper().writeValue(response?.outputStream, authResponse)
             }
         }
     }
 
-    fun getUser(id: Int): UserOutputModel {
+    fun getUser(id: Int): GetUserDTO {
         val user = usersRepository.getUser(id) ?: throw NotFoundException("User with id:$id not found")
-        return UserOutputModel(user._username, user.email)
+        return GetUserDTO(user._username, user.email)
     }
 
-    fun getUsers(): UsersOutputModel {
+    fun getUsers(): GetUsersDTO {
         val users = usersRepository.getAllUsers() ?: throw NotFoundException("No users found")
-        val usersInfo = users.map { UserOutputModel(it.username, it.email) }
-        return UsersOutputModel(usersInfo)
+        val usersInfo = users.map { GetUserDTO(it.username, it.email) }
+        return GetUsersDTO(usersInfo)
     }
 
-    fun updateUser(id: Int, username: String) : UserOutputModel{
+    fun updateUser(id: Int, username: String) : GetUserDTO {
         usersRepository.updateUsername(id, username)
         val editedUser = usersRepository.getUser(id) ?: throw NotFoundException("User with id:$id not found")
-        return UserOutputModel(editedUser.username, editedUser.email)
+        return GetUserDTO(editedUser.username, editedUser.email)
     }
 
     private fun saveUserToken(user: User, jwtToken: String) {

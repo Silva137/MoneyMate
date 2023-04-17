@@ -1,4 +1,4 @@
-package isel.pt.moneymate.utils
+package isel.pt.moneymate.http.utils
 
 /**
  * The Uris of the API
@@ -55,7 +55,7 @@ object Uris {
         /**
          * Requets of transactions Page (Common to both wallet types)
          */
-        const val GET_ALL_OF_WALLET_ORDERED = "/transactions/wallets/{walletId}"
+        const val GET_ALL_OF_WALLET_SORTED_BY = "/transactions/wallets/{walletId}"
         const val GET_AMOUNT_FROM_WALLET = "/transactions/wallets/{walletId}/amount"         // Soma do lucro ou da despesa
 
         /**
@@ -64,6 +64,7 @@ object Uris {
         const val GET_ALL_OF_PW_GIVEN_CATEGORY_BY_DATE = "/transactions/wallets/{walletId}/categories/{categoryId}"
         const val GET_AMOUNTS_FROM_PW_BY_CATEGORY = "/transactions/wallets/{walletId}/categoryAmounts"
 
+        // TODO were to get user??
         /**
          * Requests of a SW Insights Page
          */

@@ -1,9 +1,8 @@
 package isel.pt.moneymate.controller.models
 
-import isel.pt.moneymate.services.dtos.TransactionDTO
 import jakarta.validation.constraints.NotBlank
 
-data class TransactionInputModel (
+data class CreateTransactionDTO (
     @field:NotBlank(message = "Transaction ammount is required")
     val amount: Int,
 
@@ -17,5 +16,12 @@ data class TransactionInputModel (
     val periodical: String
 
 ){
-    fun toTransactionInputDTO() = TransactionDTO(amount, title, transactionType, periodical)
+    //fun toTransactionInputDTO() = TransactionDTO(amount, title, transactionType, periodical)
 }
+
+data class UpdateTransactionDTO (
+    val categoryId: Int,
+    val amount: Int,
+    val title: String,
+    val transactionType: Int,
+)

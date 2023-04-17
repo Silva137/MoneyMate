@@ -1,9 +1,9 @@
-package isel.pt.moneymate.controller.models
+package isel.pt.moneymate.http.models
 
 import isel.pt.moneymate.services.dtos.CategoryDTO
 import jakarta.validation.constraints.NotBlank
 
-data class CategoryInputModel (
+data class CategoryInputDTO (
     @field:NotBlank(message = "Category name  is required")
     val name: String,
 ){
