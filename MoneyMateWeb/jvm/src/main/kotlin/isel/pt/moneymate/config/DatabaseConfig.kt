@@ -71,6 +71,7 @@ class DatabaseConfiguration {
         jdbi.registerRowMapper(TransactionMapper(userMapper, categoryMapper, walletMapper))
         jdbi.registerRowMapper(CategorySumsDtoMapper(categoryMapper))
         jdbi.registerRowMapper(UserSumsDtoMapper(userMapper))
+        jdbi.registerRowMapper(WalletBalanceDtoMapper())
 
         return jdbi.onDemand(TransactionRepository::class.java)
     }

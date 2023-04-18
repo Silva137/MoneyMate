@@ -17,6 +17,10 @@ data class TransactionDto(
    val x: Int
 )
 
+data class WalletBalanceDTO(
+   val lucrativeSum: Int,
+   val expensesSum: Int,
+)
 
 data class CategorySumsOutDto(
    val category: Category,

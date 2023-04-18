@@ -2,6 +2,7 @@ package isel.pt.moneymate.repository
 
 import isel.pt.moneymate.domain.User
 import org.jdbi.v3.sqlobject.customizer.Bind
+import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys
 import org.jdbi.v3.sqlobject.statement.SqlQuery
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
 import org.springframework.stereotype.Repository
@@ -9,7 +10,9 @@ import org.springframework.stereotype.Repository
 @Repository
 interface UsersRepository {
     @SqlUpdate("INSERT INTO MoneyMate.users (username, email, password) VALUES (:username, :email, :password)")
-    fun register(@Bind("username") name: String, @Bind("email") email: String, @Bind("password") passwordHash: String)
+    @GetGeneratedKeys("user_id")
+
+    fun register(@Bind("username") name: String, @Bind("email") email: String, @Bind("password") passwordHash: String):Int
 
     @SqlQuery("SELECT * FROM MoneyMate.users WHERE user_id = :id")
     fun getUser(@Bind("id") id: Int): User?

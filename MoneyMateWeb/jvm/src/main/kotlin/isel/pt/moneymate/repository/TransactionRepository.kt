@@ -2,6 +2,7 @@ package isel.pt.moneymate.repository
 
 import isel.pt.moneymate.controller.models.CategorySumsOutDto
 import isel.pt.moneymate.controller.models.UserSumsOutDto
+import isel.pt.moneymate.controller.models.WalletBalanceDTO
 import isel.pt.moneymate.domain.Transaction
 import org.jdbi.v3.sqlobject.customizer.Bind
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys
@@ -96,21 +97,22 @@ interface TransactionRepository {
         SELECT 
             SUM( CASE WHEN transactions.amount >=0 THEN transactions.amount ELSE 0 END) AS lucrative_sum,
             SUM( CASE WHEN transactions.amount < 0 THEN transactions.amount ELSE 0 END) AS expense_sum
-        FROM MoneyMate.wallet wallets
-        JOIN MoneyMate.transactions transactions ON wallets.wallet_id = transactions.wallet_id
-        WHERE wallets.wallet_id = :wallet_id
+        FROM MoneyMate.transactions transactions
+        WHERE transactions.wallet_id = :wallet_id
     """
     )
     fun getSumsFromWallet(
         @Bind("wallet_id") walletId: Int
-    ): List<Int>
+    ): WalletBalanceDTO
 
 
     @SqlQuery(
         """
         SELECT *
-        FROM MoneyMate.transactions transactions
-        JOIN MoneyMate.category categories ON transactions.category_id = categories.category_id
+        FROM MoneyMate.transactions transactions 
+        JOIN Moneymate.users users ON transactions.user_id = users.user_id
+        JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
+        JOIN Moneymate.category category ON transactions.category_id = category.category_id
         WHERE transactions.wallet_id = :wallet_id AND transactions.category_id = :category_id
         ORDER BY transactions.date_of_creation DESC
     """
@@ -126,7 +128,7 @@ interface TransactionRepository {
         SELECT categories.*, SUM(transactions.amount) AS sum
         FROM MoneyMate.transactions transactions
         JOIN MoneyMate.category categories ON transactions.category_id = categories.category_id
-        WHERE transactions.wallet_id = :wallet_id AND transactions.category_id = :category_id
+        WHERE transactions.wallet_id = :wallet_id
         GROUP BY categories.category_id
     """
     )
@@ -138,8 +140,10 @@ interface TransactionRepository {
     @SqlQuery(
         """
         SELECT *
-        FROM MoneyMate.transactions transactions
-        JOIN MoneyMate.users users ON transactions.user_id = users.user_id
+        FROM MoneyMate.transactions transactions 
+        JOIN Moneymate.users users ON transactions.user_id = users.user_id
+        JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
+        JOIN Moneymate.category category ON transactions.category_id = category.category_id
         WHERE transactions.wallet_id = :wallet_id AND transactions.user_id = :user_id
         ORDER BY transactions.date_of_creation DESC
     """

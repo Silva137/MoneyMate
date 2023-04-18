@@ -16,24 +16,26 @@ import org.springframework.test.context.ActiveProfiles
 
 class TransactionRepositoryTest {
 
-    @Autowired
-    lateinit var transactionRepository: TransactionRepository
-
-    @Autowired
-    lateinit var categoryRepository: CategoryRepository
+    @Autowired lateinit var transactionRepository: TransactionRepository
+    @Autowired lateinit var categoryRepository: CategoryRepository
+    @Autowired lateinit var usersRepository: UsersRepository
+    @Autowired lateinit var walletRepository: WalletRepository
 
     var nOfTransactions = 0
-    val userId = InitValues.InitUser.initialUserId
-    val walletId = InitValues.InitWallet.initialWalletId
+    var userId = -1
+    var walletId = -1
 
-    private fun createRandomTransaction(): Int {
-        val title = "TestTransaction"
-        val periodical = listOf(1, 3, 6, 9, 12).random()
-        val minAmount = -100
-        val maxAmount = 100
-        val amount = (minAmount..maxAmount).random()
-        val transactionTitle = "$title ${++nOfTransactions}"
+    @BeforeAll
+    fun init(){
+        val userName = "testUserForTransaction"
 
+        val user = usersRepository.getUserByUsername(userName)
+        userId = user?.id ?: usersRepository.register(userName, "usertransaction@example.com", "password")
+
+        walletId = walletRepository.createWallet("TestWalletForTransaction", userId)
+    }
+
+    private fun getCategory(): Int {
         // Select a random available category
         val availabeCategories = categoryRepository.getCategories()
 
@@ -44,6 +46,17 @@ class TransactionRepositoryTest {
                 val randomCategorie = availabeCategories.randomOrNull() ?: error("No available categories found")
                 randomCategorie.id
             }
+        return categorieId
+    }
+    private fun createRandomTransaction(): Int {
+        val title = "TestTransaction"
+        val periodical = listOf(1, 3, 6, 9, 12).random()
+        val minAmount = -100
+        val maxAmount = 100
+        val amount = (minAmount..maxAmount).random()
+        val transactionTitle = "$title ${++nOfTransactions}"
+
+        val categorieId = getCategory()
 
         val transactionId = transactionRepository.createTransaction(
             userId, walletId, categorieId, amount, transactionTitle, periodical
@@ -64,12 +77,6 @@ class TransactionRepositoryTest {
             println(it.dateOfCreation)
         }
         return actualList
-    }
-
-    @BeforeAll
-    fun init(){
-        val tId = createRandomTransaction()
-        assertNotNull(tId)
     }
 
     @Test
@@ -152,4 +159,62 @@ class TransactionRepositoryTest {
         val expectedList = actualList.sortedBy { it.amount }
         assertIterableEquals(actualList, expectedList)
     }
+
+    @Test
+    fun `get sums from wallet`() {
+        createRandomTransaction()
+        createRandomTransaction()
+        createRandomTransaction()
+
+        val balanceDTO = transactionRepository.getSumsFromWallet(walletId)
+        assertNotNull(balanceDTO)
+        println(balanceDTO.lucrativeSum)
+        println(balanceDTO.expensesSum)
+    }
+
+    @Test
+    fun `get transactions from PW given category`() {
+        val categoryId = getCategory()
+        createRandomTransaction()
+        createRandomTransaction()
+        createRandomTransaction()
+        val transactions = transactionRepository.getTransactionsFromPWGivenCategory(walletId, categoryId)
+
+        assertNotNull(transactions)
+        transactions.forEach{
+            println(it.id)
+            assertEquals(it.category.id, categoryId)
+        }
+    }
+
+    // TODO NEED TESTING
+    // Need joining querie to user or change Category() to categoryId in Mapper
+    @Test
+    fun `get amounts from PW by category`() {
+        createRandomTransaction()
+        createRandomTransaction()
+        createRandomTransaction()
+        val categorySumsList = transactionRepository.getAmountsFromPwByCategory(walletId)
+        categorySumsList.forEach{
+            println("${it.category} as ${it.amount} $")
+        }
+        assertNotNull(categorySumsList)
+    }
+
+    @Test
+    fun `get transactions from SW given user`() {
+        val walletId = 1
+        val userId = 1
+        val transactions = transactionRepository.getTransactionsFromSwGivenUser(walletId, userId)
+        assertNotNull(transactions)
+    }
+
+    @Test
+    fun `get amounts from SW by user`() {
+        val walletId = 1
+        val amounts = transactionRepository.getAmountsFromSwByUser(walletId)
+        assertNotNull(amounts)
+    }
+
+
 }

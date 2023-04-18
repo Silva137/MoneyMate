@@ -1,5 +1,6 @@
 package isel.pt.moneymate.repository.utils
 
+// TODO DELETE CLASS
 object InitValues {
 
     object InitUser{
@@ -15,13 +16,4 @@ object InitValues {
         const val initialWalletId = 1
     }
 
-    object InitCategory{
-        const val initialCategoryId = 1
-
-    }
-
-    object InitTransaction{
-        const val initialTransactionId = 1
-
-    }
 }

@@ -2,6 +2,7 @@ package isel.pt.moneymate.repository.mappers
 
 import isel.pt.moneymate.controller.models.CategorySumsOutDto
 import isel.pt.moneymate.controller.models.UserSumsOutDto
+import isel.pt.moneymate.controller.models.WalletBalanceDTO
 import isel.pt.moneymate.domain.Transaction
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
@@ -59,6 +60,18 @@ class UserSumsDtoMapper (
         return UserSumsOutDto(
             user,
             rs.getInt("sum")
+        )
+    }
+}
+
+class WalletBalanceDtoMapper (): RowMapper<WalletBalanceDTO> {
+
+    @Throws(SQLException::class)
+    override fun map(rs: ResultSet, ctx: StatementContext?): WalletBalanceDTO {
+
+        return WalletBalanceDTO(
+            rs.getInt("lucrative_sum"),
+            rs.getInt("expense_sum")
         )
     }
 }

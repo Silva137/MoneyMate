@@ -55,7 +55,7 @@ class TransactionService(private val transactionRepository: TransactionRepositor
         return transactionRepository.getTransactionsSortedBy(walletId, criterion, order)
     }
 
-    fun getSumsFromWallet(walletId: Int): List<Int> {
+    fun getSumsFromWallet(walletId: Int): WalletBalanceDTO {
         // Todo verificacao e excessao de parametros
         return transactionRepository.getSumsFromWallet(walletId)
 
