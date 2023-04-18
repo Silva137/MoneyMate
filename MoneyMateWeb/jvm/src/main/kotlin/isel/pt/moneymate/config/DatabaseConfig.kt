@@ -66,8 +66,9 @@ class DatabaseConfiguration {
     fun transactionRepository(jdbi: Jdbi): TransactionRepository {
         val userMapper = UserMapper()
         val categoryMapper = CategoryMapper(userMapper)
+        val walletMapper = WalletMapper(userMapper)
 
-        jdbi.registerRowMapper(TransactionMapper(userMapper, categoryMapper))
+        jdbi.registerRowMapper(TransactionMapper(userMapper, categoryMapper, walletMapper))
         jdbi.registerRowMapper(CategorySumsDtoMapper(categoryMapper))
         jdbi.registerRowMapper(UserSumsDtoMapper(userMapper))
 

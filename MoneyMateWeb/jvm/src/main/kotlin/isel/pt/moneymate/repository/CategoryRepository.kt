@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository
 interface CategoryRepository {
 
         @SqlUpdate("INSERT INTO MoneyMate.category (name, user_id) VALUES (:name, :userId)")
-        @GetGeneratedKeys("id")
+        @GetGeneratedKeys("category_id")
         fun createCategory(@Bind("name") name: String, @Bind("userId") userId: Int) : Int
         @SqlQuery("""
             SELECT c.*, u.*

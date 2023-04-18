@@ -56,7 +56,7 @@ object Uris {
          * Requets of transactions Page (Common to both wallet types)
          */
         const val GET_ALL_OF_WALLET_SORTED_BY = "/transactions/wallets/{walletId}"
-        const val GET_AMOUNT_FROM_WALLET = "/transactions/wallets/{walletId}/amount"         // Soma do lucro ou da despesa
+        const val GET_AMOUNT_FROM_WALLET = "/transactions/wallets/{walletId}/amount"         // Somas do lucro e da despesa
 
         /**
          * Requests of a PW Insights Page
@@ -74,10 +74,10 @@ object Uris {
         /**
          * Requests of overViewPage
          */
-        const val GET_AMOUNT_FROM_WALLETS = "/transactions/amount}"         // Soma do lucro ou da despesa
+        const val GET_AMOUNT_FROM_WALLETS = "/transactions/amount}"         // Somas do lucro e da despesa
         const val GET_ALL_GIVEN_CATEGORY_BY_DATE = "/transactions/categories/{categoryId}"
         const val GET_AMOUNTS_BY_CATEGORY = "/transactions/categoryAmounts"
-        const val GET_AMOUNT_BY_WALLETS = "/transactions/walletAmounts}"         // Soma do lucro ou da despesa
+        const val GET_AMOUNT_BY_WALLETS = "/transactions/walletAmounts}"         // Soma de todas as transacoes de cada wallet
 
         const val GET_ALL_FROM_ASSOCIATION = "/transactions/wallets/{walletId}"
     }

@@ -23,7 +23,6 @@ class TransactionService(private val transactionRepository: TransactionRepositor
             categoryId,
             transactionData.amount,
             transactionData.title,
-            transactionData.transactionType,
             transactionData.periodical,
         )
     }
@@ -43,7 +42,6 @@ class TransactionService(private val transactionRepository: TransactionRepositor
             transactionData.categoryId,
             transactionData.amount,
             transactionData.title,
-            transactionData.transactionType,
         )
         return getTransactionById(transactionId)
     }
@@ -53,7 +51,7 @@ class TransactionService(private val transactionRepository: TransactionRepositor
     }
 
     fun getTransactionsFromWalletSortedBy(walletId: Int, criterion: String, order: String): List<Transaction>? {
-        // Todo verificacao e excessao de parametros
+        // Todo verificacao e excessao de parametros IllegalArgumentException
         return transactionRepository.getTransactionsSortedBy(walletId, criterion, order)
     }
 

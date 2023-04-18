@@ -63,10 +63,12 @@ CREATE TABLE MoneyMate.transactions
     amount           DECIMAL(10, 2) NOT NULL,
     date_of_creation DATE           NOT NULL DEFAULT CURRENT_DATE,
     title            VARCHAR(50)    NOT NULL,
-    transaction_type VARCHAR(15)    NOT NULL,
+    --transaction_type SMALLINT       NOT NULL DEFAULT (CASE WHEN amount > 0 THEN 1 ELSE 0 END),
     periodical       SMALLINT,
 
-    CONSTRAINT transaction_is_valid CHECK (transaction_type IN ('income', 'expense')),
+    -- field transaction_type is redundant
+    --CONSTRAINT transaction_is_valid CHECK (transaction_type IN ('income', 'expense')),
+
     CONSTRAINT period_is_valid CHECK (periodical IN (1, 3, 6, 9, 12))
 
 );

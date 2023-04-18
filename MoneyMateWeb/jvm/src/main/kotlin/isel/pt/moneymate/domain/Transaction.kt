@@ -5,15 +5,11 @@ import java.sql.Date
 data class Transaction(
     val id: Int,
     val user: User,
-    val amount: Int,
-    val type: Int,
+    val wallet: Wallet,
     val category: Category,
+    val amount: Int,
+    val dateOfCreation: Date,
     val title: String,
-    val createdAt: Date,
-    //val periodicity: TransactionPeriodicity?
+    val periodical: Int
 )
 
-enum class TransactionType {
-    INCOME,
-    EXPENSE
-}

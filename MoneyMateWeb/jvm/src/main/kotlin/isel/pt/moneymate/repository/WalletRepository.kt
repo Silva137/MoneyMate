@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface WalletRepository {
     @SqlUpdate("INSERT INTO MoneyMate.wallet(name,user_id) VALUES (:name,:user_id)")
-    @GetGeneratedKeys("id")
+    @GetGeneratedKeys("wallet_id")
     fun createWallet(@Bind("name") walletName: String, @Bind("user_id") userId: Int): Int
 
     @SqlQuery(

@@ -10,21 +10,24 @@ import java.sql.SQLException
 
 class TransactionMapper (
     private val userMapper: UserMapper,
-    private val categoryMapper: CategoryMapper
+    private val categoryMapper: CategoryMapper,
+    private val walletMapper: WalletMapper
 )  : RowMapper<Transaction> {
 
     @Throws(SQLException::class)
     override fun map(rs: ResultSet, ctx: StatementContext?): Transaction {
         val user = userMapper.map(rs, ctx)
         val category = categoryMapper.map(rs, ctx)
+        val wallet = walletMapper.map(rs, ctx)
         return Transaction(
             rs.getInt("transaction_id"),
             user,
-            rs.getInt("amount"),
-            rs.getInt("transaction_type"),
+            wallet,
             category,
+            rs.getInt("amount"),
+            rs.getDate("date_of_creation"),
             rs.getString("title"),
-            rs.getDate("createdAt"),
+            rs.getInt("periodical"),
         )
     }
 }
