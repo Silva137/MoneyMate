@@ -31,6 +31,7 @@ class TransactionService(private val transactionRepository: TransactionRepositor
     fun getTransactionById(transactionId: Int): TransactionDTO {
         val transaction = transactionRepository.getTransactionById(transactionId) ?: throw NotFoundException("Transaction with id $transactionId not found")
         return TransactionDTO(
+            transaction.id,
             transaction.title,
             transaction.amount,
             transaction.user,
@@ -63,6 +64,7 @@ class TransactionService(private val transactionRepository: TransactionRepositor
         val sortedTransactions = transactionRepository.getTransactionsSortedBy(walletId, criterion, order, offset, limit) ?: throw NotFoundException("Transactions with Wallet id $walletId not found")
         val listDTO = sortedTransactions.map {
             TransactionDTO(
+                it.id,
                 it.title,
                 it.amount,
                 it.user,

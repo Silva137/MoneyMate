@@ -19,7 +19,7 @@ class WalletService(private val walletRepository : WalletRepository) {
 
     fun getWalletsOfUser(userId: Int, offset: Int, limit: Int) : WalletsDTO {
         val wallets = walletRepository.getWalletsOfUser(userId, offset, limit) ?: throw NotFoundException("No wallets found for user with id $userId") //TODO
-        val listDTO = wallets.map { WalletDTO(it.name, it.user.toDTO(), it.createdAt) }
+        val listDTO = wallets.map { WalletDTO(it.id, it.name, it.user.toDTO(), it.createdAt) }
         return WalletsDTO(listDTO)
     }
 
@@ -27,7 +27,7 @@ class WalletService(private val walletRepository : WalletRepository) {
     fun updateWallet(walletInput: UpdateWalletDTO, walletId : Int) : WalletDTO {
         walletRepository.updateWallet(walletInput.name, walletId)
         val updatedWallet = walletRepository.getWalletById(walletId) ?: throw NotFoundException("Wallet with id $walletId not found")
-        return WalletDTO(updatedWallet.name, updatedWallet.user.toDTO(), updatedWallet.createdAt)
+        return WalletDTO(updatedWallet.id, updatedWallet.name, updatedWallet.user.toDTO(), updatedWallet.createdAt)
     }
 
     fun deleteWallet(walletId : Int){

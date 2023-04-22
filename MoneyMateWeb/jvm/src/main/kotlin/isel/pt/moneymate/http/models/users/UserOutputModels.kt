@@ -14,6 +14,7 @@ data class AuthenticationOutDTO(
 )
 
 data class UserDTO(
+    val id: Int,
     @field:NotBlank(message = "Username is required")
     val username: String,
     @field:NotBlank(message = "Email is required")

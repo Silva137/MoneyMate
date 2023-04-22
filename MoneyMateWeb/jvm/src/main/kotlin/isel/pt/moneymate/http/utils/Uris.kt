@@ -17,13 +17,25 @@ object Uris {
 
     object Users {
         const val GET_BY_ID = "/users/{id}"
-        const val GET_ALL_USERS = "/users"
+        const val GET_USERS = "/users"
         const val UPDATE = "/users"
         const val DELETE = "/users"
     }
 
-    object Wallets {
+    object Category {
+        /**
+         * Create a new Category:
+         * System - Created autmatically for all Users
+         * Custom - Created expecifically by a User
+         */
+        const val CREATE = "/categories"
+        const val GET_CATEGORIES = "/categories"
+        const val GET_BY_ID = "/categories/{categoryId}"
+        const val UPDATE = "/categories/{categoryId}"
+        const val DELETE_BY_ID = "/categories/{categoryId}"
+    }
 
+    object Wallets {
         /**
          * Create a Wallet:
          * Private - Given a userId and a Name
@@ -43,7 +55,6 @@ object Uris {
     }
 
     object Transactions {
-
         /**
          * Other Requests
          */
@@ -80,23 +91,5 @@ object Uris {
         const val GET_AMOUNT_BY_WALLETS = "/transactions/walletAmounts}"         // Soma de todas as transacoes de cada wallet
 
         const val GET_ALL_FROM_ASSOCIATION = "/transactions/wallets/{walletId}"
-    }
-
-    object Category {
-        /**
-         * Create a new Category:
-         * System - Created autmatically for all Users
-         * Custom - Created expecifically by a User
-         */
-        const val CREATE = "/categories"
-
-        /**
-         * Get all system Categories (userId = "system") or all cateogries of a User
-         */
-        const val GET_CATEGORIES = "/categories"
-
-        const val GET_BY_ID = "/categories/{categoryId}"
-        const val UPDATE = "/categories/{categoryId}"
-        const val DELETE_BY_ID = "/categories/{categoryId}"
     }
 }

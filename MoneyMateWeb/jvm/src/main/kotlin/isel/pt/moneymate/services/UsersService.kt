@@ -89,19 +89,19 @@ class UsersService(
 
     fun getUserById(id: Int): UserDTO {
         val user = usersRepository.getUserById(id) ?: throw NotFoundException("User with id:$id not found")
-        return UserDTO(user._username, user.email)
+        return UserDTO(user.id, user._username, user.email)
     }
 
     fun getUsers(offset: Int, limit: Int): UsersDTO {
         val users = usersRepository.getAllUsers(offset, limit) ?: throw NotFoundException("No users found")
-        val listDTO = users.map { UserDTO(it.username, it.email) }
+        val listDTO = users.map { UserDTO(it.id, it.username, it.email) }
         return UsersDTO(listDTO)
     }
 
     fun updateUser(userId: Int, username: String) : UserDTO {
         usersRepository.updateUsername(userId, username)
         val editedUser = usersRepository.getUserById(userId) ?: throw NotFoundException("User with id:$userId not found")
-        return UserDTO(editedUser._username, editedUser.email)
+        return UserDTO(editedUser.id, editedUser._username, editedUser.email)
     }
 
     private fun saveUserToken(user: User, jwtToken: String) {

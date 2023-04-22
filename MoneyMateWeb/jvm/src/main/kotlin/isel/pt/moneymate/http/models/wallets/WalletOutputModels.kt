@@ -9,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat
 import java.util.Date
 
 data class WalletDTO (
+    val id: Int,
     @field:NotBlank(message = "Wallet name is required")
     val name: String,
     @field:NotNull(message = "User is required")

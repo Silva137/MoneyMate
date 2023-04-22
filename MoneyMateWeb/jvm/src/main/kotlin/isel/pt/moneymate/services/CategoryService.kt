@@ -16,24 +16,24 @@ class CategoryService(private val categoryRepository : CategoryRepository) {
     fun createCategory(categoryInput : CreateCategoryDTO, userId: Int): CategoryDTO {
         val categoryId = categoryRepository.createCategory(categoryInput.name, userId)
         val category = getCategoryById(categoryId)
-        return CategoryDTO(category.name,category.user)
+        return CategoryDTO(category.id,category.name,category.user)
     }
 
     fun getCategories(offset: Int, limit: Int): CategoriesDTO {
         val categories = categoryRepository.getCategories(offset, limit) ?: throw NotFoundException("No categories found")
-        val listDTO = categories.map { CategoryDTO(it.name, it.user?.toDTO())}
+        val listDTO = categories.map { CategoryDTO(it.id, it.name, it.user?.toDTO())}
         return CategoriesDTO(listDTO)
     }
 
     fun getCategoryById(categoryId : Int) : CategoryDTO {
         val category = categoryRepository.getCategoryById(categoryId) ?: throw NotFoundException("Category with id $categoryId not found")
-        return CategoryDTO(category.name, category.user?.toDTO())
+        return CategoryDTO(category.id, category.name, category.user?.toDTO())
     }
 
     fun updateCategory(categoryInput : UpdateCategoryDTO, categoryId: Int) : CategoryDTO {
         categoryRepository.updateCategoryName(categoryInput.name, categoryId)
         val updatedCategory = categoryRepository.getCategoryById(categoryId) ?: throw NotFoundException("Category with id $categoryId not found")
-        return CategoryDTO(updatedCategory.name, updatedCategory.user?.toDTO())
+        return CategoryDTO(updatedCategory.id, updatedCategory.name, updatedCategory.user?.toDTO())
     }
 
     fun deleteCategory(categoryId: Int) {

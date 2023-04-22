@@ -9,6 +9,7 @@ import java.sql.Date
 
 
 data class TransactionDTO(
+   val id: Int,
    val title: String,
    val amount: Int,
    val user: User,

@@ -53,7 +53,7 @@ class UsersController(
             .body(user)
     }
 
-    @GetMapping(Uris.Users.GET_ALL_USERS)
+    @GetMapping(Uris.Users.GET_USERS)
     fun getUsers(
         @RequestParam(defaultValue = "0") offset: Int,
         @RequestParam(defaultValue = "10") limit: Int
