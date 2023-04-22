@@ -1,6 +1,5 @@
 package isel.pt.moneymate.exceptions
 
-import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus

@@ -1,5 +1,6 @@
 package isel.pt.moneymate.domain
 
+import isel.pt.moneymate.http.models.users.UserDTO
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
@@ -22,6 +23,8 @@ data class User(
     override fun isAccountNonLocked() = true
 
     override fun getAuthorities() = emptyList<GrantedAuthority>()
+
+    fun toDTO() = UserDTO(_username, email)
 }
 
 

@@ -22,12 +22,12 @@ class TransactionMapper (
         val wallet = walletMapper.map(rs, ctx)
         return Transaction(
             rs.getInt("transaction_id"),
+            rs.getString("title"),
+            rs.getInt("amount"),
             user,
             wallet,
             category,
-            rs.getInt("amount"),
             rs.getDate("date_of_creation"),
-            rs.getString("title"),
             rs.getInt("periodical"),
         )
     }

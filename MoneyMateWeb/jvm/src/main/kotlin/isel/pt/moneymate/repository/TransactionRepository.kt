@@ -78,24 +78,26 @@ interface TransactionRepository {
         JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
         JOIN Moneymate.category category ON transactions.category_id = category.category_id
         WHERE transactions.wallet_id = :wallet_id
-       ORDER BY 
+        ORDER BY 
             CASE WHEN :criterion = 'bydate' AND :order = 'DESC' THEN transactions.date_of_creation END DESC,
             CASE WHEN :criterion = 'bydate' AND :order = 'ASC' THEN transactions.date_of_creation END,
             CASE WHEN :criterion = 'byprice' AND :order = 'DESC' THEN transactions.amount END DESC,
             CASE WHEN :criterion = 'byprice' AND :order = 'ASC' THEN transactions.amount END
-    """
-    )
+        LIMIT :limit OFFSET :offset
+    """)
     fun getTransactionsSortedBy(
         @Bind("wallet_id") walletId: Int,
         @Bind("criterion") criterion: String,
-        @Bind("order") order: String // Must be ASC OR DESC
-    ): List<Transaction>
+        @Bind("order") order: String, // Must be ASC OR DESC
+        @Bind("offset") offset: Int,
+        @Bind("limit") limit: Int
+    ): List<Transaction>?
 
 
     @SqlQuery(
         """
         SELECT 
-            SUM( CASE WHEN transactions.amount >=0 THEN transactions.amount ELSE 0 END) AS lucrative_sum,
+            SUM( CASE WHEN transactions.amount >=0 THEN transactions.amount ELSE 0 END) AS income_sum,
             SUM( CASE WHEN transactions.amount < 0 THEN transactions.amount ELSE 0 END) AS expense_sum
         FROM MoneyMate.transactions transactions
         WHERE transactions.wallet_id = :wallet_id

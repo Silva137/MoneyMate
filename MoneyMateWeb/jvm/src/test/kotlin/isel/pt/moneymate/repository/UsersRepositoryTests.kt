@@ -34,7 +34,7 @@ class UsersRepositoryTests {
     @Test
     fun testRegisterAndGetUser() {
         // Get the registered user by id
-        val user = usersRepository.getUser(1)
+        val user = usersRepository.getUserById(1)
         assertNotNull(user)
         assertEquals(userEmail, user!!.email)
         assertEquals(userPasswordHash, user.passwordHash)
@@ -79,7 +79,7 @@ class UsersRepositoryTests {
         usersRepository.updateUsername(1, newUsername)
 
         // Get the updated user
-        val user = usersRepository.getUser(1)
+        val user = usersRepository.getUserById(1)
         assertNotNull(user)
         assertEquals(newUsername, user!!._username)
     }

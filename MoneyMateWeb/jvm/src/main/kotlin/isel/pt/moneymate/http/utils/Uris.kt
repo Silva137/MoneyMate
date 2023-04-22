@@ -16,10 +16,10 @@ object Uris {
     }
 
     object Users {
-        const val UPDATE = "/users"
-        const val DELETE = "/users"
         const val GET_BY_ID = "/users/{id}"
         const val GET_ALL_USERS = "/users"
+        const val UPDATE = "/users"
+        const val DELETE = "/users"
     }
 
     object Wallets {

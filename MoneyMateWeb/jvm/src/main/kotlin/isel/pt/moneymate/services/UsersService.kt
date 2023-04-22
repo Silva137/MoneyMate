@@ -31,7 +31,6 @@ class UsersService(
     private val authenticationManager: AuthenticationManager
 ) {
 
-    //change model to dto
     fun register(registerInputDTO: CreateUserDTO): AuthenticationOutDTO {
         if(usersRepository.getUserByUsername(registerInputDTO.username) != null)
             throw AlreadyExistsException("User with username ${registerInputDTO.username} already exists")
@@ -88,21 +87,21 @@ class UsersService(
         }
     }
 
-    fun getUser(id: Int): GetUserDTO {
-        val user = usersRepository.getUser(id) ?: throw NotFoundException("User with id:$id not found")
-        return GetUserDTO(user._username, user.email)
+    fun getUserById(id: Int): UserDTO {
+        val user = usersRepository.getUserById(id) ?: throw NotFoundException("User with id:$id not found")
+        return UserDTO(user._username, user.email)
     }
 
-    fun getUsers(): GetUsersDTO {
-        val users = usersRepository.getAllUsers() ?: throw NotFoundException("No users found")
-        val usersInfo = users.map { GetUserDTO(it.username, it.email) }
-        return GetUsersDTO(usersInfo)
+    fun getUsers(offset: Int, limit: Int): UsersDTO {
+        val users = usersRepository.getAllUsers(offset, limit) ?: throw NotFoundException("No users found")
+        val listDTO = users.map { UserDTO(it.username, it.email) }
+        return UsersDTO(listDTO)
     }
 
-    fun updateUser(id: Int, username: String) : GetUserDTO {
-        usersRepository.updateUsername(id, username)
-        val editedUser = usersRepository.getUser(id) ?: throw NotFoundException("User with id:$id not found")
-        return GetUserDTO(editedUser.username, editedUser.email)
+    fun updateUser(userId: Int, username: String) : UserDTO {
+        usersRepository.updateUsername(userId, username)
+        val editedUser = usersRepository.getUserById(userId) ?: throw NotFoundException("User with id:$userId not found")
+        return UserDTO(editedUser._username, editedUser.email)
     }
 
     private fun saveUserToken(user: User, jwtToken: String) {

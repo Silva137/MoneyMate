@@ -1,7 +1,6 @@
 package isel.pt.moneymate.repository
 
 import isel.pt.moneymate.domain.Transaction
-import isel.pt.moneymate.repository.utils.InitValues
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -74,7 +73,7 @@ class TransactionRepositoryTest {
 
         println("Printing transaction dates")
         actualList.forEach{
-            println(it.dateOfCreation)
+            println(it.createdAt)
         }
         return actualList
     }
@@ -129,7 +128,7 @@ class TransactionRepositoryTest {
         val actualList = sortedBy(walletId, "bydate", "DESC")
         assertNotNull(actualList)
 
-        val expectedList = actualList.sortedByDescending { it.dateOfCreation }
+        val expectedList = actualList.sortedByDescending { it.createdAt }
         assertIterableEquals(actualList, expectedList)
     }
 
@@ -138,7 +137,7 @@ class TransactionRepositoryTest {
         val actualList = sortedBy(walletId, "bydate", "ASC")
         assertNotNull(actualList)
 
-        val expectedList = actualList.sortedBy { it.dateOfCreation }
+        val expectedList = actualList.sortedBy { it.createdAt }
         assertIterableEquals(actualList, expectedList)
     }
 
@@ -168,7 +167,7 @@ class TransactionRepositoryTest {
 
         val balanceDTO = transactionRepository.getSumsFromWallet(walletId)
         assertNotNull(balanceDTO)
-        println(balanceDTO.lucrativeSum)
+        println(balanceDTO.incomeSum)
         println(balanceDTO.expensesSum)
     }
 

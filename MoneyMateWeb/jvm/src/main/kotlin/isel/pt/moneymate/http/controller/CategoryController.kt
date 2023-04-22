@@ -1,8 +1,12 @@
 package isel.pt.moneymate.http.controller
 
-import isel.pt.moneymate.http.models.CategoryInputDTO
+import isel.pt.moneymate.domain.User
+import isel.pt.moneymate.http.models.categories.CreateCategoryDTO
+import isel.pt.moneymate.http.models.categories.UpdateCategoryDTO
 import isel.pt.moneymate.services.CategoryService
 import isel.pt.moneymate.http.utils.Uris
+import jakarta.validation.Valid
+import jakarta.validation.constraints.Digits
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -10,15 +14,19 @@ import org.springframework.web.bind.annotation.*
 @RestController
 class CategoryController(private val categoryService : CategoryService) {
     @PostMapping(Uris.Category.CREATE)
-    fun createCategory(@RequestBody categoryData: CategoryInputDTO) : ResponseEntity<*> {
-        val category = categoryService.createCategory(categoryData.toCategoryInputDTO())
+    fun createCategory(@Valid @RequestBody categoryData: CreateCategoryDTO, user: User) : ResponseEntity<*> {
+        val category = categoryService.createCategory(categoryData, user.id)
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(category)
     }
+
     @GetMapping(Uris.Category.GET_CATEGORIES)
-    fun getCategories(): ResponseEntity<*> {
-        val categories = categoryService.getCategories()
+    fun getCategories(
+        @RequestParam(defaultValue = "0") offset: Int,
+        @RequestParam(defaultValue = "10") limit: Int
+    ): ResponseEntity<*> {
+        val categories = categoryService.getCategories(offset, limit)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(categories)
@@ -32,8 +40,8 @@ class CategoryController(private val categoryService : CategoryService) {
             .body(category)
     }
     @PatchMapping(Uris.Category.UPDATE)
-    fun updateCategory(@RequestBody categoryData: CategoryInputDTO, @PathVariable categoryId: Int): ResponseEntity<*> {
-        val category = categoryService.updateCategory(categoryData.toCategoryInputDTO(),categoryId)
+    fun updateCategory(@Valid @RequestBody categoryData: UpdateCategoryDTO, @PathVariable categoryId: Int): ResponseEntity<*> {
+        val category = categoryService.updateCategory(categoryData, categoryId)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(category)

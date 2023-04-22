@@ -1,6 +1,8 @@
 package isel.pt.moneymate.http.controller
 
-import isel.pt.moneymate.http.models.WalletInputDTO
+import isel.pt.moneymate.domain.User
+import isel.pt.moneymate.http.models.wallets.CreateWalletDTO
+import isel.pt.moneymate.http.models.wallets.UpdateWalletDTO
 import isel.pt.moneymate.services.WalletService
 import isel.pt.moneymate.http.utils.Uris
 import jakarta.validation.Valid
@@ -14,25 +16,28 @@ class WalletController(private val walletsService: WalletService) {
 
 
     @PostMapping(Uris.Wallets.CREATE)
-    fun createWallet(@Valid @RequestBody walletData: WalletInputDTO): ResponseEntity<*> {
-        val wallet = walletsService.createWallet(walletData.toWalletInputDTO())
+    fun createWallet(@Valid @RequestBody walletData: CreateWalletDTO, user: User): ResponseEntity<*> {
+        val wallet = walletsService.createWallet(walletData, user.id)
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(wallet)
     }
 
-    // TODO: Given autentication get the user wallets
     @GetMapping(Uris.Wallets.GET_WALLETS_OF_USER)
-    fun getWallets(): ResponseEntity<*> {
-        val wallets = walletsService.getWallets()
+    fun getWalletsOfUser(
+        @RequestParam(defaultValue = "0") offset: Int,
+        @RequestParam(defaultValue = "10") limit: Int,
+        user: User
+    ): ResponseEntity<*> {
+        val wallets = walletsService.getWalletsOfUser(user.id, offset, limit)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(wallets)
     }
 
     @PatchMapping(Uris.Wallets.UPDATE_NAME)
-    fun updateWalletName(@RequestBody walletName: WalletInputDTO, @PathVariable walletId: Int) : ResponseEntity<*> {
-        val wallet = walletsService.updateWallet(walletName.toWalletInputDTO(),walletId)
+    fun updateWalletName(@Valid @RequestBody walletName: UpdateWalletDTO, @PathVariable walletId: Int) : ResponseEntity<*> {
+        val wallet = walletsService.updateWallet(walletName, walletId)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(wallet)
@@ -42,7 +47,7 @@ class WalletController(private val walletsService: WalletService) {
         walletsService.deleteWallet(walletId)
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body("Wallet with ${walletId} was deleted successfully!")
+            .body("Wallet with $walletId was deleted successfully!")
     }
 }
 

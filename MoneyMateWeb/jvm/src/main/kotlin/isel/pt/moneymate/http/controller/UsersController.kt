@@ -1,6 +1,7 @@
 package isel.pt.moneymate.http.controller
 
 
+import isel.pt.moneymate.domain.User
 import isel.pt.moneymate.http.models.users.LoginUserDTO
 import isel.pt.moneymate.http.models.users.CreateUserDTO
 import isel.pt.moneymate.http.models.users.UpdateUserDTO
@@ -45,23 +46,26 @@ class UsersController(
 
     @GetMapping(Uris.Users.GET_BY_ID)
     fun getUserById(@PathVariable id : Int): ResponseEntity<*> {
-        val user = usersService.getUser(id)
+        val user = usersService.getUserById(id)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(user)
     }
 
     @GetMapping(Uris.Users.GET_ALL_USERS)
-    fun getUsers(): ResponseEntity<*> {
-        val users = usersService.getUsers()
+    fun getUsers(
+        @RequestParam(defaultValue = "0") offset: Int,
+        @RequestParam(defaultValue = "10") limit: Int
+    ): ResponseEntity<*> {
+        val users = usersService.getUsers(offset, limit)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(users)
     }
 
     @PatchMapping(Uris.Users.UPDATE)
-    fun updateUserName(@RequestBody userEditInput: UpdateUserDTO, @PathVariable userId: Int): ResponseEntity<*> {
-        val editedUser = usersService.updateUser(userId, userEditInput.username)
+    fun updateUserName(@Valid @RequestBody userEditInput: UpdateUserDTO, user: User): ResponseEntity<*> {
+        val editedUser = usersService.updateUser(user.id, userEditInput.username)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(editedUser)

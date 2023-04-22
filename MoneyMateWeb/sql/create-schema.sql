@@ -48,7 +48,7 @@ CREATE TABLE MoneyMate.category
 
 CREATE TABLE MoneyMate.user_shared_wallet
 (
-    sh_id          SERIAL PRIMARY KEY,
+    sh_id                   SERIAL PRIMARY KEY,
     wallet_id   INT         NOT NULL REFERENCES MoneyMate.wallet (wallet_id),
     user_id     INT         NOT NULL REFERENCES MoneyMate.users (user_id),
     wallet_name VARCHAR(50) NOT NULL
@@ -56,7 +56,7 @@ CREATE TABLE MoneyMate.user_shared_wallet
 
 CREATE TABLE MoneyMate.transactions
 (
-    transaction_id               SERIAL PRIMARY KEY,
+    transaction_id                  SERIAL PRIMARY KEY,
     user_id          INT            NOT NULL REFERENCES MoneyMate.users (user_id),
     wallet_id        INT            NOT NULL REFERENCES MoneyMate.wallet (wallet_id),
     category_id      INT            NOT NULL REFERENCES MoneyMate.category (category_id),

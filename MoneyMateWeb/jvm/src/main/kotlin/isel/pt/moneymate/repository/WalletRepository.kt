@@ -7,12 +7,19 @@ import org.jdbi.v3.sqlobject.statement.SqlQuery
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
 import org.springframework.stereotype.Repository
 
-
 @Repository
 interface WalletRepository {
     @SqlUpdate("INSERT INTO MoneyMate.wallet(name,user_id) VALUES (:name,:user_id)")
     @GetGeneratedKeys("wallet_id")
     fun createWallet(@Bind("name") walletName: String, @Bind("user_id") userId: Int): Int
+
+    @SqlQuery("""
+        SELECT w.*, u.*
+        FROM MoneyMate.wallet w 
+        JOIN MoneyMate.users u ON w.user_id = u.user_id 
+        WHERE w.wallet_id = :id
+        """)
+    fun getWalletById(@Bind("id") walletId: Int): Wallet?
 
     @SqlQuery(
         """
@@ -20,15 +27,12 @@ interface WalletRepository {
         FROM MoneyMate.wallet w
         JOIN MoneyMate.users u ON w.user_id = u.user_id
         WHERE w.user_id = :id
-    """
-    )
-    fun getWallets(@Bind("id") userId: Int): List<Wallet>
+        LIMIT :limit OFFSET :offset
+   """)
+    fun getWalletsOfUser(@Bind("id") userId: Int, @Bind("offset") offset: Int, @Bind("limit") limit: Int): List<Wallet>?
 
     @SqlUpdate("UPDATE MoneyMate.wallet SET name = :name WHERE wallet_id = :id ")
     fun updateWallet( @Bind("name") newName: String, @Bind("id") walletId: Int)
-
-    @SqlQuery("SELECT w.*, u.*FROM MoneyMate.wallet w JOIN MoneyMate.users u ON w.user_id = u.user_id WHERE w.wallet_id = :id")
-    fun getWalletById(@Bind("id") walletId: Int): Wallet
 
     @SqlUpdate("DELETE FROM MoneyMate.wallet WHERE wallet_id = :id")
     fun deleteWallet(@Bind("id") walletId: Int)

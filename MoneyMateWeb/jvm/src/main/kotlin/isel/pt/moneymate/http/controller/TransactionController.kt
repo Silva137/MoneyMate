@@ -5,6 +5,7 @@ import isel.pt.moneymate.controller.models.UpdateTransactionDTO
 import isel.pt.moneymate.domain.User
 import isel.pt.moneymate.services.TransactionService
 import isel.pt.moneymate.http.utils.Uris
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -24,16 +25,10 @@ class TransactionController(private val transactionService: TransactionService) 
     fun createTransaction(
         @PathVariable walletId: Int,
         @PathVariable categoryId: Int,
-        @RequestBody transactionData: CreateTransactionDTO,
-        @RequestBody loggedUser: User
+        @Valid  @RequestBody transactionData: CreateTransactionDTO,
+        user: User
     ) : ResponseEntity<*> {
-        val transaction = transactionService.createTransaction(
-            loggedUser, // How to get user?
-            walletId,
-            categoryId,
-            transactionData
-        )
-
+        val transaction = transactionService.createTransaction(user, walletId, categoryId, transactionData)
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(transaction)
@@ -47,13 +42,8 @@ class TransactionController(private val transactionService: TransactionService) 
      * @return the response to the request with the transaction requested
      */
     @GetMapping(Uris.Transactions.GET_BY_ID)
-    fun getTransactionById(
-        @PathVariable transactionId: Int,
-    ) : ResponseEntity<*> {
-        val updatedTransaction = transactionService.getTransactionById(
-            transactionId,
-        )
-
+    fun getTransactionById(@PathVariable transactionId: Int) : ResponseEntity<*> {
+        val updatedTransaction = transactionService.getTransactionById(transactionId)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(updatedTransaction)
@@ -71,7 +61,7 @@ class TransactionController(private val transactionService: TransactionService) 
     fun updateTransaction(
         @PathVariable transactionId: Int,
         @RequestParam transactionData: UpdateTransactionDTO,
-    ) : ResponseEntity<*> {
+    ): ResponseEntity<*> {
         val updatedTransaction = transactionService.updateTransaction(
             transactionId,
             transactionData
@@ -90,12 +80,8 @@ class TransactionController(private val transactionService: TransactionService) 
      * @return the response to the request with info "deleted with sucess"
      */
     @DeleteMapping(Uris.Transactions.DELETE_BY_ID)
-    fun deleteTransaction(
-        @PathVariable transactionId: Int,
-    ) : ResponseEntity<*> {
-        transactionService.deleteTransaction(
-            transactionId,
-        )
+    fun deleteTransaction(@PathVariable transactionId: Int) : ResponseEntity<*> {
+        transactionService.deleteTransaction(transactionId)
 
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -118,11 +104,15 @@ class TransactionController(private val transactionService: TransactionService) 
         @RequestParam criterion: String,
         @RequestParam order: String,
         @RequestParam user: User,
+        @RequestParam(defaultValue = "0") offset: Int,
+        @RequestParam(defaultValue = "10") limit: Int
     ) : ResponseEntity<*> {
         val transactions = transactionService.getTransactionsFromWalletSortedBy(
             walletId,
             criterion,
-            order
+            order,
+            offset,
+            limit
         )
 
         return ResponseEntity
@@ -140,9 +130,7 @@ class TransactionController(private val transactionService: TransactionService) 
      * @return the sum of the values of th transactions
      */
     @GetMapping(Uris.Transactions.GET_AMOUNT_FROM_WALLET)
-    fun getSumsFromWallet(
-        @PathVariable walletId: Int,
-    ) : ResponseEntity<*> {
+    fun getSumsFromWallet(@PathVariable walletId: Int) : ResponseEntity<*> {
         val sum = transactionService.getSumsFromWallet(walletId)
 
         return ResponseEntity
@@ -174,7 +162,7 @@ class TransactionController(private val transactionService: TransactionService) 
         )
 
         return ResponseEntity
-            .status(HttpStatus.CREATED)
+            .status(HttpStatus.OK)
             .body(transactions)
     }
 
@@ -195,7 +183,7 @@ class TransactionController(private val transactionService: TransactionService) 
         )
 
         return ResponseEntity
-            .status(HttpStatus.CREATED)
+            .status(HttpStatus.OK)
             .body(transactions)
     }
 
@@ -223,7 +211,7 @@ class TransactionController(private val transactionService: TransactionService) 
         )
 
         return ResponseEntity
-            .status(HttpStatus.CREATED)
+            .status(HttpStatus.OK)
             .body(transactions)
     }
 
@@ -244,7 +232,7 @@ class TransactionController(private val transactionService: TransactionService) 
         )
 
         return ResponseEntity
-            .status(HttpStatus.CREATED)
+            .status(HttpStatus.OK)
             .body(transactions)
     }
     /*

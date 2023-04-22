@@ -15,10 +15,10 @@ interface UsersRepository {
     fun register(@Bind("username") name: String, @Bind("email") email: String, @Bind("password") passwordHash: String):Int
 
     @SqlQuery("SELECT * FROM MoneyMate.users WHERE user_id = :id")
-    fun getUser(@Bind("id") id: Int): User?
+    fun getUserById(@Bind("id") id: Int): User?
 
-    @SqlQuery("SELECT * FROM MoneyMate.users")
-    fun getAllUsers(): List<User>?
+    @SqlQuery("SELECT * FROM MoneyMate.users LIMIT :limit OFFSET :offset")
+    fun getAllUsers(@Bind("offset") offset: Int, @Bind("limit") limit: Int): List<User>?
 
     @SqlQuery("SELECT * FROM MoneyMate.users WHERE email = :email")
     fun getUserByEmail(@Bind("email") email: String): User?
