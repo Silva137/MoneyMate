@@ -9,12 +9,16 @@ import jakarta.validation.Valid
 import jakarta.validation.constraints.Digits
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
 @RestController
 class CategoryController(private val categoryService : CategoryService) {
     @PostMapping(Uris.Category.CREATE)
-    fun createCategory(@Valid @RequestBody categoryData: CreateCategoryDTO, user: User) : ResponseEntity<*> {
+    fun createCategory(
+        @Valid @RequestBody categoryData: CreateCategoryDTO,
+        @AuthenticationPrincipal user: User
+    ) : ResponseEntity<*> {
         val category = categoryService.createCategory(categoryData, user.id)
         return ResponseEntity
             .status(HttpStatus.CREATED)

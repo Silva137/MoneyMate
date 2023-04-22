@@ -8,6 +8,7 @@ import isel.pt.moneymate.http.utils.Uris
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -26,7 +27,7 @@ class TransactionController(private val transactionService: TransactionService) 
         @PathVariable walletId: Int,
         @PathVariable categoryId: Int,
         @Valid  @RequestBody transactionData: CreateTransactionDTO,
-        user: User
+        @AuthenticationPrincipal user: User
     ) : ResponseEntity<*> {
         val transaction = transactionService.createTransaction(user, walletId, categoryId, transactionData)
         return ResponseEntity

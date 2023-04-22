@@ -29,4 +29,6 @@ interface UsersRepository {
     @SqlUpdate("UPDATE MoneyMate.users SET username = :newUsername WHERE user_id = :id")
     fun updateUsername(@Bind("id") id: Int, @Bind("newUsername") newUsername: String)
 
+    @SqlUpdate("DELETE FROM MoneyMate.users WHERE  user_id = :id")
+    fun deleteUser(@Bind("id") userId: Int)
 }

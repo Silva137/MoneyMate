@@ -13,8 +13,10 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(rollbackFor = [Exception::class])
 class CategoryService(private val categoryRepository : CategoryRepository) {
 
-    fun createCategory(categoryInput : CreateCategoryDTO, userId: Int): Int {
-        return categoryRepository.createCategory(categoryInput.name, userId)
+    fun createCategory(categoryInput : CreateCategoryDTO, userId: Int): CategoryDTO {
+        val categoryId = categoryRepository.createCategory(categoryInput.name, userId)
+        val category = getCategoryById(categoryId)
+        return CategoryDTO(category.name,category.user)
     }
 
     fun getCategories(offset: Int, limit: Int): CategoriesDTO {

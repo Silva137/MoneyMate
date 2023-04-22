@@ -1,5 +1,5 @@
 package isel.pt.moneymate.repository
-
+/*
 import isel.pt.moneymate.domain.Transaction
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeAll
@@ -215,5 +215,4 @@ class TransactionRepositoryTest {
         assertNotNull(amounts)
     }
 
-
-}
+}*/

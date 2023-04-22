@@ -8,6 +8,7 @@ import isel.pt.moneymate.http.utils.Uris
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
 
@@ -16,7 +17,10 @@ class WalletController(private val walletsService: WalletService) {
 
 
     @PostMapping(Uris.Wallets.CREATE)
-    fun createWallet(@Valid @RequestBody walletData: CreateWalletDTO, user: User): ResponseEntity<*> {
+    fun createWallet(
+        @Valid @RequestBody walletData: CreateWalletDTO,
+        @AuthenticationPrincipal user: User
+    ): ResponseEntity<*> {
         val wallet = walletsService.createWallet(walletData, user.id)
         return ResponseEntity
             .status(HttpStatus.CREATED)
@@ -27,7 +31,7 @@ class WalletController(private val walletsService: WalletService) {
     fun getWalletsOfUser(
         @RequestParam(defaultValue = "0") offset: Int,
         @RequestParam(defaultValue = "10") limit: Int,
-        user: User
+        @AuthenticationPrincipal user: User
     ): ResponseEntity<*> {
         val wallets = walletsService.getWalletsOfUser(user.id, offset, limit)
         return ResponseEntity

@@ -1,7 +1,7 @@
 INSERT INTO moneymate.users (username, email, password)
 VALUES ('Gonçalo', 'goncalosilva17@gmail.com', '12345');
 
-INSERT INTO MoneyMate.users (id, username, email, password)
+INSERT INTO MoneyMate.users (user_id, username, email, password)
 VALUES (0, 'admin', 'admin@example.com', 'password_hash_here');
 
 INSERT INTO moneymate.category(name)

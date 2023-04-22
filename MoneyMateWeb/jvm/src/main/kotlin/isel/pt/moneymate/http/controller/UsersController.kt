@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
 
@@ -64,10 +65,21 @@ class UsersController(
     }
 
     @PatchMapping(Uris.Users.UPDATE)
-    fun updateUserName(@Valid @RequestBody userEditInput: UpdateUserDTO, user: User): ResponseEntity<*> {
+    fun updateUserName(
+        @Valid @RequestBody userEditInput: UpdateUserDTO,
+        @AuthenticationPrincipal user: User
+    ): ResponseEntity<*> {
         val editedUser = usersService.updateUser(user.id, userEditInput.username)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(editedUser)
+    }
+
+    @DeleteMapping(Uris.Users.DELETE)
+    fun deleteUser(@AuthenticationPrincipal user: User) : ResponseEntity<*> {
+        usersService.deleteUser(user.id)
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body("Wallet with ${user.id} was deleted successfully!")
     }
 }

@@ -31,4 +31,8 @@ interface TokensRepository {
     WHERE t.userid = :userId AND t.expired = false AND t.revoked = false
     """)
     fun findAllValidTokensByUser(@Bind("userId") userId: Int): List<Token>
+
+    @SqlUpdate("DELETE FROM MoneyMate.tokens WHERE userId = :userId")
+    fun deleteUserTokens(@Bind("userId") userId: Int)
+
 }

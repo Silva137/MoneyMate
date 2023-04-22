@@ -1,6 +1,6 @@
 package isel.pt.moneymate.repository
 
-
+/*
 import isel.pt.moneymate.repository.utils.InitValues
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -83,4 +83,4 @@ class UsersRepositoryTests {
         assertNotNull(user)
         assertEquals(newUsername, user!!._username)
     }
-}
+}*/

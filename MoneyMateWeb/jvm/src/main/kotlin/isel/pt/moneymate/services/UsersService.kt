@@ -114,4 +114,9 @@ class UsersService(
         if (validUserTokens.isEmpty()) return
         tokensRepository.revokeTokens(validUserTokens)
     }
+
+    fun deleteUser(userId: Int) {
+        tokensRepository.deleteUserTokens(userId)
+        usersRepository.deleteUser(userId)
+    }
 }

@@ -1,7 +1,6 @@
 package isel.pt.moneymate.config
 
-import isel.pt.moneymate.http.pipeline.UserArgumentResolver
-import isel.pt.moneymate.domain.User
+
 import isel.pt.moneymate.exceptions.AuthenticationException
 import isel.pt.moneymate.repository.TokensRepository
 import jakarta.servlet.FilterChain
@@ -54,7 +53,6 @@ class JwtAuthenticationFilter (
                 SecurityContextHolder.getContext().authentication = authToken
             }
         }
-        UserArgumentResolver.addUserTo(userDetailsService.loadUserByUsername(userEmail) as User, request)
         filterChain.doFilter(request, response)
     }
 }
