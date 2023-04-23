@@ -1,6 +1,6 @@
 package isel.pt.moneymate.repository.mappers
 
-import isel.pt.moneymate.controller.models.CategorySumsOutDto
+import isel.pt.moneymate.controller.models.CategoriesBalance
 import isel.pt.moneymate.controller.models.UserSumsOutDto
 import isel.pt.moneymate.controller.models.WalletBalanceDTO
 import isel.pt.moneymate.domain.Transaction
@@ -23,56 +23,39 @@ class TransactionMapper (
         return Transaction(
             rs.getInt("transaction_id"),
             rs.getString("title"),
-            rs.getInt("amount"),
+            rs.getFloat("amount"),
             user,
             wallet,
             category,
-            rs.getDate("date_of_creation"),
+            rs.getTimestamp("date_of_creation").toLocalDateTime(),
             rs.getInt("periodical"),
         )
     }
 }
 
-
-class CategorySumsDtoMapper (
-    private val categoryMapper: CategoryMapper
-)  : RowMapper<CategorySumsOutDto> {
-
+class WalletBalanceDtoMapper: RowMapper<WalletBalanceDTO> {
     @Throws(SQLException::class)
-    override fun map(rs: ResultSet, ctx: StatementContext?): CategorySumsOutDto {
-        val category = categoryMapper.map(rs, ctx)
-
-        return CategorySumsOutDto(
-            category,
-            rs.getInt("sum")
+    override fun map(rs: ResultSet, ctx: StatementContext?): WalletBalanceDTO {
+        return WalletBalanceDTO(
+            rs.getInt("income_sum"),
+            rs.getInt("expense_sum")
         )
     }
 }
 
-class UserSumsDtoMapper (
-    private val userMapper: UserMapper
-)  : RowMapper<UserSumsOutDto> {
+class CategorySumsDtoMapper (private val categoryMapper: CategoryMapper): RowMapper<CategoriesBalance> {
+    @Throws(SQLException::class)
+    override fun map(rs: ResultSet, ctx: StatementContext?): CategoriesBalance {
+        val category = categoryMapper.map(rs, ctx)
+        return CategoriesBalance(category.toDTO(), rs.getFloat("sum"))
+    }
+}
 
+class UserSumsDtoMapper (private val userMapper: UserMapper): RowMapper<UserSumsOutDto> {
     @Throws(SQLException::class)
     override fun map(rs: ResultSet, ctx: StatementContext?): UserSumsOutDto {
         val user = userMapper.map(rs, ctx)
-
-        return UserSumsOutDto(
-            user,
-            rs.getInt("sum")
-        )
-    }
-}
-
-class WalletBalanceDtoMapper (): RowMapper<WalletBalanceDTO> {
-
-    @Throws(SQLException::class)
-    override fun map(rs: ResultSet, ctx: StatementContext?): WalletBalanceDTO {
-
-        return WalletBalanceDTO(
-            rs.getInt("lucrative_sum"),
-            rs.getInt("expense_sum")
-        )
+        return UserSumsOutDto(user.toDTO(), rs.getInt("sum"))
     }
 }
 

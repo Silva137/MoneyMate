@@ -17,3 +17,4 @@ VALUES ('Saúde'),
        ('Atividades Veterinárias'),
        ('Ginásios'),
        ('Aquisição de passes mensais');
+

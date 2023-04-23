@@ -13,8 +13,10 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(rollbackFor = [Exception::class])
 class WalletService(private val walletRepository : WalletRepository) {
 
-    fun createWallet(walletInput: CreateWalletDTO, userId: Int): Int {
-        return walletRepository.createWallet(walletInput.name, userId)
+    fun createWallet(walletInput: CreateWalletDTO, userId: Int): WalletDTO {
+        val createdId = walletRepository.createWallet(walletInput.name, userId)
+        val wallet =  walletRepository.getWalletById(createdId) ?: throw NotFoundException("Wallet with id $createdId not found")
+        return WalletDTO(wallet.id, wallet.name, wallet.user.toDTO(), wallet.createdAt)
     }
 
     fun getWalletsOfUser(userId: Int, offset: Int, limit: Int) : WalletsDTO {

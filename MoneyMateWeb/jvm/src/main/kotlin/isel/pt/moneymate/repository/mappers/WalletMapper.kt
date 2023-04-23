@@ -14,7 +14,7 @@ class WalletMapper(private val userMapper: UserMapper)  : RowMapper<Wallet> {
         val user = userMapper.map(rs, ctx)
         return Wallet(
             rs.getInt("wallet_id"),
-            rs.getString("name"),
+            rs.getString("wallet_name"),
             user,
             rs.getDate("date_of_creation")
         )

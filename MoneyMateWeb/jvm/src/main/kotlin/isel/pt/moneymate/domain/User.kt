@@ -24,7 +24,7 @@ data class User(
 
     override fun getAuthorities() = emptyList<GrantedAuthority>()
 
-    fun toDTO() = UserDTO(_username, email)
+    fun toDTO() = UserDTO(id, _username, email)
 }
 
 

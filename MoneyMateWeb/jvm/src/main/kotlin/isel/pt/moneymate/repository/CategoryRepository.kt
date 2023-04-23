@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface CategoryRepository {
 
-        @SqlUpdate("INSERT INTO MoneyMate.category (name, user_id) VALUES (:name, :userId)")
+        @SqlUpdate("INSERT INTO MoneyMate.category (category_name, user_id) VALUES (:name, :userId)")
         @GetGeneratedKeys("category_id")
         fun createCategory(@Bind("name") name: String, @Bind("userId") userId: Int) : Int
 
@@ -25,7 +25,7 @@ interface CategoryRepository {
         @SqlQuery("SELECT c.* , u.* FROM MoneyMate.category c  JOIN MoneyMate.users u ON c.user_id = u.user_id WHERE c.category_id = :id ")
         fun getCategoryById(@Bind("id") categoryId: Int): Category?
 
-        @SqlUpdate("UPDATE MoneyMate.category SET name = :name WHERE category_id = :id ")
+        @SqlUpdate("UPDATE MoneyMate.category SET category_name = :name WHERE category_id = :id ")
         fun updateCategoryName(@Bind("name") newName: String, @Bind("id") categoryId: Int)
 
         @SqlUpdate("DELETE FROM MoneyMate.category WHERE category_id = :id")

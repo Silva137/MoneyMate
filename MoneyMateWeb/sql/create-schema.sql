@@ -32,7 +32,7 @@ CREATE TABLE MoneyMate.tokens (
 CREATE TABLE MoneyMate.wallet
 (
     wallet_id               SERIAL PRIMARY KEY,
-    name             VARCHAR(50) NOT NULL,
+    wallet_name             VARCHAR(50) NOT NULL,
     user_id          INT         NOT NULL REFERENCES MoneyMate.users (user_id),
     date_of_creation DATE        NOT NULL DEFAULT CURRENT_DATE
 );
@@ -40,7 +40,7 @@ CREATE TABLE MoneyMate.wallet
 CREATE TABLE MoneyMate.category
 (
     category_id      SERIAL PRIMARY KEY,
-    name    VARCHAR(250) NOT NULL,
+    category_name    VARCHAR(250) NOT NULL,
     user_id INT         NOT NULL DEFAULT 0 REFERENCES MoneyMate.users,
     FOREIGN KEY (user_id) REFERENCES MoneyMate.users (user_id)
 
@@ -51,24 +51,20 @@ CREATE TABLE MoneyMate.user_shared_wallet
     sh_id                   SERIAL PRIMARY KEY,
     wallet_id   INT         NOT NULL REFERENCES MoneyMate.wallet (wallet_id),
     user_id     INT         NOT NULL REFERENCES MoneyMate.users (user_id),
-    wallet_name VARCHAR(50) NOT NULL
+    sh_name VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE MoneyMate.transactions
 (
     transaction_id                  SERIAL PRIMARY KEY,
+    title            VARCHAR(50)    NOT NULL,
+    amount           DECIMAL(10, 2) NOT NULL,
     user_id          INT            NOT NULL REFERENCES MoneyMate.users (user_id),
     wallet_id        INT            NOT NULL REFERENCES MoneyMate.wallet (wallet_id),
     category_id      INT            NOT NULL REFERENCES MoneyMate.category (category_id),
-    amount           DECIMAL(10, 2) NOT NULL,
-    date_of_creation DATE           NOT NULL DEFAULT CURRENT_DATE,
-    title            VARCHAR(50)    NOT NULL,
-    --transaction_type SMALLINT       NOT NULL DEFAULT (CASE WHEN amount > 0 THEN 1 ELSE 0 END),
-    periodical       SMALLINT,
+    date_of_creation TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    periodical       SMALLINT
 
-    -- field transaction_type is redundant
-    --CONSTRAINT transaction_is_valid CHECK (transaction_type IN ('income', 'expense')),
-
-    CONSTRAINT period_is_valid CHECK (periodical IN (1, 3, 6, 9, 12))
+    --CONSTRAINT period_is_valid CHECK (periodical IN (1, 3, 6, 9, 12))
 
 );

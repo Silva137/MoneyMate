@@ -13,7 +13,7 @@ class CategoryMapper (private val userMapper: UserMapper)  : RowMapper<Category>
         val user = userMapper.map(rs, ctx)
         return Category(
             rs.getInt("category_id"),
-            rs.getString("name"),
+            rs.getString("category_name"),
             user
         )
     }

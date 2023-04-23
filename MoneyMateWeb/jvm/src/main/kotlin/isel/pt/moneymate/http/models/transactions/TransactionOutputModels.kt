@@ -2,20 +2,21 @@ package isel.pt.moneymate.controller.models
 
 import isel.pt.moneymate.domain.Category
 import isel.pt.moneymate.domain.User
-import isel.pt.moneymate.domain.Wallet
+import isel.pt.moneymate.http.models.categories.CategoryDTO
 import isel.pt.moneymate.http.models.users.UserDTO
+import isel.pt.moneymate.http.models.wallets.WalletDTO
 import jakarta.validation.constraints.Digits
-import java.sql.Date
+import java.time.LocalDateTime
 
 
 data class TransactionDTO(
    val id: Int,
    val title: String,
-   val amount: Int,
-   val user: User,
-   val wallet: Wallet,
-   val category: Category,
-   val createdAt: Date,
+   val amount: Float,
+   val user: UserDTO,
+   val wallet: WalletDTO,
+   val category: CategoryDTO,
+   val createdAt: LocalDateTime,
    val periodical: Int
 )
 
@@ -27,17 +28,15 @@ data class TransactionsDTO(
 
 data class WalletBalanceDTO(
    val incomeSum: Int,
-   val expensesSum: Int,
+   val expenseSum: Int,
 )
 
-//TODO change to categoryDTO ?
-data class CategorySumsOutDto(
-   val category: Category,
-   val amount: Int
+data class CategoriesBalance(
+   val category: CategoryDTO,
+   val balance: Float
 )
 
-//TODO change to userDTO ?
 data class UserSumsOutDto(
-   val user: User,
+   val user: UserDTO,
    val amount: Int
 )

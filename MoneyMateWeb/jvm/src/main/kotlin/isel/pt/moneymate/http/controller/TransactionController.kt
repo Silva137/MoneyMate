@@ -24,12 +24,12 @@ class TransactionController(private val transactionService: TransactionService) 
      */
     @PostMapping(Uris.Transactions.CREATE)
     fun createTransaction(
-        @PathVariable walletId: Int,
-        @PathVariable categoryId: Int,
         @Valid  @RequestBody transactionData: CreateTransactionDTO,
-        @AuthenticationPrincipal user: User
+        @AuthenticationPrincipal user: User,
+        @PathVariable categoryId: Int,
+        @PathVariable walletId: Int
     ) : ResponseEntity<*> {
-        val transaction = transactionService.createTransaction(user, walletId, categoryId, transactionData)
+        val transaction = transactionService.createTransaction(transactionData, user, categoryId, walletId)
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(transaction)
@@ -58,16 +58,12 @@ class TransactionController(private val transactionService: TransactionService) 
      *
      * @return the response to the request with the updated transaction
      */
-    @PatchMapping(Uris.Transactions.UPDATE)
+    @PutMapping(Uris.Transactions.UPDATE)
     fun updateTransaction(
         @PathVariable transactionId: Int,
-        @RequestParam transactionData: UpdateTransactionDTO,
+        @RequestBody transactionData: UpdateTransactionDTO,
     ): ResponseEntity<*> {
-        val updatedTransaction = transactionService.updateTransaction(
-            transactionId,
-            transactionData
-        )
-
+        val updatedTransaction = transactionService.updateTransaction(transactionId, transactionData)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(updatedTransaction)
@@ -94,28 +90,26 @@ class TransactionController(private val transactionService: TransactionService) 
      * ordered by price or date
      *
      * @param walletId the wallet to consult the transactions
-     * @param criterion the chosen ordenation criterium (bydate or byprice)
-     * @param order the chosen order(ascending or descending)
+     * @param sortedBy the chosen ordenation criterium (bydate or byprice)
+     * @param orderBy the chosen order(ascending or descending)
      *
      * @return the response to the request with a map of transactions
      */
-    @GetMapping(Uris.Transactions.GET_ALL_OF_WALLET_SORTED_BY)
-    fun getTransactionsFromWalletSortedBy(
+    @GetMapping(Uris.Transactions.GET_WALLET_TRANSACTIONS_SORTEDBY)
+    fun getWalletTransactionsSortedBy(
         @PathVariable walletId: Int,
-        @RequestParam criterion: String,
-        @RequestParam order: String,
-        @RequestParam user: User,
+        @RequestParam(defaultValue = "bydate") sortedBy: String,
+        @RequestParam(defaultValue = "DESC") orderBy: String,
         @RequestParam(defaultValue = "0") offset: Int,
         @RequestParam(defaultValue = "10") limit: Int
     ) : ResponseEntity<*> {
-        val transactions = transactionService.getTransactionsFromWalletSortedBy(
+        val transactions = transactionService.getWalletTransactionsSortedBy(
             walletId,
-            criterion,
-            order,
+            sortedBy,
+            orderBy,
             offset,
             limit
         )
-
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(transactions)
@@ -130,10 +124,9 @@ class TransactionController(private val transactionService: TransactionService) 
      *
      * @return the sum of the values of th transactions
      */
-    @GetMapping(Uris.Transactions.GET_AMOUNT_FROM_WALLET)
-    fun getSumsFromWallet(@PathVariable walletId: Int) : ResponseEntity<*> {
-        val sum = transactionService.getSumsFromWallet(walletId)
-
+    @GetMapping(Uris.Transactions.GET_WALLET_BALANCE)
+    fun getWalletBalance(@PathVariable walletId: Int) : ResponseEntity<*> {
+        val sum = transactionService.getWalletBalance(walletId)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(sum)
@@ -151,17 +144,12 @@ class TransactionController(private val transactionService: TransactionService) 
      *
      * @return the response to the request with a map of transactions organized by date
      */
-    @GetMapping(Uris.Transactions.GET_ALL_OF_PW_GIVEN_CATEGORY_BY_DATE)
-    fun getTransactionsFromPWGivenCategory(
+    @GetMapping(Uris.Transactions.GET_PW_TRANSACTIONS_BY_CATEGORY)
+    fun getPWTransactionsByCategory(
         @PathVariable walletId: Int,
         @PathVariable categoryId: Int
     ) : ResponseEntity<*> {
-
-        val transactions = transactionService.getTransactionsFromPWGivenCategory(
-            walletId,
-            categoryId,
-        )
-
+        val transactions = transactionService.getPWTransactionsByCategory(walletId, categoryId,)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(transactions)
@@ -174,15 +162,9 @@ class TransactionController(private val transactionService: TransactionService) 
      *
      * @return the response to the request with a map with the sum of each category
      */
-    @GetMapping(Uris.Transactions.GET_AMOUNTS_FROM_PW_BY_CATEGORY)
-    fun getAmountsFromPwByCategory(
-        @PathVariable walletId: Int,
-    ) : ResponseEntity<*> {
-
-        val transactions = transactionService.getAmountsFromPwByCategory(
-            walletId,
-        )
-
+    @GetMapping(Uris.Transactions.GET_PW_CATEGORY_BALANCE)
+    fun getPWCategoriesBalance(@PathVariable walletId: Int) : ResponseEntity<*> {
+        val transactions = transactionService.getPWCategoriesBalance(walletId)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(transactions)

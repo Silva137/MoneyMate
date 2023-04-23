@@ -55,36 +55,26 @@ object Uris {
     }
 
     object Transactions {
-        /**
-         * Other Requests
-         */
+        /**Other Requests */
         const val CREATE = "/transactions/wallets/{walletId}/categories/{categoryId}"
         const val GET_BY_ID = "/transactions/{transactionId}"
         const val UPDATE = "/transactions/{transactionId}"
         const val DELETE_BY_ID = "/transactions/{transactionId}"
 
-        /**
-         * Requets of transactions Page (Common to both wallet types)
-         */
-        const val GET_ALL_OF_WALLET_SORTED_BY = "/transactions/wallets/{walletId}"
-        const val GET_AMOUNT_FROM_WALLET = "/transactions/wallets/{walletId}/amount"         // Somas do lucro e da despesa
+        /**Requets of transactions Page (Common to both wallet types) */
+        const val GET_WALLET_TRANSACTIONS_SORTEDBY = "/transactions/wallets/{walletId}"
+        const val GET_WALLET_BALANCE = "/transactions/wallets/{walletId}/balance"    //should be a Wallet URI?
 
-        /**
-         * Requests of a PW Insights Page
-         */
-        const val GET_ALL_OF_PW_GIVEN_CATEGORY_BY_DATE = "/transactions/wallets/{walletId}/categories/{categoryId}"
-        const val GET_AMOUNTS_FROM_PW_BY_CATEGORY = "/transactions/wallets/{walletId}/categoryAmounts"
+        /**Requests of a PW Insights Page */
+        const val GET_PW_TRANSACTIONS_BY_CATEGORY = "/transactions/wallets/{walletId}/categories/{categoryId}"
+        const val GET_PW_CATEGORY_BALANCE = "/transactions/wallets/{walletId}/categories/balance"
 
         // TODO were to get user??
-        /**
-         * Requests of a SW Insights Page
-         */
+        /**Requests of a SW Insights Page */
         const val GET_ALL_OF_SW_GIVEN_USER_BY_DATE = "/transactions/wallets/{walletId}/users/{userId}"
         const val GET_AMOUNTS_FROM_SW_BY_USER = "/transactions/wallets/{walletId}/users/userAmounts"
 
-        /**
-         * Requests of overViewPage
-         */
+        /**Requests of overViewPage */
         const val GET_AMOUNT_FROM_WALLETS = "/transactions/amount}"         // Somas do lucro e da despesa
         const val GET_ALL_GIVEN_CATEGORY_BY_DATE = "/transactions/categories/{categoryId}"
         const val GET_AMOUNTS_BY_CATEGORY = "/transactions/categoryAmounts"

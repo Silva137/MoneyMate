@@ -3,28 +3,43 @@ package isel.pt.moneymate.services
 import isel.pt.moneymate.controller.models.*
 import isel.pt.moneymate.domain.Transaction
 import isel.pt.moneymate.domain.User
+import isel.pt.moneymate.exceptions.InvalidParameterException
 import isel.pt.moneymate.exceptions.NotFoundException
 import isel.pt.moneymate.repository.TransactionRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 @Service
 @Transactional(rollbackFor = [Exception::class])
 class TransactionService(private val transactionRepository: TransactionRepository) {
 
     fun createTransaction(
+        transactionData: CreateTransactionDTO,
         user: User,
-        walletId: Int,
         categoryId: Int,
-        transactionData: CreateTransactionDTO
-    ): Int {
-        return transactionRepository.createTransaction(
+        walletId: Int
+    ): TransactionDTO {
+        val createdId = transactionRepository.createTransaction(
+            transactionData.title,
+            transactionData.amount,
             user.id,
             walletId,
             categoryId,
-            transactionData.amount,
-            transactionData.title,
+            LocalDateTime.now(),
             transactionData.periodical,
+        )
+        val transaction = getTransactionById(createdId)
+
+        return TransactionDTO(
+            transaction.id,
+            transactionData.title,
+            transactionData.amount,
+            transaction.user,
+            transaction.wallet,
+            transaction.category,
+            transaction.createdAt,
+            transactionData.periodical
         )
     }
 
@@ -34,9 +49,9 @@ class TransactionService(private val transactionRepository: TransactionRepositor
             transaction.id,
             transaction.title,
             transaction.amount,
-            transaction.user,
-            transaction.wallet,
-            transaction.category,
+            transaction.user.toDTO(),
+            transaction.wallet.toDTO(),
+            transaction.category.toDTO(),
             transaction.createdAt,
             transaction.periodical,
         )
@@ -60,37 +75,36 @@ class TransactionService(private val transactionRepository: TransactionRepositor
         transactionRepository.deleteTransaction(transactionId)
     }
 
-    fun getTransactionsFromWalletSortedBy(walletId: Int, criterion: String, order: String, offset: Int, limit: Int): TransactionsDTO {
-        val sortedTransactions = transactionRepository.getTransactionsSortedBy(walletId, criterion, order, offset, limit) ?: throw NotFoundException("Transactions with Wallet id $walletId not found")
+    fun getWalletTransactionsSortedBy(walletId: Int, sortedBy: String, orderBy: String, offset: Int, limit: Int): TransactionsDTO {
+        val validSortByValues = setOf("bydate", "byprice"/*, "bycategory"*/)
+        val validOrderByValues = setOf("ASC", "DESC")
+        if (sortedBy !in validSortByValues || orderBy !in validOrderByValues)
+            throw InvalidParameterException("Invalid parameters for sorting or ordering")
+
+        val sortedTransactions = transactionRepository.getTransactionsSortedBy(walletId, sortedBy, orderBy, offset, limit)
+            ?: throw NotFoundException("Transactions of Wallet with id $walletId not found")
         val listDTO = sortedTransactions.map {
-            TransactionDTO(
-                it.id,
-                it.title,
-                it.amount,
-                it.user,
-                it.wallet,
-                it.category,
-                it.createdAt,
-                it.periodical,
-            )
+            TransactionDTO(it.id, it.title, it.amount, it.user.toDTO(), it.wallet.toDTO(), it.category.toDTO(), it.createdAt, it.periodical)
         }
         return TransactionsDTO(listDTO)
     }
 
-    fun getSumsFromWallet(walletId: Int): WalletBalanceDTO {
-        // Todo verificacao e excessao de parametros
-        return transactionRepository.getSumsFromWallet(walletId)
-
+    fun getWalletBalance(walletId: Int): WalletBalanceDTO {
+        return transactionRepository.getWalletBalance(walletId)
     }
 
     /** ----------------------------------- PW --------------------------------   */
 
-    fun getTransactionsFromPWGivenCategory(walletId: Int, categoryId: Int): List<Transaction> {
-        return transactionRepository.getTransactionsFromPWGivenCategory(walletId, categoryId)
+    fun getPWTransactionsByCategory(walletId: Int, categoryId: Int): TransactionsDTO {
+        val categoryTransactions = transactionRepository.getPWTransactionsByCategory(walletId, categoryId)
+        val listDTO = categoryTransactions.map {
+            TransactionDTO(it.id, it.title, it.amount, it.user.toDTO(), it.wallet.toDTO(), it.category.toDTO(), it.createdAt, it.periodical)
+        }
+        return TransactionsDTO(listDTO)
     }
 
-    fun getAmountsFromPwByCategory(walletId: Int): List<CategorySumsOutDto> {
-        return transactionRepository.getAmountsFromPwByCategory(walletId)
+    fun getPWCategoriesBalance(walletId: Int): List<CategoriesBalance> {
+        return transactionRepository.getPWCategoriesBalance(walletId)
     }
 
     /** ----------------------------------- SW --------------------------------   */

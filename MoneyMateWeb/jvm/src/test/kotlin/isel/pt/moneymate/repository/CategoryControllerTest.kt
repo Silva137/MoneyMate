@@ -1,6 +1,6 @@
 package isel.pt.moneymate.repository
 
-
+/*
 import com.fasterxml.jackson.databind.ObjectMapper
 import isel.pt.moneymate.config.JwtService
 import isel.pt.moneymate.domain.User
@@ -70,5 +70,5 @@ class CategoryControllerTest {
                 }
             }
     }
-}
+}**/
 

@@ -9,7 +9,8 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface WalletRepository {
-    @SqlUpdate("INSERT INTO MoneyMate.wallet(name,user_id) VALUES (:name,:user_id)")
+
+    @SqlUpdate("INSERT INTO MoneyMate.wallet(wallet_name, user_id) VALUES (:name,:user_id)")
     @GetGeneratedKeys("wallet_id")
     fun createWallet(@Bind("name") walletName: String, @Bind("user_id") userId: Int): Int
 
@@ -21,8 +22,7 @@ interface WalletRepository {
         """)
     fun getWalletById(@Bind("id") walletId: Int): Wallet?
 
-    @SqlQuery(
-        """
+    @SqlQuery("""
         SELECT w.*, u.*
         FROM MoneyMate.wallet w
         JOIN MoneyMate.users u ON w.user_id = u.user_id
@@ -31,7 +31,7 @@ interface WalletRepository {
    """)
     fun getWalletsOfUser(@Bind("id") userId: Int, @Bind("offset") offset: Int, @Bind("limit") limit: Int): List<Wallet>?
 
-    @SqlUpdate("UPDATE MoneyMate.wallet SET name = :name WHERE wallet_id = :id ")
+    @SqlUpdate("UPDATE MoneyMate.wallet SET wallet_name = :name WHERE wallet_id = :id ")
     fun updateWallet( @Bind("name") newName: String, @Bind("id") walletId: Int)
 
     @SqlUpdate("DELETE FROM MoneyMate.wallet WHERE wallet_id = :id")
