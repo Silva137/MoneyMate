@@ -1,6 +1,5 @@
 package isel.pt.moneymate.http.models.wallets
 
-import isel.pt.moneymate.domain.User
 import isel.pt.moneymate.http.models.users.UserDTO
 import jakarta.validation.constraints.Digits
 import jakarta.validation.constraints.NotBlank
@@ -20,7 +19,7 @@ data class WalletDTO (
 
 
 data class WalletsDTO (
-    val categories: List<WalletDTO>,
+    val wallets: List<WalletDTO>,
     @field:Digits(integer = 10, fraction = 0, message = "Total count must be a number")
-    val totalCount: Int = categories.size
+    val totalCount: Int = wallets.size
 )

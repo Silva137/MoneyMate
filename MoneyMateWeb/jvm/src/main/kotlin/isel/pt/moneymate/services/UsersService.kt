@@ -32,10 +32,10 @@ class UsersService(
 ) {
 
     fun register(registerInputDTO: CreateUserDTO): AuthenticationOutDTO {
-        if(usersRepository.getUserByUsername(registerInputDTO.username) != null)
+        if (usersRepository.getUserByUsername(registerInputDTO.username) != null)
             throw AlreadyExistsException("User with username ${registerInputDTO.username} already exists")
 
-        if(usersRepository.getUserByEmail(registerInputDTO.email) != null)
+        if (usersRepository.getUserByEmail(registerInputDTO.email) != null)
             throw AlreadyExistsException("User with email ${registerInputDTO.email} already exists")
 
         val passwordHash = passwordEncoder.encode(registerInputDTO.password)
@@ -52,7 +52,7 @@ class UsersService(
     }
 
     fun login(loginInput: LoginUserDTO): AuthenticationOutDTO {
-        try{
+        try {
             authenticationManager.authenticate(
                 UsernamePasswordAuthenticationToken(loginInput.email, loginInput.password)
             )
@@ -98,9 +98,10 @@ class UsersService(
         return UsersDTO(listDTO)
     }
 
-    fun updateUser(userId: Int, username: String) : UserDTO {
+    fun updateUser(userId: Int, username: String): UserDTO {
         usersRepository.updateUsername(userId, username)
-        val editedUser = usersRepository.getUserById(userId) ?: throw NotFoundException("User with id:$userId not found")
+        val editedUser =
+            usersRepository.getUserById(userId) ?: throw NotFoundException("User with id:$userId not found")
         return UserDTO(editedUser.id, editedUser._username, editedUser.email)
     }
 
@@ -118,5 +119,10 @@ class UsersService(
     fun deleteUser(userId: Int) {
         tokensRepository.deleteUserTokens(userId)
         usersRepository.deleteUser(userId)
+    }
+
+    fun getUserByEmail(email: String): UserDTO {
+        val user = usersRepository.getUserByEmail(email) ?: throw NotFoundException("User with email:$email not found")
+        return UserDTO(user.id, user.username, user.email)
     }
 }

@@ -31,4 +31,5 @@ interface CategoryRepository {
         @SqlUpdate("DELETE FROM MoneyMate.category WHERE category_id = :id")
         fun deleteCategoryById(@Bind("id") categoryId: Int)
 
+
 }

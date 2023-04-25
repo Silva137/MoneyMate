@@ -32,7 +32,7 @@ CREATE TABLE MoneyMate.tokens (
 CREATE TABLE MoneyMate.wallet
 (
     wallet_id               SERIAL PRIMARY KEY,
-    wallet_name             VARCHAR(50) NOT NULL,
+    wallet_name             VARCHAR(50) NOT NULL UNIQUE,
     user_id          INT         NOT NULL REFERENCES MoneyMate.users (user_id),
     date_of_creation DATE        NOT NULL DEFAULT CURRENT_DATE
 );
