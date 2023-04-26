@@ -1,23 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+    height: 100vh;
+    width: 100vw;
 }
 
-@layer components {
-  .sidebar{
-    transition:all .2s ease-in-out;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 300px;
-    height: 100vh;
-    background-color: #f1f1f1;
-  }
+.bg-container {
+  background-image: url("./assets/bg.png");
+  height: 100vh;
+  width: 100vw;
+  background-position: center;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
 

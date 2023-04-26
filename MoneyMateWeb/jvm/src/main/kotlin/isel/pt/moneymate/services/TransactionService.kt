@@ -57,10 +57,7 @@ class TransactionService(private val transactionRepository: TransactionRepositor
         )
     }
 
-    /**
-     * Todos os campos sao opcionais mas caso o utilizador nao insira sao
-     * submetidos os valores anteriores
-     */
+
     fun updateTransaction(transactionId: Int, transactionData: UpdateTransactionDTO): TransactionDTO {
         transactionRepository.updateTransaction(
             transactionId,
@@ -109,12 +106,12 @@ class TransactionService(private val transactionRepository: TransactionRepositor
 
     /** ----------------------------------- SW --------------------------------   */
 
-    fun getTransactionsFromSwGivenUser(walletId: Int, userId: Int): List<Transaction> {
-        return transactionRepository.getTransactionsFromSwGivenUser(walletId, userId)
+    fun getSWTransactionsByUser(walletId: Int, userId: Int): List<Transaction> {
+        return transactionRepository.getSWTransactionsByUser(walletId, userId)
     }
 
-    fun getAmountsFromSwByUser(walletId: Int): List<UserSumsOutDto> {
-        return transactionRepository.getAmountsFromSwByUser(walletId)
+    fun getSWUsersBalance(walletId: Int): List<UserSumsOutDto> {
+        return transactionRepository.getSWUsersBalance(walletId)
     }
 
 

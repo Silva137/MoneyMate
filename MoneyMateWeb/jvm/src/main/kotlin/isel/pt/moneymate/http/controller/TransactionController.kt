@@ -95,7 +95,7 @@ class TransactionController(private val transactionService: TransactionService) 
      *
      * @return the response to the request with a map of transactions
      */
-    @GetMapping(Uris.Transactions.GET_WALLET_TRANSACTIONS_SORTEDBY)
+    @GetMapping(Uris.Transactions.GET_WALLET_TRANSACTIONS_SORTED_BY)
     fun getWalletTransactionsSortedBy(
         @PathVariable walletId: Int,
         @RequestParam(defaultValue = "bydate") sortedBy: String,
@@ -162,7 +162,7 @@ class TransactionController(private val transactionService: TransactionService) 
      *
      * @return the response to the request with a map with the sum of each category
      */
-    @GetMapping(Uris.Transactions.GET_PW_CATEGORY_BALANCE)
+    @GetMapping(Uris.Transactions.GET_PW_CATEGORIES_BALANCE)
     fun getPWCategoriesBalance(@PathVariable walletId: Int) : ResponseEntity<*> {
         val transactions = transactionService.getPWCategoriesBalance(walletId)
         return ResponseEntity
@@ -182,17 +182,12 @@ class TransactionController(private val transactionService: TransactionService) 
      *
      * @return the response to the request with a map of transactions organized by date
      */
-    @GetMapping(Uris.Transactions.GET_ALL_OF_SW_GIVEN_USER_BY_DATE)
-    fun getTransactionsFromSwGivenUser(
-        @PathVariable walletId: Int,
+    @GetMapping(Uris.Transactions.GET_SW_TRANSACTIONS_BY_USER)
+    fun getSWTransactionsByUser(
+        @PathVariable shId: Int,
         @PathVariable userId: Int
     ) : ResponseEntity<*> {
-
-        val transactions = transactionService.getTransactionsFromSwGivenUser(
-            walletId,
-            userId,
-        )
-
+        val transactions = transactionService.getSWTransactionsByUser(shId, userId)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(transactions)
@@ -205,15 +200,11 @@ class TransactionController(private val transactionService: TransactionService) 
      *
      * @return the response to the request with a map with the sum of each user
      */
-    @GetMapping(Uris.Transactions.GET_AMOUNTS_FROM_SW_BY_USER)
-    fun getAmountsFromSwByUser(
-        @PathVariable walletId: Int,
+    @GetMapping(Uris.Transactions.GET_SW_USERS_BALANCE)
+    fun getSWUsersBalance(
+        @PathVariable shId: Int,
     ) : ResponseEntity<*> {
-
-        val transactions = transactionService.getAmountsFromSwByUser(
-            walletId,
-        )
-
+        val transactions = transactionService.getSWUsersBalance(shId)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(transactions)

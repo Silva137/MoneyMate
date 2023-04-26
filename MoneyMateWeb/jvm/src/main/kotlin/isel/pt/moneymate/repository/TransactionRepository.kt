@@ -132,7 +132,7 @@ interface TransactionRepository {
         WHERE transactions.wallet_id = :wallet_id AND transactions.user_id = :user_id
         ORDER BY transactions.date_of_creation DESC
     """)
-    fun getTransactionsFromSwGivenUser(
+    fun getSWTransactionsByUser(
         @Bind("wallet_id") walletId: Int,
         @Bind("user_id") userId: Int,
     ): List<Transaction>
@@ -145,7 +145,7 @@ interface TransactionRepository {
         WHERE transactions.wallet_id = :wallet_id AND transactions.user_id = :user_id
         GROUP BY users.user_id
     """)
-    fun getAmountsFromSwByUser(
+    fun getSWUsersBalance(
         @Bind("wallet_id") walletId: Int,
     ): List<UserSumsOutDto>
 }
