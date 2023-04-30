@@ -1,5 +1,5 @@
 import React from 'react';
-import AppRoutes from './AppRoutes';
+import AppRoutes from './Routes/AppRoutes.jsx';
 import SideNavBar from "./Components/SideNavBar/SideNavBar.jsx";
 
 const App = () => {

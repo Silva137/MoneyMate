@@ -18,7 +18,7 @@ export const navItems = [
     {
         icon: <RiUserFill />,
         text: "Profile",
-        link: "/profile"
+        link: "/users/profile"
     },
     {
         icon: <TbArrowsExchange />,
