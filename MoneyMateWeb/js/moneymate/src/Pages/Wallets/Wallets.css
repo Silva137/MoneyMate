@@ -1,0 +1,63 @@
+.list-title {
+    font-size: 26px;
+    font-weight: normal;
+    color: #fff;
+    margin-bottom: 20px;
+    margin-top: 20px;
+
+}
+
+.wallet-list {
+    display: flex;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    gap: 30px;
+}
+
+.wallet-list::-webkit-scrollbar {
+    height: 12px;
+}
+
+.wallet-list::-webkit-scrollbar-track {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.wallet-list::-webkit-scrollbar-thumb {
+    background: linear-gradient(to right, #67d9a0, #392d62);
+    border-radius: 4px;
+}
+
+.wallet-list::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+.scrollable {
+    overflow-x: scroll;
+}
+
+.list-container{
+    display: flex;
+    gap: 50px;
+}
+
+.add-button {
+    width: 65px;
+    height: 165px;
+    border-radius: 100px;
+    border: 4px solid #39d97a;
+    background-color: #393838;
+    padding: 13px;
+    margin-top: 8px;
+    margin-right: 60px;
+}
+
+.add-button:hover {
+    background-color: #232323;
+    border: 4px solid #39d97a;
+}
+
+.add-button svg {
+    font-size: 30px;
+    color: #77eca6;
+}

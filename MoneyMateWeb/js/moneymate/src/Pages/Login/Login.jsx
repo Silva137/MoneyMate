@@ -19,8 +19,8 @@ function Login() {
                 </div>
                 <div className="login-text">Sign in</div>
                 <form onSubmit={handleSubmit}>
-                    <input type="text" autoComplete="off" name="email" className="input" placeholder="Email"></input>
-                    <input type="password" autoComplete="off" name="password" className="input" placeholder="Password"></input>
+                    <input type="email" autoComplete="off" name="email" className="input" placeholder="Email" required></input>
+                    <input type="password" autoComplete="off" name="password" className="input" placeholder="Password" required></input>
                     <button type="submit" className="login-button">Sign in</button>
                 </form>
                 <div className="secondary-text" >

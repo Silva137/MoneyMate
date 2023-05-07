@@ -1,7 +1,7 @@
 import {BrowserRouter, Route, Routes} from "react-router-dom"
 import Register from "../Pages/Register/Register.jsx"
 import Login from "../Pages/Login/Login.jsx"
-import Wallets from "../Pages/Wallets.jsx"
+import Wallets from "../Pages/Wallets/Wallets.jsx"
 import SideNavBar from "../Components/SideNavBar/SideNavBar.jsx";
 import Profile from "../Pages/Profile.jsx";
 import Transactions from "../Pages/Transactions.jsx";

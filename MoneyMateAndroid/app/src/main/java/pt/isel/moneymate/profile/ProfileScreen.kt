@@ -105,7 +105,7 @@ fun ProfImg() {
         }
         Text(
             modifier = Modifier.padding(16.dp),
-            text = "Hi, \nGiga nigga!",
+            text = "Hi, \nWalter White!",
             color = Color.White,
             fontSize = 24.sp,
             fontWeight = FontWeight.SemiBold,

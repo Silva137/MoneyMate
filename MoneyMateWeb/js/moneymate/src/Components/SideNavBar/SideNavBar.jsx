@@ -1,6 +1,5 @@
 import './SideNavBar.css';
 import React, { useState } from 'react';
-import {FaBars} from 'react-icons/fa';
 import {navItems} from "./navData.jsx";
 import {NavLink, useLocation} from 'react-router-dom';
 
@@ -20,7 +19,7 @@ const SideNavBar = ({ children }) => {
             {hideNavBar ? null : (
                 <div className="sidebar" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
                     <div className="top_section">
-                        <img src="../../public/logo.png" className="logo" alt="logo"/>
+                        <img src="../../logo.png" className="logo" alt="logo"/>
                         {isExpanded && (<h1 className="logo-text">MoneyMate</h1>)}
                     </div>
                     {navItems.map((item, index) => (

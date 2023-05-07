@@ -19,9 +19,9 @@ function Register() {
                 </div>
                 <div className="register-text">Sign up</div>
                 <form onSubmit={handleSubmit}>
-                    <input type="text" autoComplete="off" name="username" className="input" placeholder="Username"></input>
-                    <input type="text" autoComplete="off" name="email" className="input" placeholder="Email"></input>
-                    <input type="password" autoComplete="off" name="password" className="input" placeholder="Password"></input>
+                    <input type="text" autoComplete="off" name="username" className="input" placeholder="Username" required></input>
+                    <input type="email" autoComplete="off" name="email" className="input" placeholder="Email" required></input>
+                    <input type="password" autoComplete="off" name="password" className="input" placeholder="Password" required></input>
                     <button type="submit" className="register-button">Sign up</button>
                 </form>
                 <div className="secondary-text" >
