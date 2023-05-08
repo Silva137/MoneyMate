@@ -1,0 +1,31 @@
+.row{
+    display: flex;
+    align-items: center;
+}
+
+.welcome-text{
+    font-size: 34px;
+    font-weight: bolder;
+    margin-left: 50px;
+}
+
+.edit-profile {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 20px;
+    font-weight: bolder;
+    color: #ffffff;
+    background-color: #393838;
+    border: 4px solid #27a2d3;
+    border-radius: 20px;
+    display: flex;
+}
+
+.edit-profile svg{
+    font-size: 25px;
+    margin-right: 5px;
+}
+
+.fields-container{
+    margin-top: 50px;
+}

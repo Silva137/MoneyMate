@@ -10,26 +10,26 @@ function WalletCard(props) {
     const [walletName, setWalletName] = useState(props.name);
 
     function handleEditButtonClick() {
-        setModal(!modal);
+        setModal(true)
     }
 
     function handleWalletNameChange(e) {
-        setWalletName(e.target.value);
+        setWalletName(e.target.value)
     }
 
     function handleSaveChangesClick() {
         // Do something with the new wallet name (e.g. update it in the database)
-        setModal(false);
+        setModal(false)
     }
 
     function handleDeleteWalletClick() {
         // Do something to delete the wallet (e.g. remove it from the database)
-        setModal(false);
+        setModal(false)
     }
 
     function handleOverlayClick(e) {
         if (e.target.classList.contains('modal-overlay'))
-            setModal(false);
+            setModal(false)
     }
 
     return (

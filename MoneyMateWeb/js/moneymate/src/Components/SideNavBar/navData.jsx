@@ -12,13 +12,13 @@ export const navItems = [
     },
     {
         icon: <FaChartPie />,
-        text: "Insights",
-        link: "/insights"
+        text: "Statistics",
+        link: "/statistics"
     },
     {
         icon: <RiUserFill />,
         text: "Profile",
-        link: "/users/profile"
+        link: "/profile"
     },
     {
         icon: <TbArrowsExchange />,

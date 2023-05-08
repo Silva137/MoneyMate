@@ -25,7 +25,7 @@ function Wallets() {
     ]);
 
     function handleAddButtonClick() {
-        setModal(!modal);
+        setModal(true);
     }
 
     function handleOverlayClick(e) {
@@ -34,12 +34,7 @@ function Wallets() {
     }
 
     function handleSaveChangesClick() {
-        // Do something with the new wallet name (e.g. update it in the database)
-        setModal(false);
-    }
-
-    function handleDeleteWalletClick() {
-        // Do something to delete the wallet (e.g. remove it from the database)
+        // Api call to save the new wallet
         setModal(false);
     }
 
@@ -55,9 +50,7 @@ function Wallets() {
                             <WalletCard key={index} name={wallet.name} balance={wallet.balance} />
                         ))}
                     </div>
-                    <button className="add-button" onClick={handleAddButtonClick}>
-                        <HiPlus/>
-                    </button>
+                    <button className="add-button" onClick={handleAddButtonClick}><HiPlus/></button>
                 </div>
                 <h2 className="list-title">Shared wallets</h2>
                 <div className="list-container">
@@ -66,9 +59,7 @@ function Wallets() {
                             <WalletCard key={index} name={wallet.name} balance={wallet.balance} />
                         ))}
                     </div>
-                    <button className="add-button" onClick={handleAddButtonClick}>
-                        <HiPlus/>
-                    </button>
+                    <button className="add-button" onClick={handleAddButtonClick}><HiPlus/></button>
                 </div>
             </div>
             {modal && (
