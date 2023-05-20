@@ -20,3 +20,16 @@ data class UpdateTransactionDTO(
     @field:NotBlank(message = "Transaction title is required")
     val title: String,
 )
+
+data class UpdateTransactionFrequencyDTO(
+    val periodical: Int,
+
+)
+
+data class UpdateTransactionAmountDTO(
+    @field:Digits(integer = 10, fraction = 2, message = "Transaction amount must be a number")
+    val amount: Float,
+)
+
+
+

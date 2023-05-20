@@ -23,7 +23,7 @@ interface WalletRepository {
     fun getWalletById(@Bind("id") walletId: Int): Wallet?
 
     @SqlQuery("""
-        SELECT w.*, u.*
+        SELECT *
         FROM MoneyMate.wallet w
         JOIN MoneyMate.users u ON w.user_id = u.user_id
         WHERE w.user_id = :id

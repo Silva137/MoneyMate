@@ -13,6 +13,12 @@ import java.time.LocalDateTime
 @Service
 @Transactional(rollbackFor = [Exception::class])
 class TransactionService(private val transactionRepository: TransactionRepository) {
+    private val validSortByValues = setOf("bydate", "byprice"/*, "bycategory"*/)
+    private val validOrderByValues = setOf("ASC", "DESC")
+
+
+    /** ----------------------------------- Transactions --------------------------------   */
+
 
     fun createTransaction(
         transactionData: CreateTransactionDTO,
@@ -29,32 +35,13 @@ class TransactionService(private val transactionRepository: TransactionRepositor
             LocalDateTime.now(),
             transactionData.periodical,
         )
-        val transaction = getTransactionById(createdId)
-
-        return TransactionDTO(
-            transaction.id,
-            transactionData.title,
-            transactionData.amount,
-            transaction.user,
-            transaction.wallet,
-            transaction.category,
-            transaction.createdAt,
-            transactionData.periodical
-        )
+        return getTransactionById(createdId)
     }
 
     fun getTransactionById(transactionId: Int): TransactionDTO {
-        val transaction = transactionRepository.getTransactionById(transactionId) ?: throw NotFoundException("Transaction with id $transactionId not found")
-        return TransactionDTO(
-            transaction.id,
-            transaction.title,
-            transaction.amount,
-            transaction.user.toDTO(),
-            transaction.wallet.toDTO(),
-            transaction.category.toDTO(),
-            transaction.createdAt,
-            transaction.periodical,
-        )
+        val transaction = transactionRepository.getTransactionById(transactionId)
+            ?: throw NotFoundException("Transaction with id $transactionId not found")
+        return transaction.toDTO()
     }
 
 
@@ -68,91 +55,126 @@ class TransactionService(private val transactionRepository: TransactionRepositor
         return getTransactionById(transactionId)
     }
 
-    fun deleteTransaction(transactionId: Int){
+    fun deleteTransaction(transactionId: Int) {
         transactionRepository.deleteTransaction(transactionId)
     }
 
-    fun getWalletTransactionsSortedBy(walletId: Int, sortedBy: String, orderBy: String, offset: Int, limit: Int): TransactionsDTO {
-        val validSortByValues = setOf("bydate", "byprice"/*, "bycategory"*/)
-        val validOrderByValues = setOf("ASC", "DESC")
-        if (sortedBy !in validSortByValues || orderBy !in validOrderByValues)
-            throw InvalidParameterException("Invalid parameters for sorting or ordering")
-
-        val sortedTransactions = transactionRepository.getTransactionsSortedBy(walletId, sortedBy, orderBy, offset, limit)
-            ?: throw NotFoundException("Transactions of Wallet with id $walletId not found")
-        val listDTO = sortedTransactions.map {
-            TransactionDTO(it.id, it.title, it.amount, it.user.toDTO(), it.wallet.toDTO(), it.category.toDTO(), it.createdAt, it.periodical)
+    fun getAllTransactions(walletId: Int, sortedBy: String, orderBy: String, offset: Int, limit: Int): TransactionsDTO {
+        return getTransactionsSortedBy(walletId, sortedBy, orderBy, offset, limit) { id, sortBy, orderBy, off, lim ->
+            transactionRepository.getAllTransactions(id, sortBy, orderBy, off, lim)
         }
-        return TransactionsDTO(listDTO)
+    }
+
+    fun getIncomeTransactions(
+        walletId: Int,
+        sortedBy: String,
+        orderBy: String,
+        offset: Int,
+        limit: Int
+    ): TransactionsDTO {
+        return getTransactionsSortedBy(walletId, sortedBy, orderBy, offset, limit) { id, sortBy, orderBy, off, lim ->
+            transactionRepository.getIncomeTransactions(id, sortBy, orderBy, off, lim)
+        }
+    }
+
+    fun getExpenseTransactions(
+        walletId: Int,
+        sortedBy: String,
+        orderBy: String,
+        offset: Int,
+        limit: Int
+    ): TransactionsDTO {
+        return getTransactionsSortedBy(walletId, sortedBy, orderBy, offset, limit) { id, sortBy, orderBy, off, lim ->
+            transactionRepository.getExpenseTransactions(id, sortBy, orderBy, off, lim)
+        }
     }
 
     fun getWalletBalance(walletId: Int): WalletBalanceDTO {
-        return transactionRepository.getWalletBalance(walletId)
+        val walletBalance = transactionRepository.getWalletBalance(walletId)
+            ?: throw NotFoundException("Balance of Wallet not found")
+        return walletBalance.toDTO()
     }
 
     /** ----------------------------------- PW --------------------------------   */
 
-    fun getPWTransactionsByCategory(walletId: Int, categoryId: Int): TransactionsDTO {
-        val categoryTransactions = transactionRepository.getPWTransactionsByCategory(walletId, categoryId)
-        val listDTO = categoryTransactions.map {
-            TransactionDTO(it.id, it.title, it.amount, it.user.toDTO(), it.wallet.toDTO(), it.category.toDTO(), it.createdAt, it.periodical)
-        }
-        return TransactionsDTO(listDTO)
+    fun getByCategory(walletId: Int, categoryId: Int): TransactionsDTO {
+        val transactionsOfCategory = transactionRepository.getByCategory(walletId, categoryId)
+            ?: throw NotFoundException("Transactions Of Category not Found")
+        return transactionsOfCategory.toDTO()
     }
 
-    fun getPWCategoriesBalance(walletId: Int): List<CategoriesBalance> {
-        return transactionRepository.getPWCategoriesBalance(walletId)
+    fun getBalanceByCategory(walletId: Int): CategoriesBalanceDTO {
+        val balanceOfCategories = transactionRepository.getBalanceByCategory(walletId)
+            ?: throw NotFoundException("Balance of Categories not Found")
+        return balanceOfCategories.toDTO()
+    }
+
+    /** ----------------------------------- OverView --------------------------------   */
+
+    fun getAllByCategory(categoryId: Int): TransactionsDTO {
+        val transactionsOfCategory = transactionRepository.getAllByCategory(categoryId)
+            ?: throw NotFoundException("Transactions Of Category not Found")
+        return transactionsOfCategory.toDTO()
+
+    }
+
+    fun getAllBalanceByCategory(): CategoriesBalanceDTO {
+        val balanceOfCategories = transactionRepository.getAllBalanceByCategory()
+            ?: throw NotFoundException("Balance of Categories not Found")
+        return balanceOfCategories.toDTO()
     }
 
     /** ----------------------------------- SW --------------------------------   */
 
-    fun getSWTransactionsByUser(walletId: Int, userId: Int): List<Transaction> {
-        return transactionRepository.getSWTransactionsByUser(walletId, userId)
+    fun getByUser(walletId: Int, userId: Int): TransactionsDTO {
+        val transactionsOfUser = transactionRepository.getByUser(walletId, userId)
+            ?: throw NotFoundException("Transactions Of User not Found")
+        return transactionsOfUser.toDTO()
     }
 
-    fun getSWUsersBalance(walletId: Int): List<UserSumsOutDto> {
-        return transactionRepository.getSWUsersBalance(walletId)
+    fun getBalanceByUser(walletId: Int): UsersBalanceDTO {
+        val balanceOfCategories = transactionRepository.getBalanceByUser(walletId)
+            ?: throw NotFoundException("Balance of Categories not Found")
+        return balanceOfCategories.toDTO()
     }
 
+    /** ----------------------------------- Regular --------------------------------   */
 
-
-    /*
-
-
-    /** ----------------------------------- OverView --------------------------------   */
-
-    fun getSumsFromWallets(criterion: String): Int {
-        return when (criterion) {
-            "+" -> transactionRepository.getPositiveSumsFromWallets()
-            "-" -> transactionRepository.getNegativeSumsFromWallets()
-            else -> 0
-        }
+    fun getPeriodicalTransactions(offset: Int, limit: Int): TransactionsDTO {
+        val sortedTransactions = transactionRepository.getPeriodicalTransactions(offset, limit)
+            ?: throw NotFoundException("Peridical Transactions not found")
+        return sortedTransactions.toDTO()
     }
 
-    fun getTransactionsFromAllWalletsGivenCategory(categoryId: String): List<Transaction> {
-        return transactionRepository.getTransactionsFromAllWalletsGivenCategory(categoryId)
+    fun updateTransactionFrequency(transactionId: Int, transactionData: UpdateTransactionFrequencyDTO): TransactionDTO {
+        transactionRepository.updateTransactionFrequency(
+            transactionId,
+            transactionData.periodical,
+        )
+        return getTransactionById(transactionId)
     }
 
-    fun getAmountsFromAllWalletsByCategory(): Map<Int, Int> {
-        return transactionRepository.getAmountsFromAllWalletsByCategory()
-    }*/
+    fun updateTransactionAmount(transactionId: Int, transactionData: UpdateTransactionAmountDTO): TransactionDTO {
+        transactionRepository.updateTransactionAmount(
+            transactionId,
+            transactionData.amount,
+        )
+        return getTransactionById(transactionId)
+    }
+
+    /** ----------------------------------- Auxiliar Functions --------------------------------   */
+
+
+    private fun getTransactionsSortedBy(
+        walletId: Int, sortedBy: String, orderBy: String, offset: Int, limit: Int,
+        getTransactionsFunction: (Int, String, String, Int, Int) -> List<Transaction>?
+    ): TransactionsDTO {
+        if (sortedBy !in validSortByValues || orderBy !in validOrderByValues)
+            throw InvalidParameterException("Invalid parameters for sorting or ordering")
+
+        val sortedTransactions = getTransactionsFunction(walletId, sortedBy, orderBy, offset, limit)
+            ?: throw NotFoundException("Transactions of Wallet with id $walletId not found")
+
+        return sortedTransactions.toDTO()
+    }
 }
-
-/*
-        return when (criterion) {
-            "bydate" ->
-                when (order){
-                    "asc" -> transactionRepository.getTransactionsByDateAsc(walletId)
-                    "desc" -> transactionRepository.getTransactionsByDateDesc(walletId)
-                    else -> null
-                }
-            "byprice" ->
-                when (order){
-                    "asc" -> transactionRepository.getTransactionsByPriceAsc(walletId)
-                    "desc" -> transactionRepository.getTransactionsByPriceDesc(walletId)
-                    else -> null
-            }
-            else -> null
-        }
-
-         */

@@ -1,5 +1,6 @@
 package isel.pt.moneymate.domain
 
+import isel.pt.moneymate.http.models.categories.CategoryDTO
 import isel.pt.moneymate.http.models.wallets.WalletDTO
 import java.sql.Date
 
@@ -9,6 +10,7 @@ data class Wallet(
     val user: User,
     val createdAt : Date
 ){
+    // TODO put this on Wallet DTO
     fun toDTO() = WalletDTO(
         id,
         name,

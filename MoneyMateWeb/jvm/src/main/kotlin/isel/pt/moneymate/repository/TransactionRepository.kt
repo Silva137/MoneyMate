@@ -1,9 +1,9 @@
 package isel.pt.moneymate.repository
 
-import isel.pt.moneymate.controller.models.CategoriesBalance
-import isel.pt.moneymate.controller.models.UserSumsOutDto
-import isel.pt.moneymate.controller.models.WalletBalanceDTO
+import isel.pt.moneymate.domain.CategoryBalance
 import isel.pt.moneymate.domain.Transaction
+import isel.pt.moneymate.domain.UserBalance
+import isel.pt.moneymate.domain.WalletBalance
 import org.jdbi.v3.sqlobject.customizer.Bind
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys
 import org.jdbi.v3.sqlobject.statement.SqlQuery
@@ -13,6 +13,8 @@ import java.time.LocalDateTime
 
 @Repository
 interface TransactionRepository {
+
+    /** ----------------------------------- Transactions --------------------------------   */
 
     @SqlUpdate("""
         INSERT INTO MoneyMate.transactions(title, amount, user_id, wallet_id, category_id, date_of_creation, periodical) 
@@ -78,7 +80,7 @@ interface TransactionRepository {
             CASE WHEN :sortedBy = 'byprice' AND :orderBy = 'ASC' THEN transactions.amount END
         LIMIT :limit OFFSET :offset
     """)
-    fun getTransactionsSortedBy(
+    fun getAllTransactions(
         @Bind("wallet_id") walletId: Int,
         @Bind("sortedBy") sortedBy: String,
         @Bind("orderBy") orderBy: String,
@@ -86,6 +88,51 @@ interface TransactionRepository {
         @Bind("limit") limit: Int
     ): List<Transaction>?
 
+    @SqlQuery("""
+        SELECT *
+        FROM MoneyMate.transactions transactions 
+        JOIN Moneymate.users users ON transactions.user_id = users.user_id
+        JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
+        JOIN Moneymate.category category ON transactions.category_id = category.category_id
+        WHERE transactions.wallet_id = :wallet_id AND transactions.amount > 0
+        ORDER BY 
+            CASE WHEN :sortedBy = 'bycategory' THEN category.category_name END,
+            CASE WHEN :sortedBy = 'bydate' AND :orderBy = 'DESC' THEN transactions.date_of_creation END DESC,
+            CASE WHEN :sortedBy = 'bydate' AND :orderBy = 'ASC' THEN transactions.date_of_creation END,
+            CASE WHEN :sortedBy = 'byprice' AND :orderBy = 'DESC' THEN transactions.amount END DESC,
+            CASE WHEN :sortedBy = 'byprice' AND :orderBy = 'ASC' THEN transactions.amount END
+        LIMIT :limit OFFSET :offset
+    """)
+    fun getIncomeTransactions(
+        @Bind("wallet_id") walletId: Int,
+        @Bind("sortedBy") sortedBy: String,
+        @Bind("orderBy") orderBy: String,
+        @Bind("offset") offset: Int,
+        @Bind("limit") limit: Int
+    ): List<Transaction>?
+
+    @SqlQuery("""
+        SELECT *
+        FROM MoneyMate.transactions transactions 
+        JOIN Moneymate.users users ON transactions.user_id = users.user_id
+        JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
+        JOIN Moneymate.category category ON transactions.category_id = category.category_id
+        WHERE transactions.wallet_id = :wallet_id AND transactions.amount <= 0
+        ORDER BY 
+            CASE WHEN :sortedBy = 'bycategory' THEN category.category_name END,
+            CASE WHEN :sortedBy = 'bydate' AND :orderBy = 'DESC' THEN transactions.date_of_creation END DESC,
+            CASE WHEN :sortedBy = 'bydate' AND :orderBy = 'ASC' THEN transactions.date_of_creation END,
+            CASE WHEN :sortedBy = 'byprice' AND :orderBy = 'DESC' THEN transactions.amount END DESC,
+            CASE WHEN :sortedBy = 'byprice' AND :orderBy = 'ASC' THEN transactions.amount END
+        LIMIT :limit OFFSET :offset
+    """)
+    fun getExpenseTransactions(
+        @Bind("wallet_id") walletId: Int,
+        @Bind("sortedBy") sortedBy: String,
+        @Bind("orderBy") orderBy: String,
+        @Bind("offset") offset: Int,
+        @Bind("limit") limit: Int
+    ): List<Transaction>?
 
     @SqlQuery("""
         SELECT 
@@ -94,8 +141,10 @@ interface TransactionRepository {
         FROM MoneyMate.transactions transactions
         WHERE transactions.wallet_id = :wallet_id
     """)
-    fun getWalletBalance(@Bind("wallet_id") walletId: Int): WalletBalanceDTO
+    fun getWalletBalance(@Bind("wallet_id") walletId: Int): WalletBalance?
 
+
+    /** ----------------------------------- PW --------------------------------   */
 
     @SqlQuery("""
         SELECT *
@@ -106,10 +155,10 @@ interface TransactionRepository {
         WHERE transactions.wallet_id = :wallet_id AND transactions.category_id = :category_id
         ORDER BY transactions.date_of_creation DESC
     """)
-    fun getPWTransactionsByCategory(
+    fun getByCategory(
         @Bind("wallet_id") walletId: Int,
         @Bind("category_id") categoryId: Int
-    ): List<Transaction>
+    ): List<Transaction>?
 
 
     @SqlQuery("""
@@ -120,8 +169,36 @@ interface TransactionRepository {
             WHERE transactions.wallet_id = :wallet_id
             GROUP BY categories.category_id, categories.category_name, users.user_id, users.username, users.email, users.password
     """)
-    fun getPWCategoriesBalance(@Bind("wallet_id") walletId: Int): List<CategoriesBalance>
+    fun getBalanceByCategory(@Bind("wallet_id") walletId: Int): List<CategoryBalance>?
 
+    /** ----------------------------------- OverView --------------------------------   */
+
+    @SqlQuery("""
+        SELECT *
+        FROM MoneyMate.transactions transactions 
+        JOIN Moneymate.users users ON transactions.user_id = users.user_id
+        JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
+        JOIN Moneymate.category category ON transactions.category_id = category.category_id
+        WHERE transactions.category_id = :category_id
+        ORDER BY transactions.date_of_creation DESC
+    """)
+    fun getAllByCategory(
+        @Bind("category_id") categoryId: Int
+    ): List<Transaction>?
+
+
+    @SqlQuery("""
+        SELECT categories.category_id, categories.category_name, users.user_id, users.username, users.email, users.password, SUM(transactions.amount) AS sum
+            FROM MoneyMate.transactions transactions
+            JOIN Moneymate.users users ON transactions.user_id = users.user_id
+            JOIN MoneyMate.category categories ON transactions.category_id = categories.category_id
+            GROUP BY categories.category_id, categories.category_name, users.user_id, users.username, users.email, users.password
+    """)
+    fun getAllBalanceByCategory(): List<CategoryBalance>?
+
+
+
+    /** ----------------------------------- SW --------------------------------   */
 
     @SqlQuery("""
         SELECT *
@@ -132,10 +209,10 @@ interface TransactionRepository {
         WHERE transactions.wallet_id = :wallet_id AND transactions.user_id = :user_id
         ORDER BY transactions.date_of_creation DESC
     """)
-    fun getSWTransactionsByUser(
+    fun getByUser(
         @Bind("wallet_id") walletId: Int,
         @Bind("user_id") userId: Int,
-    ): List<Transaction>
+    ): List<Transaction>?
 
 
     @SqlQuery("""
@@ -145,7 +222,47 @@ interface TransactionRepository {
         WHERE transactions.wallet_id = :wallet_id AND transactions.user_id = :user_id
         GROUP BY users.user_id
     """)
-    fun getSWUsersBalance(
+    fun getBalanceByUser(
         @Bind("wallet_id") walletId: Int,
-    ): List<UserSumsOutDto>
+    ): List<UserBalance>?
+
+
+    /** ----------------------------------- Regular --------------------------------   */
+
+
+    @SqlQuery("""
+        SELECT *
+        FROM MoneyMate.transactions transactions 
+        JOIN Moneymate.users users ON transactions.user_id = users.user_id
+        JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
+        JOIN Moneymate.category category ON transactions.category_id = category.category_id
+        LIMIT :limit OFFSET :offset
+    """)
+    fun getPeriodicalTransactions(
+        @Bind("offset") offset: Int,
+        @Bind("limit") limit: Int
+    ): List<Transaction>?
+
+
+    @SqlUpdate("""
+        UPDATE MoneyMate.transactions
+        SET periodical = :periodical
+        WHERE transactions.transaction_id = :transaction_id
+    """)
+    fun updateTransactionFrequency(
+        @Bind("transaction_id") transactionId: Int,
+        @Bind("periodical") periodical: Int,
+    )
+
+    @SqlUpdate("""
+        UPDATE MoneyMate.transactions
+        SET amount = :amount
+        WHERE transactions.transaction_id = :transaction_id
+    """)
+    fun updateTransactionAmount(
+        @Bind("transaction_id") transactionId: Int,
+        @Bind("amount") amount: Float,
+    )
+
+
 }

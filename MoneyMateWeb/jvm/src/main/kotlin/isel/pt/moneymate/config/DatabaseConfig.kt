@@ -67,11 +67,16 @@ class DatabaseConfiguration {
         val userMapper = UserMapper()
         val categoryMapper = CategoryMapper(userMapper)
         val walletMapper = WalletMapper(userMapper)
+        val transactionMapper = TransactionMapper(userMapper, categoryMapper, walletMapper)
 
-        jdbi.registerRowMapper(TransactionMapper(userMapper, categoryMapper, walletMapper))
-        jdbi.registerRowMapper(CategorySumsDtoMapper(categoryMapper))
-        jdbi.registerRowMapper(UserSumsDtoMapper(userMapper))
-        jdbi.registerRowMapper(WalletBalanceDtoMapper())
+        val walletBalanceMapper = WalletBalanceMapper()
+        val categoyBalanceMapper = CategoryBalanceMapper(categoryMapper)
+        val userBalanceMapper = UserBalanceMapper(userMapper)
+
+        jdbi.registerRowMapper(transactionMapper)
+        jdbi.registerRowMapper(walletBalanceMapper)
+        jdbi.registerRowMapper(categoyBalanceMapper)
+        jdbi.registerRowMapper(userBalanceMapper)
 
         return jdbi.onDemand(TransactionRepository::class.java)
     }

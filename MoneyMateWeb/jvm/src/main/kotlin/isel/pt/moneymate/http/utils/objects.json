@@ -1,0 +1,47 @@
+{
+  "create_user":{
+    "username": "teste_user_1",
+    "email": "teste_user_1@example.com",
+    "password": "teste1"
+  },
+  "update_user":{
+    "username": "nome_editado_1"
+  },
+  "create_category":{
+    "name": "teste_category_1"
+  },
+  "update_category":{
+    "name": "nome_editado_1"
+  },
+  "create_wallet":{
+    "name": "teste_wallet_1"
+  },
+  "update_wallet":{
+    "name": "nome_editado_1"
+  },
+  "create_transaction":{
+    "ammount": "-30",
+    "title": "teste_transaction_1",
+    "periodical": "0"
+  },
+  "update_transaction":{
+    "categoryId": "1",
+    "ammount": "-30",
+    "title": "nome_editado_1"
+  },
+  "create_user_1":{
+    "username": "User1",
+    "email": "user1@example.com",
+    "password": "password"
+  },
+  "create_user_2":{
+    "username": "User2",
+    "email": "user2@example.com",
+    "password": "password"
+  },
+  "create_user_3":{
+    "username": "User3",
+    "email": "user3@example.com",
+    "password": "password"
+  }
+}

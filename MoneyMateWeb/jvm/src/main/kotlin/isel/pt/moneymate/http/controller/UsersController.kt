@@ -56,7 +56,7 @@ class UsersController(
     @GetMapping(Uris.Users.GET_USERS)
     fun getUsers(
         @RequestParam(defaultValue = "0") offset: Int,
-        @RequestParam(defaultValue = "10") limit: Int
+        @RequestParam(defaultValue = "100") limit: Int
     ): ResponseEntity<*> {
         val users = usersService.getUsers(offset, limit)
         return ResponseEntity

@@ -1,9 +1,9 @@
 package isel.pt.moneymate.repository.mappers
 
-import isel.pt.moneymate.controller.models.CategoriesBalance
-import isel.pt.moneymate.controller.models.UserSumsOutDto
-import isel.pt.moneymate.controller.models.WalletBalanceDTO
+import isel.pt.moneymate.domain.CategoryBalance
+import isel.pt.moneymate.domain.WalletBalance
 import isel.pt.moneymate.domain.Transaction
+import isel.pt.moneymate.domain.UserBalance
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
 import java.sql.ResultSet
@@ -33,29 +33,35 @@ class TransactionMapper (
     }
 }
 
-class WalletBalanceDtoMapper: RowMapper<WalletBalanceDTO> {
+class WalletBalanceMapper: RowMapper<WalletBalance> {
     @Throws(SQLException::class)
-    override fun map(rs: ResultSet, ctx: StatementContext?): WalletBalanceDTO {
-        return WalletBalanceDTO(
+    override fun map(rs: ResultSet, ctx: StatementContext?): WalletBalance {
+        return WalletBalance(
             rs.getInt("income_sum"),
             rs.getInt("expense_sum")
         )
     }
 }
 
-class CategorySumsDtoMapper (private val categoryMapper: CategoryMapper): RowMapper<CategoriesBalance> {
+class CategoryBalanceMapper (private val categoryMapper: CategoryMapper): RowMapper<CategoryBalance> {
     @Throws(SQLException::class)
-    override fun map(rs: ResultSet, ctx: StatementContext?): CategoriesBalance {
+    override fun map(rs: ResultSet, ctx: StatementContext?): CategoryBalance {
         val category = categoryMapper.map(rs, ctx)
-        return CategoriesBalance(category.toDTO(), rs.getFloat("sum"))
+        return CategoryBalance(
+            category,
+            rs.getInt("sum")
+        )
     }
 }
 
-class UserSumsDtoMapper (private val userMapper: UserMapper): RowMapper<UserSumsOutDto> {
+class UserBalanceMapper (private val userMapper: UserMapper): RowMapper<UserBalance> {
     @Throws(SQLException::class)
-    override fun map(rs: ResultSet, ctx: StatementContext?): UserSumsOutDto {
+    override fun map(rs: ResultSet, ctx: StatementContext?): UserBalance {
         val user = userMapper.map(rs, ctx)
-        return UserSumsOutDto(user.toDTO(), rs.getInt("sum"))
+        return UserBalance(
+            user,
+            rs.getInt("sum")
+        )
     }
 }
 
