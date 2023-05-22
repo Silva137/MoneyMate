@@ -1,4 +1,4 @@
-import {BrowserRouter, Route, Routes} from "react-router-dom"
+import {BrowserRouter, Routes, Route, Navigate, Outlet} from 'react-router-dom';
 import Register from "../Pages/Register/Register.jsx"
 import Login from "../Pages/Login/Login.jsx"
 import Transactions from "../Pages/Transactions/Transactions.jsx"
@@ -8,20 +8,34 @@ import Profile from "../Pages/Profile/Profile.jsx"
 import Categories from "../Pages/Categories/Categories.jsx"
 import Statistics from "../Pages/Statistics/Statistics.jsx"
 import Overview from "../Pages/Overview/Overview.jsx"
+import Logout from "../Pages/Logout/Logout.jsx"
+
+import {useContext} from "react";
+import {SessionContext} from "../Utils/Session.jsx";
+
+const PrivateRoutes = () => {
+    const { isAuthenticated } = useContext(SessionContext);
+    console.log("Authenticated", isAuthenticated)
+    return(isAuthenticated ? <Outlet/> : <Navigate to="/users/login"/>)
+}
 
 const AppRoutes = () => {
     return (
         <BrowserRouter>
             <SideNavBar>
                 <Routes>
+                    <Route path='/' element={<Login/>}/> //TODO create landing page
                     <Route path='/users/login' element={<Login/>}/>
                     <Route path='/users/register' element={<Register/>}/>
-                    <Route path='/wallets' element={<Wallets/>}/>
-                    <Route path='/profile' element={<Profile/>}/>
-                    <Route path='/transactions' element={<Transactions/>}/>
-                    <Route path='/categories' element={<Categories/>}/>
-                    <Route path='/statistics' element={<Statistics/>}/>
-                    <Route path='/overview' element={<Overview/>}/>
+                    <Route element={<PrivateRoutes />}>
+                        <Route path='/wallets' element={<Wallets/>}/>
+                        <Route path='/profile' element={<Profile/>}/>
+                        <Route path='/transactions' element={<Transactions/>}/>
+                        <Route path='/categories' element={<Categories/>}/>
+                        <Route path='/statistics' element={<Statistics/>}/>
+                        <Route path='/overview' element={<Overview/>}/>
+                        <Route path='/logout' element={<Logout/>}/>
+                    </Route>
                 </Routes>
             </SideNavBar>
         </BrowserRouter>

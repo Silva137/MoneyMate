@@ -4,6 +4,7 @@ package isel.pt.moneymate.http.controller
 import isel.pt.moneymate.domain.User
 import isel.pt.moneymate.http.models.users.LoginUserDTO
 import isel.pt.moneymate.http.models.users.CreateUserDTO
+import isel.pt.moneymate.http.models.users.RefreshTokenDTO
 import isel.pt.moneymate.http.models.users.UpdateUserDTO
 import isel.pt.moneymate.services.UsersService
 import isel.pt.moneymate.http.utils.Uris
@@ -40,9 +41,13 @@ class UsersController(
     @PostMapping(Uris.Authentication.REFRESH_TOKEN)
     fun refreshToken(
         request: HttpServletRequest?,
-        response: HttpServletResponse?
-    ) {
-        usersService.refreshToken(request, response)
+        response: HttpServletResponse?,
+        @Valid @RequestBody refreshToken: RefreshTokenDTO
+    ): ResponseEntity<*> {
+        val tokens = usersService.refreshToken(request, response, refreshToken.refreshToken)
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(tokens)
     }
 
     @GetMapping(Uris.Users.GET_BY_ID)
@@ -51,6 +56,14 @@ class UsersController(
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(user)
+    }
+
+    @GetMapping(Uris.Users.GET_USER)
+    fun getUser(@AuthenticationPrincipal user: User): ResponseEntity<*> {
+        val res = usersService.getUserById(user.id)
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(res)
     }
 
     @GetMapping(Uris.Users.GET_USERS)

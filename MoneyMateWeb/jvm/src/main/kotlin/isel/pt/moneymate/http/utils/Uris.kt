@@ -17,6 +17,7 @@ object Uris {
 
     object Users {
         const val GET_BY_ID = "/users/{id}"
+        const val GET_USER = "/user"
         const val GET_USERS = "/users"
         const val UPDATE = "/users"
         const val DELETE = "/users"
@@ -79,6 +80,7 @@ object Uris {
         /**Requests of a PW Insights Page */
         const val GET_BY_CATEGORY = "/transactions/wallets/{walletId}/categories/{categoryId}"
         const val GET_BALANCE_BY_CATEGORY = "/transactions/wallets/{walletId}/categories/balance"
+
 
         /**Requests of overViewPage */
         const val GET_ALL_BY_CATEGORY = "/transactions/categories/{categoryId}"

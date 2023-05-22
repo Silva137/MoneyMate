@@ -1,13 +1,33 @@
-import React from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import './Login.css';
-import { NavLink } from 'react-router-dom';
+import {NavLink, useNavigate} from 'react-router-dom';
+import AuthService from "../../Services/AuthService.jsx";
+import {SessionContext} from "../../Utils/Session.jsx";
 
 function Login() {
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const navigate = useNavigate()
+    const { isAuthenticated, setIsAuthenticated } = useContext(SessionContext);
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        // Handle form submission here, e.g. by sending a POST request to your API
-    };
+    console.log("Authenticated", isAuthenticated)
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/profile');
+        }
+    }, [isAuthenticated]);
+
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        try {
+            const response = await AuthService.login(email, password, setIsAuthenticated)
+            console.log(response)
+        } catch (error) {
+            console.log('Error occurred:', error.response)
+        }
+    }
 
     return (
         <div className="login-bg-container">
@@ -19,8 +39,8 @@ function Login() {
                 </div>
                 <div className="login-text">Sign in</div>
                 <form onSubmit={handleSubmit}>
-                    <input type="email" autoComplete="off" name="email" className="input" placeholder="Email" required></input>
-                    <input type="password" autoComplete="off" name="password" className="input" placeholder="Password" required></input>
+                    <input onChange={e => setEmail(e.target.value)} type="email" className="input" placeholder="Email" required></input>
+                    <input onChange={e => setPassword(e.target.value)} type="password" className="input" placeholder="Password" required></input>
                     <button type="submit" className="login-button">Sign in</button>
                 </form>
                 <div className="secondary-text" >
