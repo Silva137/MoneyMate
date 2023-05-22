@@ -1,5 +1,6 @@
 package pt.isel.moneymate.main
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -15,8 +16,8 @@ import pt.isel.moneymate.transactions.TransactionsActivity
 @OptIn(ExperimentalMaterialApi::class)
 class MainActivity : ComponentActivity() {
     companion object {
-        fun navigate(context: Context) {
-            with(context) {
+        fun navigate(origin: Activity) {
+            with(origin) {
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
             }
