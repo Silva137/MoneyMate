@@ -51,10 +51,14 @@ class CategoryController(private val categoryService : CategoryService) {
             .body(category)
     }
     @DeleteMapping(Uris.Category.DELETE_BY_ID)
-    fun deleteCategory(@PathVariable categoryId: Int) : ResponseEntity<*>{
-        categoryService.deleteCategory(categoryId)
+    fun deleteCategory(
+        @PathVariable categoryId: Int,
+        @AuthenticationPrincipal user: User
+
+    ) : ResponseEntity<*>{
+        categoryService.deleteCategory(categoryId, user.id)
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body("Category $categoryId was deleted successfully!")
+            .body("Category $categoryId was deleted successfully")
     }
 }

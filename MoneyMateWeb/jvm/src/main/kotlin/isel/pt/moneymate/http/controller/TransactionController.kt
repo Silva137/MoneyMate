@@ -102,7 +102,7 @@ class TransactionController(private val transactionService: TransactionService) 
 
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body("Transaction $transactionId was deleted successfully!")
+            .body("Transaction $transactionId was deleted successfully")
     }
 
     /**

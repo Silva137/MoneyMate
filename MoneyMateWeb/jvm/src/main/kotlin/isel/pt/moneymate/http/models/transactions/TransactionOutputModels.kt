@@ -5,8 +5,11 @@ import isel.pt.moneymate.domain.Transaction
 import isel.pt.moneymate.domain.UserBalance
 import isel.pt.moneymate.domain.WalletBalance
 import isel.pt.moneymate.http.models.categories.CategoryDTO
+import isel.pt.moneymate.http.models.categories.toDTO
 import isel.pt.moneymate.http.models.users.UserDTO
+import isel.pt.moneymate.http.models.users.toDTO
 import isel.pt.moneymate.http.models.wallets.WalletDTO
+import isel.pt.moneymate.http.models.wallets.toDTO
 import jakarta.validation.constraints.Digits
 import java.time.LocalDateTime
 
@@ -35,9 +38,8 @@ data class TransactionDTO(
    )
 }
 
-fun Transaction.toDTO(): TransactionDTO {
-   return TransactionDTO(this)
-}
+fun Transaction.toDTO() = TransactionDTO(this)
+
 
 /** ----------------------------------- List of Transactions --------------------------------   */
 

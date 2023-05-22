@@ -9,12 +9,4 @@ data class Wallet(
     val name: String,
     val user: User,
     val createdAt : Date
-){
-    // TODO put this on Wallet DTO
-    fun toDTO() = WalletDTO(
-        id,
-        name,
-        user.toDTO(),
-        createdAt
-    )
-}
+)

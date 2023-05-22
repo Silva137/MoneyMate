@@ -88,21 +88,28 @@ class UsersService(
     }
 
     fun getUserById(id: Int): UserDTO {
-        val user = usersRepository.getUserById(id) ?: throw NotFoundException("User with id:$id not found")
-        return UserDTO(user.id, user._username, user.email)
+        val user = usersRepository.getUserById(id)
+            ?: throw NotFoundException("User with id:$id not found")
+        return user.toDTO()
+    }
+
+    fun getUserByEmail(email: String): UserDTO {
+        val user = usersRepository.getUserByEmail(email)
+            ?: throw NotFoundException("User with email:$email not found")
+        return user.toDTO()
     }
 
     fun getUsers(offset: Int, limit: Int): UsersDTO {
-        val users = usersRepository.getAllUsers(offset, limit) ?: throw NotFoundException("No users found")
-        val listDTO = users.map { UserDTO(it.id, it.username, it.email) }
-        return UsersDTO(listDTO)
+        val users = usersRepository.getAllUsers(offset, limit)
+            ?: throw NotFoundException("No users found")
+        return users.toDTO()
     }
 
     fun updateUser(userId: Int, username: String): UserDTO {
         usersRepository.updateUsername(userId, username)
-        val editedUser =
-            usersRepository.getUserById(userId) ?: throw NotFoundException("User with id:$userId not found")
-        return UserDTO(editedUser.id, editedUser._username, editedUser.email)
+        val editedUser = usersRepository.getUserById(userId)
+            ?: throw NotFoundException("User with id:$userId not found")
+        return editedUser.toDTO()
     }
 
     private fun saveUserToken(user: User, jwtToken: String) {
@@ -119,10 +126,5 @@ class UsersService(
     fun deleteUser(userId: Int) {
         tokensRepository.deleteUserTokens(userId)
         usersRepository.deleteUser(userId)
-    }
-
-    fun getUserByEmail(email: String): UserDTO {
-        val user = usersRepository.getUserByEmail(email) ?: throw NotFoundException("User with email:$email not found")
-        return UserDTO(user.id, user.username, user.email)
     }
 }

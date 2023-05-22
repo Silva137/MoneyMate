@@ -44,7 +44,6 @@ class TransactionService(private val transactionRepository: TransactionRepositor
         return transaction.toDTO()
     }
 
-
     fun updateTransaction(transactionId: Int, transactionData: UpdateTransactionDTO): TransactionDTO {
         transactionRepository.updateTransaction(
             transactionId,
@@ -55,6 +54,7 @@ class TransactionService(private val transactionRepository: TransactionRepositor
         return getTransactionById(transactionId)
     }
 
+    // TODO : Apgar tambem user_shared_waleet_association
     fun deleteTransaction(transactionId: Int) {
         transactionRepository.deleteTransaction(transactionId)
     }
@@ -176,5 +176,14 @@ class TransactionService(private val transactionRepository: TransactionRepositor
             ?: throw NotFoundException("Transactions of Wallet with id $walletId not found")
 
         return sortedTransactions.toDTO()
+    }
+
+    fun updateTransactionsCategories(userId: Int, oldCategoryId: Int, newCategoryId: Int) {
+       if(oldCategoryId == newCategoryId) return
+        transactionRepository.updateTransactionsCategories(userId, oldCategoryId, newCategoryId)
+    }
+
+    fun deleteTransactionsOfWallet(walletId: Int) {
+        transactionRepository.deleteTransactionsOfWallet(walletId)
     }
 }

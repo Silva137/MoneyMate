@@ -1,5 +1,6 @@
 package isel.pt.moneymate.controller.models
 
+import isel.pt.moneymate.domain.Transaction
 import jakarta.validation.constraints.Digits
 import jakarta.validation.constraints.NotBlank
 
@@ -15,8 +16,8 @@ data class CreateTransactionDTO(
 data class UpdateTransactionDTO(
     @field:Digits(integer = 10, fraction = 0, message = "Category Id must be a number")
     val categoryId: Int,
-    @field:Digits(integer = 10, fraction = 2, message = "Amount must be a number")
-    val amount: Int,
+    @field:Digits(integer = 10, fraction = 2, message = "Transaction amount must be a number")
+    val amount: Float,
     @field:NotBlank(message = "Transaction title is required")
     val title: String,
 )

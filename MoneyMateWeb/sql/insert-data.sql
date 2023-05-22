@@ -1,4 +1,6 @@
 /*
+Valores de teste
+
 INSERT INTO moneymate.users (username, email, password)
 VALUES ('Gonçalo', 'goncalosilva17@gmail.com', '12345');
 
@@ -25,9 +27,8 @@ VALUES
     ('User 1', 'user1@example.com', 'password1'),
     ('User 2', 'user2@example.com', 'password2'),
     ('User 3', 'user3@example.com', 'password3');
-
  */
--- Inserção de dados para a tabela category
+
 INSERT INTO MoneyMate.category (category_name, user_id)
 VALUES
     ('Categoria 1 - Compras', 1),

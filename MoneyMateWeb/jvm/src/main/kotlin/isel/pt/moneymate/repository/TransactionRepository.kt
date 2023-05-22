@@ -51,7 +51,7 @@ interface TransactionRepository {
     fun updateTransaction(
         @Bind("transaction_id") transactionId: Int,
         @Bind("category_id") categoryId: Int,
-        @Bind("amount") amount: Int,
+        @Bind("amount") amount: Float,
         @Bind("title") title: String,
     )
 
@@ -264,5 +264,22 @@ interface TransactionRepository {
         @Bind("amount") amount: Float,
     )
 
+    @SqlUpdate("""
+        UPDATE MoneyMate.transactions
+        SET category_id = :new_category_id
+        WHERE transactions.user_id = :user_id AND transactions.category_id = :old_category_id
+    """)
+    fun updateTransactionsCategories(
+        @Bind("user_id" )userId: Int,
+        @Bind("old_category_id") oldCategoryId: Int,
+        @Bind("new_category_id") newCategoryId: Int
+    )
 
+    @SqlUpdate("""
+        DELETE FROM MoneyMate.transactions
+        WHERE transactions.wallet_id = :wallet_id
+        """)
+    fun deleteTransactionsOfWallet(
+        @Bind("wallet_id") walletId: Int,
+    )
 }

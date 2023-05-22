@@ -61,7 +61,7 @@ class WalletControllerTests {
             .andExpect {
                 status { isCreated() }
                 jsonPath<String>("$.name", Matchers.equalTo(newWallet.name))
-                jsonPath("$.user.username", Matchers.equalTo(newWallet.user?.username))
+                jsonPath("$.user.username", Matchers.equalTo(newWallet.user.username))
             }
         val response = result.andReturn().response.contentAsString
 

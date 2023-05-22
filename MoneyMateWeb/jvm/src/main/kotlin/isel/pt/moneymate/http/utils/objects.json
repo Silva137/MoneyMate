@@ -19,9 +19,14 @@
   "update_wallet":{
     "name": "nome_editado_1"
   },
-  "create_transaction":{
+  "create_transaction_1":{
     "ammount": "-30",
     "title": "teste_transaction_1",
+    "periodical": "0"
+  },
+  "create_transaction_2":{
+    "ammount": "100",
+    "title": "teste_transaction_2",
     "periodical": "0"
   },
   "update_transaction":{
