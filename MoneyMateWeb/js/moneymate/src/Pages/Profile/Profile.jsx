@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import '../../App.css';
 import './Profile.css';
 import '../../Components/WalletCard/WalletCard.css'
@@ -7,13 +7,29 @@ import DefaultImage from '../../assets/default-profile-image.png';
 import {RiPencilFill} from "react-icons/ri";
 import {CgClose} from "react-icons/cg";
 import {MdDoneOutline} from "react-icons/md";
+import UserService from "../../Services/UserService.jsx";
 
 function Profile() {
-    const [modal, setModal] = useState(false)
-    const [image, setImage] = useState(DefaultImage)
-    const [username, setUsername] = useState("username")
-    const [email, setEmail] = useState("goncalosilva17@gmail.com")
+    const [modal, setModal] = useState(false);
+    const [image, setImage] = useState(DefaultImage);
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [loggedUser, setLoggedUser] = useState([])
 
+    useEffect(() => {
+        const fetchLoggedUser = async () => {
+            try {
+                const response = await UserService.getLoggedUser()
+                setUsername(response.username);
+                setEmail(response.email);
+                setLoggedUser(response)
+            } catch (error) {
+                console.error('Error fetching logged user:', error)
+            }
+        }
+
+        fetchLoggedUser()
+    }, [])
 
     const handleImageChange = (event) => {
         const file = event.target.files[0]
@@ -26,6 +42,8 @@ function Profile() {
 
     function handleEditButtonClick() {
         setModal(true)
+        setUsername(loggedUser.username)
+        setEmail(loggedUser.email)
     }
 
     function handleOverlayClick(e) {
@@ -33,18 +51,20 @@ function Profile() {
             setModal(false)
     }
 
-    function handleSaveChangesClick() {
-        // API call to update the user's profile
-        setModal(false)
+    function handleSaveChangesClick(event) {
+        event.preventDefault()
+
+        UserService.updateUser(username)
+            .then((response) => {
+                console.log('Profile updated successfully:', response)
+                setLoggedUser(response)
+                setModal(false)
+            })
+            .catch((error) => {
+                console.error('Error updating profile:', error)
+            })
     }
 
-    function handleUsernameChange(e) {
-        setUsername(e.target.value)
-    }
-
-    function handleEmailChange(e) {
-        setEmail(e.target.value)
-    }
 
     return (
         <div className="bg-container">
@@ -57,12 +77,12 @@ function Profile() {
                 </div>
                 <div className="fields-container">
                     <div className="form-group field">
-                        <input type="text" className="form-field" placeholder="Username" value={username} disabled></input>
-                        <label htmlFor="Wallet Name" className="form-label">Wallet Name</label>
+                        <div className="form-field" >{loggedUser.username}</div>
+                        <label htmlFor="Username" className="form-label">Username</label>
                     </div>
                     <div className="form-group field">
-                        <input type="text" className="form-field" placeholder="Email" value={email} disabled></input>
-                        <label htmlFor="Wallet Name" className="form-label">Wallet Name</label>
+                        <div className="form-field" >{loggedUser.email}</div>
+                        <label htmlFor="Email" className="form-label">Email</label>
                     </div>
                 </div>
             </div>
@@ -79,11 +99,11 @@ function Profile() {
                                 <input id="avatar-input" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImageChange}/>
                             </label>
                             <div className="form-group field">
-                                <input type="input" className="form-field" placeholder="Username" value={username} onChange={handleUsernameChange}  required></input>
+                                <input type="input" className="form-field" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} required></input>
                                 <label htmlFor="Username" className="form-label">Username</label>
                             </div>
                             <div className="form-group field">
-                                <input type="input" className="form-field" placeholder="Email" value={email} onChange={handleEmailChange}  required></input>
+                                <input type="input" className="form-field" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required></input>
                                 <label htmlFor="Email" className="form-label">Email</label>
                             </div>
                             <button type="submit" className="save-button"> <MdDoneOutline/> Save</button>

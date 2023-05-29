@@ -5,5 +5,8 @@
     <file type="web" url="file://$PROJECT_DIR$/jvm" />
     <file type="web" url="file://$PROJECT_DIR$/MoneyMate" />
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_20" project-jdk-name="corretto-17" project-jdk-type="JavaSDK" />
+  <component name="JavaScriptSettings">
+    <option name="languageLevel" value="FLOW" />
+  </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="corretto-17" project-jdk-type="JavaSDK" />
 </project>

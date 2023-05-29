@@ -33,6 +33,11 @@ data class LoginUserDTO(
     val password: String
 )
 
+data class RefreshTokenDTO(
+    @field:NotBlank(message = "Refresh token is required")
+    val refreshToken: String
+)
+
 
 
 

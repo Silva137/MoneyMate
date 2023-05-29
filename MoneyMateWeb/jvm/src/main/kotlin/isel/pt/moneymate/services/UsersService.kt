@@ -1,12 +1,9 @@
 package isel.pt.moneymate.services
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import isel.pt.moneymate.config.JwtService
 import isel.pt.moneymate.domain.Token
 import isel.pt.moneymate.domain.User
-import isel.pt.moneymate.exceptions.AlreadyExistsException
-import isel.pt.moneymate.exceptions.InvalidLoginException
-import isel.pt.moneymate.exceptions.NotFoundException
+import isel.pt.moneymate.exceptions.*
 import isel.pt.moneymate.http.models.users.*
 import isel.pt.moneymate.repository.TokensRepository
 import isel.pt.moneymate.repository.UsersRepository
@@ -14,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -28,7 +26,7 @@ class UsersService(
     private val tokensRepository: TokensRepository,
     private val passwordEncoder: PasswordEncoder,
     private val jwtService : JwtService,
-    private val authenticationManager: AuthenticationManager
+    private val authenticationProvider: AuthenticationProvider
 ) {
 
     fun register(registerInputDTO: CreateUserDTO): AuthenticationOutDTO {
@@ -53,7 +51,7 @@ class UsersService(
 
     fun login(loginInput: LoginUserDTO): AuthenticationOutDTO {
         try {
-            authenticationManager.authenticate(
+            authenticationProvider.authenticate(
                 UsernamePasswordAuthenticationToken(loginInput.email, loginInput.password)
             )
         } catch (ex: BadCredentialsException) {
@@ -68,12 +66,7 @@ class UsersService(
         return AuthenticationOutDTO(accessToken, refreshToken)
     }
 
-    fun refreshToken(request: HttpServletRequest?, response: HttpServletResponse?) {
-        val authHeader = request?.getHeader(HttpHeaders.AUTHORIZATION)
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return
-        }
-        val refreshToken = authHeader.substring(7)
+    fun refreshToken(request: HttpServletRequest?, response: HttpServletResponse?, refreshToken: String): AuthenticationOutDTO {
         val userEmail = jwtService.extractUsername(refreshToken)
         if (userEmail != null) {
             val user = usersRepository.getUserByEmail(userEmail) ?: throw NotFoundException("User $userEmail not found")
@@ -81,10 +74,10 @@ class UsersService(
                 val accessToken = jwtService.generateToken(user)
                 revokeAllUserTokens(user)
                 saveUserToken(user, accessToken)
-                val authResponse = AuthenticationOutDTO(accessToken, refreshToken)
-                ObjectMapper().writeValue(response?.outputStream, authResponse)
+                return AuthenticationOutDTO(accessToken, refreshToken)
             }
         }
+        throw NotFoundException("Error extract username from refresh-token")
     }
 
     fun getUserById(id: Int): UserDTO {

@@ -2,6 +2,8 @@ package isel.pt.moneymate.config
 
 import isel.pt.moneymate.repository.UsersRepository
 import isel.pt.moneymate.exceptions.NotFoundException
+import isel.pt.moneymate.http.pipeline.RequestFilter
+import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -14,6 +16,13 @@ import org.springframework.security.crypto.password.PasswordEncoder
 
 @Configuration
 class ApplicationConfig(private val repository: UsersRepository) {
+
+    @Bean
+    fun responseFilterBean(): FilterRegistrationBean<RequestFilter> {
+        val filterRegistrationBean = FilterRegistrationBean(RequestFilter())
+        filterRegistrationBean.addUrlPatterns("/*")
+        return filterRegistrationBean
+    }
 
     @Bean
     fun userDetailsService(): UserDetailsService {
@@ -41,5 +50,4 @@ class ApplicationConfig(private val repository: UsersRepository) {
     fun passwordEncoder(): PasswordEncoder {
         return BCryptPasswordEncoder()
     }
-
 }

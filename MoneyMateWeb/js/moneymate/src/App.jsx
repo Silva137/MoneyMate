@@ -1,11 +1,13 @@
 import React from 'react';
 import AppRoutes from './Routes/AppRoutes.jsx';
-import SideNavBar from "./Components/SideNavBar/SideNavBar.jsx";
+import {SessionProvider} from "./Utils/Session";
 
 const App = () => {
     return (
         <div>
-            <AppRoutes />
+            <SessionProvider>
+                <AppRoutes />
+            </SessionProvider>
         </div>
     );
 };
