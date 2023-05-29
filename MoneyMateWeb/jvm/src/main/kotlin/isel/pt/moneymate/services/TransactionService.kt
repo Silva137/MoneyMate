@@ -97,8 +97,8 @@ class TransactionService(private val transactionRepository: TransactionRepositor
 
     /** ----------------------------------- PW --------------------------------   */
 
-    fun getByCategory(walletId: Int, categoryId: Int): TransactionsDTO {
-        val transactionsOfCategory = transactionRepository.getByCategory(walletId, categoryId)
+    fun getByCategory(walletId: Int, categoryId: Int, offset: Int, limit: Int): TransactionsDTO {
+        val transactionsOfCategory = transactionRepository.getByCategory(walletId, categoryId, offset, limit)
             ?: throw NotFoundException("Transactions Of Category not Found")
         return transactionsOfCategory.toDTO()
     }
@@ -111,8 +111,8 @@ class TransactionService(private val transactionRepository: TransactionRepositor
 
     /** ----------------------------------- OverView --------------------------------   */
 
-    fun getAllByCategory(categoryId: Int): TransactionsDTO {
-        val transactionsOfCategory = transactionRepository.getAllByCategory(categoryId)
+    fun getAllByCategory(categoryId: Int, offset: Int, limit: Int): TransactionsDTO {
+        val transactionsOfCategory = transactionRepository.getAllByCategory(categoryId, offset, limit)
             ?: throw NotFoundException("Transactions Of Category not Found")
         return transactionsOfCategory.toDTO()
 
@@ -126,8 +126,8 @@ class TransactionService(private val transactionRepository: TransactionRepositor
 
     /** ----------------------------------- SW --------------------------------   */
 
-    fun getByUser(walletId: Int, userId: Int): TransactionsDTO {
-        val transactionsOfUser = transactionRepository.getByUser(walletId, userId)
+    fun getByUser(walletId: Int, userId: Int, offset: Int, limit: Int): TransactionsDTO {
+        val transactionsOfUser = transactionRepository.getByUser(walletId, userId, offset, limit)
             ?: throw NotFoundException("Transactions Of User not Found")
         return transactionsOfUser.toDTO()
     }

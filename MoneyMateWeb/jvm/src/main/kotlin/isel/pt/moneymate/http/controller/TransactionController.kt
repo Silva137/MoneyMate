@@ -209,9 +209,16 @@ class TransactionController(private val transactionService: TransactionService) 
     @GetMapping(Uris.Transactions.GET_BY_CATEGORY)
     fun getByCategory(
         @PathVariable walletId: Int,
-        @PathVariable categoryId: Int
+        @PathVariable categoryId: Int,
+        @RequestParam(defaultValue = "0") offset: Int,
+        @RequestParam(defaultValue = "10") limit: Int
     ): ResponseEntity<*> {
-        val transactions = transactionService.getByCategory(walletId, categoryId,)
+        val transactions = transactionService.getByCategory(
+            walletId,
+            categoryId,
+            offset,
+            limit
+        )
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(transactions)
@@ -245,9 +252,15 @@ class TransactionController(private val transactionService: TransactionService) 
      */
     @GetMapping(Uris.Transactions.GET_ALL_BY_CATEGORY)
     fun getAllByCategory(
-        @PathVariable categoryId: Int
+        @PathVariable categoryId: Int,
+        @RequestParam(defaultValue = "0") offset: Int,
+        @RequestParam(defaultValue = "10") limit: Int
     ): ResponseEntity<*> {
-        val transactions = transactionService.getAllByCategory(categoryId)
+        val transactions = transactionService.getAllByCategory(
+            categoryId,
+            offset,
+            limit
+        )
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(transactions)
@@ -283,9 +296,16 @@ class TransactionController(private val transactionService: TransactionService) 
     @GetMapping(Uris.Transactions.GET_BY_USER)
     fun getByUser(
         @PathVariable shId: Int,
-        @PathVariable userId: Int
+        @PathVariable userId: Int,
+        @RequestParam(defaultValue = "0") offset: Int,
+        @RequestParam(defaultValue = "10") limit: Int
     ): ResponseEntity<*> {
-        val transactions = transactionService.getByUser(shId, userId)
+        val transactions = transactionService.getByUser(
+            shId,
+            userId,
+            offset,
+            limit
+        )
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(transactions)

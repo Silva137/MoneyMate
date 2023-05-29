@@ -219,9 +219,23 @@ echo "- Got Response:"
 echo "$RESPONSE" | "$JQ_EXEC"
 
 echo
+echo "[REQUEST][2] - Get Transaction 1 By Id"
+echo "- Making a GET Request To: "$GET_TRANSACTION_BY_ID
+RESPONSE=$(curl -X GET -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" $GET_TRANSACTION_BY_ID"2")
+echo "- Got Response:"
+echo "$RESPONSE" | "$JQ_EXEC"
+
+echo
 echo "[REQUEST][6] - Delete Wallet"
 echo "- Making a DELETE Request To: "$DELETE_WALLET_BY_ID
 RESPONSE=$(curl -X DELETE -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" $DELETE_WALLET_BY_ID$WALLET_ID_CREATED)
+echo "- Got Response:"
+echo "$RESPONSE" | "$JQ_EXEC"
+
+echo
+echo "[REQUEST][2] - Get Transaction 1 By Id"
+echo "- Making a GET Request To: "$GET_TRANSACTION_BY_ID
+RESPONSE=$(curl -X GET -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" $GET_TRANSACTION_BY_ID"2")
 echo "- Got Response:"
 echo "$RESPONSE" | "$JQ_EXEC"
 

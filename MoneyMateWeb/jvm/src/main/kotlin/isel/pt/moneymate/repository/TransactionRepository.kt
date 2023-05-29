@@ -154,10 +154,13 @@ interface TransactionRepository {
         JOIN Moneymate.category category ON transactions.category_id = category.category_id
         WHERE transactions.wallet_id = :wallet_id AND transactions.category_id = :category_id
         ORDER BY transactions.date_of_creation DESC
+        LIMIT :limit OFFSET :offset
     """)
     fun getByCategory(
         @Bind("wallet_id") walletId: Int,
-        @Bind("category_id") categoryId: Int
+        @Bind("category_id") categoryId: Int,
+        @Bind("offset") offset: Int,
+        @Bind("limit") limit: Int
     ): List<Transaction>?
 
 
@@ -181,9 +184,12 @@ interface TransactionRepository {
         JOIN Moneymate.category category ON transactions.category_id = category.category_id
         WHERE transactions.category_id = :category_id
         ORDER BY transactions.date_of_creation DESC
+        LIMIT :limit OFFSET :offset
     """)
     fun getAllByCategory(
-        @Bind("category_id") categoryId: Int
+        @Bind("category_id") categoryId: Int,
+        @Bind("offset") offset: Int,
+        @Bind("limit") limit: Int
     ): List<Transaction>?
 
 
@@ -208,10 +214,14 @@ interface TransactionRepository {
         JOIN Moneymate.category category ON transactions.category_id = category.category_id
         WHERE transactions.wallet_id = :wallet_id AND transactions.user_id = :user_id
         ORDER BY transactions.date_of_creation DESC
+        LIMIT :limit OFFSET :offset
+
     """)
     fun getByUser(
         @Bind("wallet_id") walletId: Int,
         @Bind("user_id") userId: Int,
+        @Bind("offset") offset: Int,
+        @Bind("limit") limit: Int
     ): List<Transaction>?
 
 
