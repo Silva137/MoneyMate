@@ -25,6 +25,7 @@ class CategoryController(private val categoryService : CategoryService) {
             .body(category)
     }
 
+    // TODO pass user e criar outro pedido para is buscar categorias default(user=0)
     @GetMapping(Uris.Category.GET_CATEGORIES)
     fun getCategories(
         @RequestParam(defaultValue = "0") offset: Int,

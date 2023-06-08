@@ -10,13 +10,49 @@
   "create_category":{
     "name": "teste_category_1"
   },
-  "update_category":{
-    "name": "nome_editado_1"
+  "create_category_1":{
+    "name": "Compras"
   },
-  "create_wallet":{
-    "name": "teste_wallet_1"
+  "create_category_2":{
+    "name": "Lazer"
   },
-  "update_wallet":{
+  "create_category_3":{
+    "name": "Desporto"
+  },
+  "create_category_4":{
+    "name": "Saude"
+  },
+  "create_category_5":{
+    "name": "Carro"
+  },
+  "create_category_6":{
+    "name": "Viagens"
+  },
+  "create_category_7":{
+    "name": "Prendas"
+  },
+  "create_category_8":{
+    "name": "Roupa"
+  },
+  "create_category_9":{
+    "name": "Apostas"
+  },
+  "create_category_10":{
+    "name": "Conta Agua"
+  },
+  "create_wallet_1":{
+    "name": "Santander"
+  },
+  "create_wallet_2":{
+    "name": "Principal"
+  },
+  "create_wallet_3":{
+    "name": "Secundaria"
+  },
+  "create_wallet_4":{
+    "name": "Outros"
+  },
+  "update_wallet_10":{
     "name": "nome_editado_1"
   },
   "create_transaction_1":{

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 class TransactionController(private val transactionService: TransactionService) {
 
+    /*
     // TODO Passar para wallet Controller
     /**
      * Handles the request to get the sume of all lucrative transactions
@@ -32,6 +33,8 @@ class TransactionController(private val transactionService: TransactionService) 
             .status(HttpStatus.OK)
             .body(sum)
     }
+
+     */
 
 
     /**

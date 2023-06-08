@@ -141,7 +141,14 @@ interface TransactionRepository {
         FROM MoneyMate.transactions transactions
         WHERE transactions.wallet_id = :wallet_id
     """)
-    fun getWalletBalance(@Bind("wallet_id") walletId: Int): WalletBalance?
+    fun getWalletBalanceOld(@Bind("wallet_id") walletId: Int): WalletBalance?
+
+    @SqlQuery("""
+        SELECT SUM(transactions.amount)
+        FROM MoneyMate.transactions transactions
+        WHERE transactions.wallet_id = :wallet_id
+""")
+    fun getWalletBalance(@Bind("wallet_id") walletId: Int): Int
 
 
     /** ----------------------------------- PW --------------------------------   */

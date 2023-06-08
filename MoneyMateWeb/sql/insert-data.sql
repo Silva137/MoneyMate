@@ -73,3 +73,8 @@ FROM
         SELECT generate_series(1, 10) AS n  -- Inserir 10 transações para cada wallet
     ) transaction;
 
+
+SELECT SUM(transactions.amount)
+FROM MoneyMate.transactions transactions
+WHERE transactions.wallet_id = 2
+

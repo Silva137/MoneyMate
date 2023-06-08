@@ -1,10 +1,8 @@
 package isel.pt.moneymate.services
 
 import isel.pt.moneymate.exceptions.NotFoundException
-import isel.pt.moneymate.http.models.categories.CategoryDTO
-import isel.pt.moneymate.http.models.categories.toDTO
-import isel.pt.moneymate.http.models.users.UserDTO
 import isel.pt.moneymate.http.models.wallets.*
+import isel.pt.moneymate.repository.TransactionRepository
 import isel.pt.moneymate.repository.WalletRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -13,33 +11,37 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(rollbackFor = [Exception::class])
 class WalletService(
     private val walletRepository : WalletRepository,
+    private val transactionRepository: TransactionRepository,
     private val transactionService: TransactionService
 
 ) {
 
-    fun createWallet(walletInput: CreateWalletDTO, userId: Int): WalletDTO {
+    fun createWallet(walletInput: CreateWalletDTO, userId: Int): WalletWithBalanceDTO {
         val createdId = walletRepository.createWallet(walletInput.name, userId)
         return getWalletById(createdId)
     }
 
-    fun getWalletById(walletId : Int): WalletDTO{
+    fun getWalletById(walletId : Int): WalletWithBalanceDTO{
         val wallet = walletRepository.getWalletById(walletId)
             ?: throw NotFoundException("Wallet with id $walletId not found")
-        return wallet.toDTO()
+        val balance = getWalletBalance(walletId)
+        return wallet.toDTO(balance)
     }
 
-    fun getWalletsOfUser(userId: Int, offset: Int, limit: Int) : WalletsDTO {
+    fun getWalletsOfUser(userId: Int, offset: Int, limit: Int) : WalletsWithBalanceDTO {
         val wallets = walletRepository.getWalletsOfUser(userId, offset, limit)
             ?: throw NotFoundException("No wallets found for user with id $userId") //TODO
-        return wallets.toDTO()
+        val map = wallets.associateWith { wallet -> getWalletBalance(wallet.id) }
+        return map.toDTO()
     }
 
     // TODO : check if its the owner of the wallet that is trying to update it ???
-    fun updateWallet(walletInput: UpdateWalletDTO, walletId : Int) : WalletDTO {
+    fun updateWallet(walletInput: UpdateWalletDTO, walletId : Int) : WalletWithBalanceDTO {
         walletRepository.updateWallet(walletInput.name, walletId)
         val updatedWallet = walletRepository.getWalletById(walletId)
             ?: throw NotFoundException("Wallet with id $walletId not found")
-        return updatedWallet.toDTO()
+        val balance = getWalletBalance(walletId)
+        return updatedWallet.toDTO(balance)
     }
 
     // TODO: Receive user? Check if the wallet belongs to the user making the request
@@ -51,4 +53,11 @@ class WalletService(
         walletRepository.deleteWallet(walletId)
     }
 
+    fun getWalletBalance(walletId: Int): Int {
+        return transactionRepository.getWalletBalance(walletId)
+    }
+
+
 }
+
+

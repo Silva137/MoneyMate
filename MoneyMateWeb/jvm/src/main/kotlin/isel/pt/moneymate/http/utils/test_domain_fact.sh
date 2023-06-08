@@ -3,6 +3,8 @@
 # THIS SCRIPT PRODUCE REQUESTS TO TEST ALL THE API DOMAIN INSERTION AND REMOVAL REQUESTS
 # First run the create-schema.sql to clear the database
 
+# source para correr processo corrente e ter acesso a vars de ambietne
+
 echo "[INIT] ------------------------------------------------------"
 
 echo
@@ -54,38 +56,17 @@ echo "[STARTING_REQUESTS]------------------------------------------" #>> $OUT_FI
 echo
 
 echo "[USER][REQUESTS]"
-
-echo
-echo "[REQUEST][1] - Create User"
-echo "- Making a POST Request To: "$CREATE_USER
-echo "$CREATE_USER_OBJ"
-RESPONSE=$(curl -X POST -H "Content-Type: application/json" -d "$CREATE_USER_OBJ" $CREATE_USER)
-echo "- Got Response:"
-echo "$RESPONSE" | "$JQ_EXEC"
-TOKEN=$(echo "$RESPONSE" | "$JQ_EXEC" -r '.access_token')
-if [ "$TOKEN" == "null" ]; then
-  echo "[ERROR] - Token is NULL, Change userDetails and try again"
-  echo "[EXITING...]"
-  sleep 10
-  exit
-fi
-
-echo
-echo "[REQUEST][2] - Get All Users"
-echo "- Making a GET Request To: "$GET_USERS
-RESPONSE=$(curl -X GET -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" $GET_USERS)
-echo "- Got Response:"
-echo "$RESPONSE" | "$JQ_EXEC"
-
-echo
-echo "[REQUEST][3] - Update User name"
-echo "- Making a PUT Request To: "$UPDATE_USER
-RESPONSE=$(curl -X PATCH -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" -d "$UPDATE_USER_OBJ" $UPDATE_USER)
-echo "- Got Response:"
-echo "$RESPONSE" | "$JQ_EXEC"
+source ./register_user.sh "POST" "$CREATE_USER" "Register User" "$CREATE_USER_OBJ"
+source ./send_request.sh "PATCH" "$UPDATE_USER" "$TOKEN" "[REQUEST][3] - Update User Name" ".create_user"
+source ./send_request.sh "GET" "$GET_USERS" "$TOKEN" "[REQUEST][2] - Get All Users"
 
 echo
 echo "[CATEGORY][REQUESTS]"
+source ./send_request.sh "GET" "$GET_WALLETS_OF_USER" "$TOKEN" "[REQUEST][2] - Get All Wallets"
+source ./send_request.sh "POST" "$CREATE_CATEGORY" "$TOKEN" "[REQUEST][2] - Create Category" ".create_category"
+
+
+
 
 echo
 echo "[REQUEST][1] - Create Category"

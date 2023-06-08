@@ -89,12 +89,19 @@ class TransactionService(private val transactionRepository: TransactionRepositor
         }
     }
 
+    fun getWalletBalanceOld(walletId: Int): WalletBalanceDTO {
+        val walletBalance = transactionRepository.getWalletBalanceOld(walletId)
+            ?: throw NotFoundException("Balance of Wallet not found")
+        return walletBalance.toDTO()
+    }
+
+    /*
     fun getWalletBalance(walletId: Int): WalletBalanceDTO {
         val walletBalance = transactionRepository.getWalletBalance(walletId)
             ?: throw NotFoundException("Balance of Wallet not found")
         return walletBalance.toDTO()
     }
-
+    */
     /** ----------------------------------- PW --------------------------------   */
 
     fun getByCategory(walletId: Int, categoryId: Int, offset: Int, limit: Int): TransactionsDTO {
