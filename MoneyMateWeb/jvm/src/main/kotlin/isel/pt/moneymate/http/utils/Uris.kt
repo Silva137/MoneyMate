@@ -80,6 +80,7 @@ object Uris {
         /**Requests of a PW Insights Page */
         const val GET_BY_CATEGORY = "/transactions/wallets/{walletId}/categories/{categoryId}"
         const val GET_BALANCE_BY_CATEGORY = "/transactions/wallets/{walletId}/categories/balance"
+        const val GET_POS_AND_NEG_BALANCE_BY_CATEGORY = "/transactions/wallets/{walletId}/categories/posneg/balance"
 
 
         /**Requests of overViewPage */

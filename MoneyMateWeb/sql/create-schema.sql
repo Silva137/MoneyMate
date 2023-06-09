@@ -28,11 +28,10 @@ CREATE TABLE MoneyMate.tokens (
     userId     INT NOT NULL REFERENCES MoneyMate.users(user_id)
 );
 
--- TODO Podem existir wallets com o mesmo nome?
 CREATE TABLE MoneyMate.wallet
 (
     wallet_id               SERIAL PRIMARY KEY,
-    wallet_name             VARCHAR(50) NOT NULL UNIQUE,
+    wallet_name             VARCHAR(50) NOT NULL,
     user_id          INT         NOT NULL REFERENCES MoneyMate.users (user_id),
     date_of_creation DATE        NOT NULL DEFAULT CURRENT_DATE
 );

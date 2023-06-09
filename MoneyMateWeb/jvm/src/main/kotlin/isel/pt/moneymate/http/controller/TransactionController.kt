@@ -242,6 +242,27 @@ class TransactionController(private val transactionService: TransactionService) 
             .body(transactions)
     }
 
+    /**
+     * Handles the request to get the sum of all positive transactions by category belongign to a private wallet
+     * and negative transactions
+     *
+     * @param walletId the wallet to consult the transactions
+     *
+     * @return the response to the request with a map with the sum of each category
+     */
+    @GetMapping(Uris.Transactions.GET_POS_AND_NEG_BALANCE_BY_CATEGORY)
+    fun getPositiveBalanceByCategory(@PathVariable walletId: Int): ResponseEntity<*> {
+        val transactions = transactionService.getPosAndNegBalanceByCategory(walletId)
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(transactions)
+    }
+
+
+
+
+
+    // TODO All Below are not tested
     /** ----------------------------------- OverView --------------------------------   */
 
     /**

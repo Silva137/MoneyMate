@@ -173,13 +173,34 @@ interface TransactionRepository {
 
     @SqlQuery("""
         SELECT categories.category_id, categories.category_name, users.user_id, users.username, users.email, users.password, SUM(transactions.amount) AS sum
-            FROM MoneyMate.transactions transactions
+        FROM MoneyMate.transactions transactions
             JOIN Moneymate.users users ON transactions.user_id = users.user_id
             JOIN MoneyMate.category categories ON transactions.category_id = categories.category_id
-            WHERE transactions.wallet_id = :wallet_id
-            GROUP BY categories.category_id, categories.category_name, users.user_id, users.username, users.email, users.password
+        WHERE transactions.wallet_id = :wallet_id
+        GROUP BY categories.category_id, categories.category_name, users.user_id, users.username, users.email, users.password
     """)
     fun getBalanceByCategory(@Bind("wallet_id") walletId: Int): List<CategoryBalance>?
+
+
+    @SqlQuery("""
+        SELECT categories.category_id, categories.category_name, users.user_id, users.username, users.email, users.password, SUM(transactions.amount) AS sum
+        FROM MoneyMate.transactions transactions
+            JOIN Moneymate.users users ON transactions.user_id = users.user_id
+            JOIN MoneyMate.category categories ON transactions.category_id = categories.category_id
+        WHERE transactions.wallet_id = :wallet_id AND transactions.amount >=0
+        GROUP BY categories.category_id, categories.category_name, users.user_id, users.username, users.email, users.password
+    """)
+    fun getPositiveBalanceByCategory(@Bind("wallet_id") walletId: Int): List<CategoryBalance>?
+
+    @SqlQuery("""
+        SELECT categories.category_id, categories.category_name, users.user_id, users.username, users.email, users.password, SUM(transactions.amount) AS sum
+        FROM MoneyMate.transactions transactions
+            JOIN Moneymate.users users ON transactions.user_id = users.user_id
+            JOIN MoneyMate.category categories ON transactions.category_id = categories.category_id
+        WHERE transactions.wallet_id = :wallet_id AND transactions.amount < 0
+        GROUP BY categories.category_id, categories.category_name, users.user_id, users.username, users.email, users.password
+    """)
+    fun getNegativeBalanceByCategory(@Bind("wallet_id") walletId: Int): List<CategoryBalance>?
 
     /** ----------------------------------- OverView --------------------------------   */
 

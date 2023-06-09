@@ -116,6 +116,16 @@ class TransactionService(private val transactionRepository: TransactionRepositor
         return balanceOfCategories.toDTO()
     }
 
+    fun getPosAndNegBalanceByCategory(walletId: Int): PosAndNegCategoryBalanceDTO {
+        val negativeBalanceOfCategories = transactionRepository.getNegativeBalanceByCategory(walletId)
+            ?: throw NotFoundException("Balance of Categories not Found")
+        val positiveBalanceOfCategories = transactionRepository.getPositiveBalanceByCategory(walletId)
+            ?: throw NotFoundException("Balance of Categories not Found")
+        val negDTO = negativeBalanceOfCategories.toDTO()
+        val posDTO = positiveBalanceOfCategories.toDTO()
+        return PosAndNegCategoryBalanceDTO(negDTO,posDTO)
+    }
+
     /** ----------------------------------- OverView --------------------------------   */
 
     fun getAllByCategory(categoryId: Int, offset: Int, limit: Int): TransactionsDTO {

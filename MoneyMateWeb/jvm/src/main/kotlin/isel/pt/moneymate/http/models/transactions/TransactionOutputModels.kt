@@ -114,4 +114,7 @@ fun List<CategoryBalance>.toDTO(): CategoriesBalanceDTO {
    return CategoriesBalanceDTO(balances)
 }
 
-
+data class PosAndNegCategoryBalanceDTO(
+   val neg: CategoriesBalanceDTO,
+   val pos: CategoriesBalanceDTO,
+)
