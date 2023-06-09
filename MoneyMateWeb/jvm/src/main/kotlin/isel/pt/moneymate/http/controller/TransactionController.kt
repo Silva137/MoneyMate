@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
+import java.sql.Date
 
 @RestController
 class TransactionController(private val transactionService: TransactionService) {
@@ -108,6 +109,7 @@ class TransactionController(private val transactionService: TransactionService) 
             .body("Transaction $transactionId was deleted successfully")
     }
 
+    // TODO Put date on Requests
     /**
      * Handles the request to get all transactions of a wallet of a user
      * ordered by price or date
@@ -120,16 +122,22 @@ class TransactionController(private val transactionService: TransactionService) 
      */
     @GetMapping(Uris.Transactions.GET_ALL)
     fun getAllTransactions(
+        @AuthenticationPrincipal user: User,
         @PathVariable walletId: Int,
         @RequestParam(defaultValue = "bydate") sortedBy: String,
         @RequestParam(defaultValue = "DESC") orderBy: String,
+        @RequestParam startDate: Date,
+        @RequestParam endDate: Date,
         @RequestParam(defaultValue = "0") offset: Int,
         @RequestParam(defaultValue = "10") limit: Int
     ): ResponseEntity<*> {
         val transactions = transactionService.getAllTransactions(
+            user,
             walletId,
             sortedBy,
             orderBy,
+            startDate,
+            endDate,
             offset,
             limit
         )
@@ -150,16 +158,22 @@ class TransactionController(private val transactionService: TransactionService) 
      */
     @GetMapping(Uris.Transactions.GET_INCOMES)
     fun getIncomeTransactions(
+        @AuthenticationPrincipal user: User,
         @PathVariable walletId: Int,
         @RequestParam(defaultValue = "bydate") sortedBy: String,
         @RequestParam(defaultValue = "DESC") orderBy: String,
+        @RequestParam startDate: Date,
+        @RequestParam endDate: Date,
         @RequestParam(defaultValue = "0") offset: Int,
         @RequestParam(defaultValue = "10") limit: Int
     ): ResponseEntity<*> {
         val transactions = transactionService.getIncomeTransactions(
+            user,
             walletId,
             sortedBy,
             orderBy,
+            startDate,
+            endDate,
             offset,
             limit
         )
@@ -180,16 +194,22 @@ class TransactionController(private val transactionService: TransactionService) 
      */
     @GetMapping(Uris.Transactions.GET_EXPENSES)
     fun getExpenseTransactions(
+        @AuthenticationPrincipal user: User,
         @PathVariable walletId: Int,
         @RequestParam(defaultValue = "bydate") sortedBy: String,
         @RequestParam(defaultValue = "DESC") orderBy: String,
+        @RequestParam startDate: Date,
+        @RequestParam endDate: Date,
         @RequestParam(defaultValue = "0") offset: Int,
         @RequestParam(defaultValue = "10") limit: Int
     ): ResponseEntity<*> {
         val transactions = transactionService.getExpenseTransactions(
+            user,
             walletId,
             sortedBy,
             orderBy,
+            startDate,
+            endDate,
             offset,
             limit
         )
@@ -211,14 +231,20 @@ class TransactionController(private val transactionService: TransactionService) 
      */
     @GetMapping(Uris.Transactions.GET_BY_CATEGORY)
     fun getByCategory(
+        @AuthenticationPrincipal user: User,
         @PathVariable walletId: Int,
         @PathVariable categoryId: Int,
+        @RequestParam startDate: Date,
+        @RequestParam endDate: Date,
         @RequestParam(defaultValue = "0") offset: Int,
         @RequestParam(defaultValue = "10") limit: Int
     ): ResponseEntity<*> {
         val transactions = transactionService.getByCategory(
+            user,
             walletId,
             categoryId,
+            startDate,
+            endDate,
             offset,
             limit
         )
@@ -235,8 +261,18 @@ class TransactionController(private val transactionService: TransactionService) 
      * @return the response to the request with a map with the sum of each category
      */
     @GetMapping(Uris.Transactions.GET_BALANCE_BY_CATEGORY)
-    fun getBalanceByCategory(@PathVariable walletId: Int): ResponseEntity<*> {
-        val transactions = transactionService.getBalanceByCategory(walletId)
+    fun getBalanceByCategory(
+        @AuthenticationPrincipal user: User,
+        @PathVariable walletId: Int,
+        @RequestParam startDate: Date,
+        @RequestParam endDate: Date,
+    ): ResponseEntity<*> {
+        val transactions = transactionService.getBalanceByCategory(
+            user,
+            walletId,
+            startDate,
+            endDate,
+        )
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(transactions)
@@ -251,16 +287,22 @@ class TransactionController(private val transactionService: TransactionService) 
      * @return the response to the request with a map with the sum of each category
      */
     @GetMapping(Uris.Transactions.GET_POS_AND_NEG_BALANCE_BY_CATEGORY)
-    fun getPositiveBalanceByCategory(@PathVariable walletId: Int): ResponseEntity<*> {
-        val transactions = transactionService.getPosAndNegBalanceByCategory(walletId)
+    fun getPositiveBalanceByCategory(
+        @AuthenticationPrincipal user: User,
+        @PathVariable walletId: Int,
+        @RequestParam startDate: Date,
+        @RequestParam endDate: Date,
+    ): ResponseEntity<*> {
+        val transactions = transactionService.getPosAndNegBalanceByCategory(
+            user,
+            walletId,
+            startDate,
+            endDate,
+        )
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(transactions)
     }
-
-
-
-
 
     // TODO All Below are not tested
     /** ----------------------------------- OverView --------------------------------   */

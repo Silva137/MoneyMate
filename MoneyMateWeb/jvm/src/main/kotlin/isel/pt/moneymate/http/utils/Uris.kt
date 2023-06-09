@@ -59,18 +59,11 @@ object Uris {
     }
 
     object Transactions {
-        // TODO PASSAR ESTES PEDIDOS PARA WALLET
-        const val GET_OVERALL_BALANCE = "/transactions/amount}"
-        const val GET_ALL_WALLETS_BALANCE = "/transactions/walletAmounts}"         // Soma de todas as transacoes de cada wallet
-
-
-        /**Other Requests */
+        /**Domain Requests */
         const val CREATE = "/transactions/wallets/{walletId}/categories/{categoryId}"
         const val GET_BY_ID = "/transactions/{transactionId}"
         const val UPDATE = "/transactions/{transactionId}"
         const val DELETE_BY_ID = "/transactions/{transactionId}"
-        // TODO PASSAR PARA WALLET
-        const val GET_WALLET_BALANCE = "/transactions/wallets/{walletId}/balance"    //should be a Wallet URI?
 
         /**Requets of transactions Page (Common to both wallet types) */
         const val GET_ALL = "/transactions/wallets/{walletId}"
@@ -82,7 +75,7 @@ object Uris {
         const val GET_BALANCE_BY_CATEGORY = "/transactions/wallets/{walletId}/categories/balance"
         const val GET_POS_AND_NEG_BALANCE_BY_CATEGORY = "/transactions/wallets/{walletId}/categories/posneg/balance"
 
-
+        // TODO Requests Below not tested
         /**Requests of overViewPage */
         const val GET_ALL_BY_CATEGORY = "/transactions/categories/{categoryId}"
         const val GET_ALL_BALANCE_BY_CATEGORY = "/transactions/categoryAmounts"
@@ -95,5 +88,13 @@ object Uris {
         const val GET_PERIODICAL = "/transactions/periodical"
         const val UPDATE_FREQUENCY = "/transactions/{transactionId}/frquency"
         const val UPDATE_AMOUNT = "/transactions/{transactionId}/amount"
+
+        const val GET_WALLET_BALANCE = "/transactions/wallets/{walletId}/balance"    //should be a Wallet URI?
+        // TODO PASSAR ESTES PEDIDOS PARA WALLET
+        const val GET_OVERALL_BALANCE = "/transactions/amount}"
+        const val GET_ALL_WALLETS_BALANCE = "/transactions/walletAmounts}"         // Soma de todas as transacoes de cada wallet
+
+
+
     }
 }

@@ -9,6 +9,7 @@ import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys
 import org.jdbi.v3.sqlobject.statement.SqlQuery
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
 import org.springframework.stereotype.Repository
+import java.sql.Date
 import java.time.LocalDateTime
 
 @Repository
@@ -71,7 +72,7 @@ interface TransactionRepository {
         JOIN Moneymate.users users ON transactions.user_id = users.user_id
         JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
         JOIN Moneymate.category category ON transactions.category_id = category.category_id
-        WHERE transactions.wallet_id = :wallet_id
+        WHERE transactions.wallet_id = :wallet_id AND transactions.date_of_creation BETWEEN :start_date AND :end_date
         ORDER BY 
             CASE WHEN :sortedBy = 'bycategory' THEN category.category_name END,
             CASE WHEN :sortedBy = 'bydate' AND :orderBy = 'DESC' THEN transactions.date_of_creation END DESC,
@@ -84,6 +85,8 @@ interface TransactionRepository {
         @Bind("wallet_id") walletId: Int,
         @Bind("sortedBy") sortedBy: String,
         @Bind("orderBy") orderBy: String,
+        @Bind("start_date") startDate: Date,
+        @Bind("end_date") endDate: Date,
         @Bind("offset") offset: Int,
         @Bind("limit") limit: Int
     ): List<Transaction>?
@@ -94,7 +97,7 @@ interface TransactionRepository {
         JOIN Moneymate.users users ON transactions.user_id = users.user_id
         JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
         JOIN Moneymate.category category ON transactions.category_id = category.category_id
-        WHERE transactions.wallet_id = :wallet_id AND transactions.amount > 0
+        WHERE transactions.wallet_id = :wallet_id AND transactions.amount > 0 AND transactions.date_of_creation BETWEEN :start_date AND :end_date
         ORDER BY 
             CASE WHEN :sortedBy = 'bycategory' THEN category.category_name END,
             CASE WHEN :sortedBy = 'bydate' AND :orderBy = 'DESC' THEN transactions.date_of_creation END DESC,
@@ -107,6 +110,8 @@ interface TransactionRepository {
         @Bind("wallet_id") walletId: Int,
         @Bind("sortedBy") sortedBy: String,
         @Bind("orderBy") orderBy: String,
+        @Bind("start_date") startDate: Date,
+        @Bind("end_date") endDate: Date,
         @Bind("offset") offset: Int,
         @Bind("limit") limit: Int
     ): List<Transaction>?
@@ -117,7 +122,7 @@ interface TransactionRepository {
         JOIN Moneymate.users users ON transactions.user_id = users.user_id
         JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
         JOIN Moneymate.category category ON transactions.category_id = category.category_id
-        WHERE transactions.wallet_id = :wallet_id AND transactions.amount <= 0
+        WHERE transactions.wallet_id = :wallet_id AND transactions.amount <= 0 AND transactions.date_of_creation BETWEEN :start_date AND :end_date
         ORDER BY 
             CASE WHEN :sortedBy = 'bycategory' THEN category.category_name END,
             CASE WHEN :sortedBy = 'bydate' AND :orderBy = 'DESC' THEN transactions.date_of_creation END DESC,
@@ -130,6 +135,8 @@ interface TransactionRepository {
         @Bind("wallet_id") walletId: Int,
         @Bind("sortedBy") sortedBy: String,
         @Bind("orderBy") orderBy: String,
+        @Bind("start_date") startDate: Date,
+        @Bind("end_date") endDate: Date,
         @Bind("offset") offset: Int,
         @Bind("limit") limit: Int
     ): List<Transaction>?
@@ -143,12 +150,15 @@ interface TransactionRepository {
     """)
     fun getWalletBalanceOld(@Bind("wallet_id") walletId: Int): WalletBalance?
 
+    /*
     @SqlQuery("""
         SELECT SUM(transactions.amount)
         FROM MoneyMate.transactions transactions
         WHERE transactions.wallet_id = :wallet_id
-""")
+    """)
     fun getWalletBalance(@Bind("wallet_id") walletId: Int): Int
+
+     */
 
 
     /** ----------------------------------- PW --------------------------------   */
@@ -156,16 +166,20 @@ interface TransactionRepository {
     @SqlQuery("""
         SELECT *
         FROM MoneyMate.transactions transactions 
-        JOIN Moneymate.users users ON transactions.user_id = users.user_id
-        JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
-        JOIN Moneymate.category category ON transactions.category_id = category.category_id
-        WHERE transactions.wallet_id = :wallet_id AND transactions.category_id = :category_id
+            JOIN Moneymate.users users ON transactions.user_id = users.user_id
+            JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
+            JOIN Moneymate.category category ON transactions.category_id = category.category_id
+        WHERE transactions.wallet_id = :wallet_id 
+            AND transactions.category_id = :category_id 
+            AND transactions.date_of_creation BETWEEN :start_date AND :end_date
         ORDER BY transactions.date_of_creation DESC
         LIMIT :limit OFFSET :offset
     """)
     fun getByCategory(
         @Bind("wallet_id") walletId: Int,
         @Bind("category_id") categoryId: Int,
+        @Bind("start_date") startDate: Date,
+        @Bind("end_date") endDate: Date,
         @Bind("offset") offset: Int,
         @Bind("limit") limit: Int
     ): List<Transaction>?
@@ -176,10 +190,15 @@ interface TransactionRepository {
         FROM MoneyMate.transactions transactions
             JOIN Moneymate.users users ON transactions.user_id = users.user_id
             JOIN MoneyMate.category categories ON transactions.category_id = categories.category_id
-        WHERE transactions.wallet_id = :wallet_id
+        WHERE transactions.wallet_id = :wallet_id 
+            AND transactions.date_of_creation BETWEEN :start_date AND :end_date
         GROUP BY categories.category_id, categories.category_name, users.user_id, users.username, users.email, users.password
     """)
-    fun getBalanceByCategory(@Bind("wallet_id") walletId: Int): List<CategoryBalance>?
+    fun getBalanceByCategory(
+        @Bind("wallet_id") walletId: Int,
+        @Bind("start_date") startDate: Date,
+        @Bind("end_date") endDate: Date,
+    ): List<CategoryBalance>?
 
 
     @SqlQuery("""
@@ -187,20 +206,32 @@ interface TransactionRepository {
         FROM MoneyMate.transactions transactions
             JOIN Moneymate.users users ON transactions.user_id = users.user_id
             JOIN MoneyMate.category categories ON transactions.category_id = categories.category_id
-        WHERE transactions.wallet_id = :wallet_id AND transactions.amount >=0
+        WHERE transactions.wallet_id = :wallet_id 
+            AND transactions.amount >=0 
+            AND transactions.date_of_creation BETWEEN :start_date AND :end_date
         GROUP BY categories.category_id, categories.category_name, users.user_id, users.username, users.email, users.password
     """)
-    fun getPositiveBalanceByCategory(@Bind("wallet_id") walletId: Int): List<CategoryBalance>?
+    fun getPositiveBalanceByCategory(
+        @Bind("wallet_id") walletId: Int,
+        @Bind("start_date") startDate: Date,
+        @Bind("end_date") endDate: Date,
+    ): List<CategoryBalance>?
 
     @SqlQuery("""
         SELECT categories.category_id, categories.category_name, users.user_id, users.username, users.email, users.password, SUM(transactions.amount) AS sum
         FROM MoneyMate.transactions transactions
             JOIN Moneymate.users users ON transactions.user_id = users.user_id
             JOIN MoneyMate.category categories ON transactions.category_id = categories.category_id
-        WHERE transactions.wallet_id = :wallet_id AND transactions.amount < 0
+        WHERE transactions.wallet_id = :wallet_id 
+            AND transactions.amount < 0
+            AND transactions.date_of_creation BETWEEN :start_date AND :end_date
         GROUP BY categories.category_id, categories.category_name, users.user_id, users.username, users.email, users.password
     """)
-    fun getNegativeBalanceByCategory(@Bind("wallet_id") walletId: Int): List<CategoryBalance>?
+    fun getNegativeBalanceByCategory(
+        @Bind("wallet_id") walletId: Int,
+        @Bind("start_date") startDate: Date,
+        @Bind("end_date") endDate: Date,
+    ): List<CategoryBalance>?
 
     /** ----------------------------------- OverView --------------------------------   */
 

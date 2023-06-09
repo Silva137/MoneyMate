@@ -7,6 +7,7 @@ import isel.pt.moneymate.exceptions.*
 import isel.pt.moneymate.http.models.users.*
 import isel.pt.moneymate.repository.TokensRepository
 import isel.pt.moneymate.repository.UsersRepository
+import isel.pt.moneymate.repository.WalletRepository
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpHeaders
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional
 class UsersService(
     private val usersRepository: UsersRepository,
     private val tokensRepository: TokensRepository,
+    private val walletRepository: WalletRepository,
     private val passwordEncoder: PasswordEncoder,
     private val jwtService : JwtService,
     private val authenticationProvider: AuthenticationProvider
@@ -119,5 +121,13 @@ class UsersService(
     fun deleteUser(userId: Int) {
         tokensRepository.deleteUserTokens(userId)
         usersRepository.deleteUser(userId)
+    }
+
+    fun verifyUserOnWallet(userId: Int, walletId: Int) {
+        val userOfWallet = walletRepository.getUserOfWallet(walletId)
+            ?: throw NotFoundException("Wallet with id $walletId not found")
+
+        if(userOfWallet != userId)
+            throw UnauthorizedException("User does not have permission to perform this action")
     }
 }

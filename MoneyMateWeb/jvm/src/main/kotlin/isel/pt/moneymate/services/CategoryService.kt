@@ -16,7 +16,9 @@ const val SYSTEM_USER = 0
 @Transactional(rollbackFor = [Exception::class])
 class CategoryService(
     private val categoryRepository : CategoryRepository,
-    private val transactionService: TransactionService
+    private val transactionService: TransactionService,
+    private val permitionsService: PermitionsService
+
 ){
 
     fun createCategory(categoryInput: CreateCategoryDTO, userId: Int): CategoryDTO {
@@ -31,6 +33,9 @@ class CategoryService(
     }
 
     fun getCategoryById(categoryId : Int) : CategoryDTO {
+        //permitionsService.verifyUserOnWallet(userId, categoryId)
+        permitionsService.verifyCategory(categoryId)
+
         val category = categoryRepository.getCategoryById(categoryId)
             ?: throw NotFoundException("Category with id $categoryId not found")
         return category.toDTO()

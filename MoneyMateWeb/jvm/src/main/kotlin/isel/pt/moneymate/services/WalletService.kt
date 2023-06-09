@@ -1,8 +1,8 @@
 package isel.pt.moneymate.services
 
 import isel.pt.moneymate.exceptions.NotFoundException
+import isel.pt.moneymate.exceptions.UnauthorizedException
 import isel.pt.moneymate.http.models.wallets.*
-import isel.pt.moneymate.repository.TransactionRepository
 import isel.pt.moneymate.repository.WalletRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(rollbackFor = [Exception::class])
 class WalletService(
     private val walletRepository : WalletRepository,
-    private val transactionRepository: TransactionRepository,
     private val transactionService: TransactionService
 
 ) {
@@ -54,10 +53,8 @@ class WalletService(
     }
 
     fun getWalletBalance(walletId: Int): Int {
-        return transactionRepository.getWalletBalance(walletId)
+        return walletRepository.getWalletBalance(walletId)
     }
-
-
 }
 
 
