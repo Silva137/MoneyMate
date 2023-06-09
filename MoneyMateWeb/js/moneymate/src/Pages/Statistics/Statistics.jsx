@@ -1,17 +1,50 @@
-import React, { useState, useEffect } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import '../../App.css'
+import './Statistics.css'
 import PieChart from "../../Components/PieChart/PieChart.jsx";
+import WalletService from "../../Services/WalletService.jsx";
+import TransactionService from "../../Services/TransactionService.jsx";
+import WalletSelector from "../../Components/WalletSelector/WalletSelector.jsx";
+import {SessionContext} from "../../Utils/Session.jsx";
 
 function Statistics() {
+    const [wallets, setWallets] = useState([])
+    const { selectedWallet, setSelectedWallet } = useContext(SessionContext);
+    const balance = [23, 45, 67, 12, 78, 34, 56, 90, 11, 55];
+    const category = ['Car', 'Food', 'Travel', 'Entertainment', 'Shopping', 'Health', 'Education', 'Housing', 'Utilities', 'Miscellaneous']
 
-const balance = [23, 45, 67, 12, 78, 34, 56, 90, 11, 55];
-const category = ['Car', 'Food', 'Travel', 'Entertainment', 'Shopping', 'Health', 'Education', 'Housing', 'Utilities', 'Miscellaneous']
+    useEffect( () => {
+        fetchPrivateWallets();
+        console.log(selectedWallet)
+        //fetchChartsData();
+    }, [])
+
+    async function fetchPrivateWallets() {
+        try {
+            const response = await WalletService.getWalletsOfUser();
+            setWallets(response.wallets);
+        } catch (error) {
+            console.error('Error fetching private wallets of user:', error);
+        }
+    }
+
+    async function fetchChartsData() {
+        try {
+            const response = await TransactionService.getBalanceByCategory();
+            setWallets(response.wallets); //change to setBalance
+        } catch (error) {
+            console.error('Error fetching charts data:', error);
+        }
+    }
 
 return (
         <div>
             <div className="bg-container">
                 <div className="content-container">
-                    <h1 className="page-title">Statistics</h1>
+                    <div className="sideByside-container">
+                        <h1 className="page-title">Statistics</h1>
+                        <WalletSelector className="wallet-selector" wallets={wallets} />
+                    </div>
                     <div className="card-income">
                         <h2>Income</h2>
                         <PieChart balance={balance} category={category} />

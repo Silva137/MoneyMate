@@ -1,6 +1,5 @@
-import axios from "axios";
 import {authHeader} from "./AuthHeader.jsx";
-import instance from "../interceptors/Axios.jsx";
+import instance from "./AxiosInterceptor.jsx";
 
 class UserService {
 

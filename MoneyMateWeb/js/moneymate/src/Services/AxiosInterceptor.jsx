@@ -1,5 +1,5 @@
 import axios from "axios";
-import TokenService from "../Services/TokenService.jsx";
+import TokenService from "./TokenService.jsx";
 
 import { useNavigate } from "react-router-dom";
 
@@ -67,7 +67,6 @@ instance.interceptors.response.use(
                 TokenService.removeUser();
                 navigateToLogout();
             }
-
         }
         return Promise.reject(err)
     }

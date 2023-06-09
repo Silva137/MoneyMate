@@ -15,14 +15,17 @@ const SideNavBar = ({ children }) => {
     const handleMouseEnter = () => {setIsExpanded(true)}
     const handleMouseLeave = () => {setIsExpanded(false)}
 
+
     useEffect(() => {
         setIsExpanded(false); // Reset the isExpanded state when the navigation occurs
     }, [location.pathname]);
 
+
+
     return (
         <div className="container">
             {hideNavBar ? null : (
-                <div className="sidebar" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                <div className={`sidebar ${isExpanded ? "expanded" : ""}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
                     <div className="top_section">
                         <img src="../../logo.png" className="logo" alt="logo"/>
                         {isExpanded && (<h1 className="logo-text">MoneyMate</h1>)}

@@ -9,15 +9,8 @@ import Categories from "../Pages/Categories/Categories.jsx"
 import Statistics from "../Pages/Statistics/Statistics.jsx"
 import Overview from "../Pages/Overview/Overview.jsx"
 import Logout from "../Pages/Logout/Logout.jsx"
+import PrivateRoutes from "./PrivateRoutes.jsx";
 
-import {useContext} from "react";
-import {SessionContext} from "../Utils/Session.jsx";
-
-const PrivateRoutes = () => {
-    const { isAuthenticated } = useContext(SessionContext);
-    console.log("Authenticated", isAuthenticated)
-    return(isAuthenticated ? <Outlet/> : <Navigate to="/users/login"/>)
-}
 
 const AppRoutes = () => {
     return (

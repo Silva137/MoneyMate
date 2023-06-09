@@ -17,19 +17,19 @@ function Profile() {
     const [loggedUser, setLoggedUser] = useState([])
 
     useEffect(() => {
-        const fetchLoggedUser = async () => {
-            try {
-                const response = await UserService.getLoggedUser()
-                setUsername(response.username);
-                setEmail(response.email);
-                setLoggedUser(response)
-            } catch (error) {
-                console.error('Error fetching logged user:', error)
-            }
-        }
-
         fetchLoggedUser()
     }, [])
+
+    const fetchLoggedUser = async () => {
+        try {
+            const response = await UserService.getLoggedUser()
+            setUsername(response.username);
+            setEmail(response.email);
+            setLoggedUser(response)
+        } catch (error) {
+            console.error('Error fetching logged user:', error)
+        }
+    }
 
     const handleImageChange = (event) => {
         const file = event.target.files[0]
@@ -43,7 +43,6 @@ function Profile() {
     function handleEditButtonClick() {
         setModal(true)
         setUsername(loggedUser.username)
-        setEmail(loggedUser.email)
     }
 
     function handleOverlayClick(e) {
@@ -72,7 +71,7 @@ function Profile() {
                 <h1 className="page-title">Profile</h1>
                 <div className="row">
                     <Avatar src={image} sx={{width: 150, height: 150, border: '4px solid #fff'}}/>
-                    <p className="welcome-text">Hi,<br />Walter White!</p>
+                    <p className="welcome-text">Hi,<br /> {username}!</p>
                     <button className="edit-profile"  onClick={handleEditButtonClick}> <RiPencilFill/> Edit Profile</button>
                 </div>
                 <div className="fields-container">
@@ -93,18 +92,12 @@ function Profile() {
                         <h2 className="modal-title">Edit Profile</h2>
                         <form onSubmit={handleSaveChangesClick}>
                             <label htmlFor="avatar-input">
-                                <Avatar src={image}
-                                        sx={{width: 150, height: 150, border: '4px solid #fff', cursor: 'pointer'}}
-                                />
+                                <Avatar src={image} sx={{width: 150, height: 150, border: '4px solid #fff', cursor: 'pointer'}}/>
                                 <input id="avatar-input" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImageChange}/>
                             </label>
                             <div className="form-group field">
                                 <input type="input" className="form-field" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} required></input>
                                 <label htmlFor="Username" className="form-label">Username</label>
-                            </div>
-                            <div className="form-group field">
-                                <input type="input" className="form-field" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required></input>
-                                <label htmlFor="Email" className="form-label">Email</label>
                             </div>
                             <button type="submit" className="save-button"> <MdDoneOutline/> Save</button>
                         </form>

@@ -4,27 +4,50 @@ import { RiPencilFill } from "react-icons/ri";
 import { GoTrashcan } from "react-icons/go";
 import { MdDoneOutline } from "react-icons/md";
 import { CgClose } from "react-icons/cg";
+import WalletService from "../../Services/WalletService.jsx";
 
-function WalletCard(props) {
+function WalletCard({wallet, setWallets, setIsLoading}) {
     const [modal, setModal] = useState(false);
-    const [walletName, setWalletName] = useState(props.name);
+    const [walletName, setWalletName] = useState(wallet.name);
+
+
+    async function fetchPrivateWallets() {
+        try {
+            setIsLoading(true);
+            const response = await WalletService.getWalletsOfUser();
+            setWallets(response.wallets);
+        } catch (error) {
+            console.error('Error fetching private wallets of user:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }
 
     function handleEditButtonClick() {
         setModal(true)
     }
 
-    function handleWalletNameChange(e) {
-        setWalletName(e.target.value)
+    async function handleSaveChangesClick(event) {
+        event.preventDefault();
+        try {
+            const response = await WalletService.updateWalletName(wallet.id, walletName);
+            console.log(response);
+            await fetchPrivateWallets()
+        } catch (error) {
+            console.error('Error updating wallet name:', error);
+        }
+        setModal(false);
     }
 
-    function handleSaveChangesClick() {
-        // Do something with the new wallet name (e.g. update it in the database)
-        setModal(false)
-    }
-
-    function handleDeleteWalletClick() {
-        // Do something to delete the wallet (e.g. remove it from the database)
-        setModal(false)
+    async function handleDeleteWalletClick() {
+        try {
+            const response = await WalletService.deleteWallet(wallet.id);
+            console.log(response);
+            await fetchPrivateWallets()
+        } catch (error) {
+            console.error('Error deleting wallet:', error);
+        }
+        setModal(false);
     }
 
     function handleOverlayClick(e) {
@@ -35,13 +58,13 @@ function WalletCard(props) {
     return (
         <div className="wallet-container">
             <div className="wallet-header">
-                <div className="wallet-name">{props.name}</div>
+                <div className="wallet-name">{wallet.name}</div>
                 <button className="edit-button" onClick={handleEditButtonClick}>
                     <RiPencilFill/>
                 </button>
             </div>
-            <h2 className="balance-txt">Balance</h2>
-            <div className="wallet-balance">${props.balance.toFixed(2)}</div>
+            <p className="balance-txt">Balance</p>
+            <div className="wallet-balance">${wallet.balance.toFixed(2)}</div>
             {modal && (
                 <div className="modal-overlay" onClick={handleOverlayClick}>
                     <div className="modal">
@@ -49,7 +72,7 @@ function WalletCard(props) {
                         <h2 className="modal-title">Edit Wallet</h2>
                         <form onSubmit={handleSaveChangesClick}>
                             <div className="form-group field">
-                                <input type="text" className="form-field" placeholder="Wallet name" value={walletName} onChange={handleWalletNameChange} required></input>
+                                <input type="text" className="form-field" placeholder="Wallet name" value={walletName} onChange={e => setWalletName(e.target.value)} required></input>
                                 <label htmlFor="Wallet Name" className="form-label">Wallet Name</label>
                             </div>
                             <div className="button-container">
