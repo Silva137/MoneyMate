@@ -6,6 +6,7 @@ import WalletService from "../../Services/WalletService.jsx";
 import TransactionService from "../../Services/TransactionService.jsx";
 import WalletSelector from "../../Components/WalletSelector/WalletSelector.jsx";
 import {SessionContext} from "../../Utils/Session.jsx";
+import DatePicker from "../../Components/DatePicker/DatePicker.jsx";
 
 function Statistics() {
     const [wallets, setWallets] = useState([])
@@ -16,7 +17,7 @@ function Statistics() {
     useEffect( () => {
         fetchPrivateWallets();
         console.log(selectedWallet)
-        //fetchChartsData();
+        fetchChartsData();
     }, [])
 
     async function fetchPrivateWallets() {
@@ -30,12 +31,18 @@ function Statistics() {
 
     async function fetchChartsData() {
         try {
-            const response = await TransactionService.getBalanceByCategory();
-            setWallets(response.wallets); //change to setBalance
+            const response = await TransactionService.getBalanceByCategory(selectedWallet);
+            console.log(response)
+            //setWallets(response.wallets); //change to setBalance
         } catch (error) {
             console.error('Error fetching charts data:', error);
         }
     }
+
+        const handleDateRangeChange = (ranges) => {
+            // Handle the selected date range here
+            console.log('Selected Date Range:', ranges);
+        }
 
 return (
         <div>
@@ -43,7 +50,9 @@ return (
                 <div className="content-container">
                     <div className="sideByside-container">
                         <h1 className="page-title">Statistics</h1>
+                        <DatePicker/>
                         <WalletSelector className="wallet-selector" wallets={wallets} />
+
                     </div>
                     <div className="card-income">
                         <h2>Income</h2>

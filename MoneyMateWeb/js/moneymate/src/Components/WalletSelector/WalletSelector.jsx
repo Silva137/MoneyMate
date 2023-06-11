@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import './WalletSelector.css';
 import { MdArrowForwardIos } from 'react-icons/md';
 import {MdArrowBackIos} from 'react-icons/md';
