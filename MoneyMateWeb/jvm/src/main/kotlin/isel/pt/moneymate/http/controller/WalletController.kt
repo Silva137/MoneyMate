@@ -40,15 +40,22 @@ class WalletController(private val walletsService: WalletService) {
     }
 
     @PatchMapping(Uris.Wallets.UPDATE_NAME)
-    fun updateWalletName(@Valid @RequestBody walletName: UpdateWalletDTO, @PathVariable walletId: Int) : ResponseEntity<*> {
-        val wallet = walletsService.updateWallet(walletName, walletId)
+    fun updateWalletName(
+        @AuthenticationPrincipal user: User,
+        @Valid @RequestBody walletName: UpdateWalletDTO,
+        @PathVariable walletId: Int
+    ) : ResponseEntity<*> {
+        val wallet = walletsService.updateWallet(user, walletName, walletId)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(wallet)
     }
     @DeleteMapping(Uris.Wallets.DELETE_BY_ID)
-    fun deleteWallet(@PathVariable walletId: Int) : ResponseEntity<*> {
-        walletsService.deleteWallet(walletId)
+    fun deleteWallet(
+        @AuthenticationPrincipal user: User,
+        @PathVariable walletId: Int
+    ) : ResponseEntity<*> {
+        walletsService.deleteWallet(user, walletId)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body("Wallet with $walletId was deleted successfully!")

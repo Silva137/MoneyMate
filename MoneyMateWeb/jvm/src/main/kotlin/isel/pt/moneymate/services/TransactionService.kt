@@ -5,7 +5,9 @@ import isel.pt.moneymate.domain.Transaction
 import isel.pt.moneymate.domain.User
 import isel.pt.moneymate.exceptions.InvalidParameterException
 import isel.pt.moneymate.exceptions.NotFoundException
+import isel.pt.moneymate.exceptions.UnauthorizedException
 import isel.pt.moneymate.repository.TransactionRepository
+import isel.pt.moneymate.repository.WalletRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.sql.Date
@@ -15,7 +17,7 @@ import java.time.LocalDateTime
 @Transactional(rollbackFor = [Exception::class])
 class TransactionService(
     private val transactionRepository: TransactionRepository,
-    private val permitionsService: PermitionsService
+    private val walletRepository : WalletRepository,
 ) {
     private val validSortByValues = setOf("bydate", "byprice"/*, "bycategory"*/)
     private val validOrderByValues = setOf("ASC", "DESC")
@@ -124,7 +126,7 @@ class TransactionService(
     /** ----------------------------------- PW --------------------------------   */
 
     fun getByCategory(user: User, walletId: Int, categoryId: Int, startDate: Date, endDate: Date, offset: Int, limit: Int): TransactionsDTO {
-        permitionsService.verifyUserOnWallet(user.id, walletId)
+        verifyUserOnWallet(user.id, walletId)
         val transactionsOfCategory = transactionRepository.getByCategory(walletId, categoryId, startDate, endDate, offset, limit)
             ?: throw NotFoundException("Transactions Of Category not Found")
 
@@ -132,7 +134,7 @@ class TransactionService(
     }
 
     fun getBalanceByCategory(user:User, walletId: Int, startDate: Date, endDate: Date,): CategoriesBalanceDTO {
-        permitionsService.verifyUserOnWallet(user.id, walletId)
+        verifyUserOnWallet(user.id, walletId)
         val balanceOfCategories = transactionRepository.getBalanceByCategory(walletId, startDate, endDate)
             ?: throw NotFoundException("Balance of Categories not Found")
 
@@ -140,7 +142,7 @@ class TransactionService(
     }
 
     fun getPosAndNegBalanceByCategory(user: User, walletId: Int, startDate: Date, endDate: Date,): PosAndNegCategoryBalanceDTO {
-        permitionsService.verifyUserOnWallet(user.id, walletId)
+        verifyUserOnWallet(user.id, walletId)
         val negativeBalanceOfCategories = transactionRepository.getNegativeBalanceByCategory(walletId, startDate, endDate)
             ?: throw NotFoundException("Balance of Categories not Found")
         val positiveBalanceOfCategories = transactionRepository.getPositiveBalanceByCategory(walletId, startDate, endDate)
@@ -216,7 +218,7 @@ class TransactionService(
             throw InvalidParameterException("Invalid parameters for sorting or ordering")
 
         // Verify if user as permitions in this wallet
-        permitionsService.verifyUserOnWallet(userId, walletId)
+        verifyUserOnWallet(userId, walletId)
 
         val sortedTransactions = getTransactionsFunction(walletId, sortedBy, orderBy, startDate, endDate, offset, limit)
 
@@ -226,12 +228,15 @@ class TransactionService(
         return sortedTransactions.toDTO()
     }
 
-    fun updateTransactionsCategories(userId: Int, oldCategoryId: Int, newCategoryId: Int) {
-       if(oldCategoryId == newCategoryId) return
-        transactionRepository.updateTransactionsCategories(userId, oldCategoryId, newCategoryId)
-    }
-
     fun deleteTransactionsOfWallet(walletId: Int) {
         transactionRepository.deleteTransactionsOfWallet(walletId)
+    }
+
+    fun verifyUserOnWallet(userId: Int, walletId: Int) {
+        val userOfWallet = walletRepository.getUserOfWallet(walletId)
+            ?: throw NotFoundException("Wallet with id $walletId not found")
+
+        if(userOfWallet != userId)
+            throw UnauthorizedException("User does not have permission to perform this action on Wallet $walletId")
     }
 }

@@ -339,7 +339,7 @@ interface TransactionRepository {
         WHERE transactions.user_id = :user_id AND transactions.category_id = :old_category_id
     """)
     fun updateTransactionsCategories(
-        @Bind("user_id" )userId: Int,
+        @Bind("user_id") userId: Int,
         @Bind("old_category_id") oldCategoryId: Int,
         @Bind("new_category_id") newCategoryId: Int
     )

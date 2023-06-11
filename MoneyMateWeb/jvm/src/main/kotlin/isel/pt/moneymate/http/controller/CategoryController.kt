@@ -6,7 +6,6 @@ import isel.pt.moneymate.http.models.categories.UpdateCategoryDTO
 import isel.pt.moneymate.services.CategoryService
 import isel.pt.moneymate.http.utils.Uris
 import jakarta.validation.Valid
-import jakarta.validation.constraints.Digits
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -25,39 +24,56 @@ class CategoryController(private val categoryService : CategoryService) {
             .body(category)
     }
 
-    // TODO pass user e criar outro pedido para is buscar categorias default(user=0)
     @GetMapping(Uris.Category.GET_CATEGORIES)
     fun getCategories(
+        @AuthenticationPrincipal user: User,
         @RequestParam(defaultValue = "0") offset: Int,
         @RequestParam(defaultValue = "10") limit: Int
     ): ResponseEntity<*> {
-        val categories = categoryService.getCategories(offset, limit)
+        val categories = categoryService.getCategoriesGivenUser(user.id, offset, limit)
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(categories)
+    }
+
+    @GetMapping(Uris.Category.GET_SYSTEM_CATEGORIES)
+    fun getSystemCategories(
+        @RequestParam(defaultValue = "0") offset: Int,
+        @RequestParam(defaultValue = "10") limit: Int
+    ): ResponseEntity<*> {
+        val categories = categoryService.getSystemCategories(offset, limit)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(categories)
     }
 
     @GetMapping(Uris.Category.GET_BY_ID)
-    fun getCategoryById(@PathVariable categoryId: Int) : ResponseEntity<*>{
-        val category = categoryService.getCategoryById(categoryId)
+    fun getCategoryById(
+        @AuthenticationPrincipal user: User,
+        @PathVariable categoryId: Int
+    ) : ResponseEntity<*>{
+        val category = categoryService.getCategoryById(user, categoryId)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(category)
     }
     @PatchMapping(Uris.Category.UPDATE)
-    fun updateCategory(@Valid @RequestBody categoryData: UpdateCategoryDTO, @PathVariable categoryId: Int): ResponseEntity<*> {
-        val category = categoryService.updateCategory(categoryData, categoryId)
+    fun updateCategory(
+        @AuthenticationPrincipal user: User,
+        @Valid @RequestBody categoryData: UpdateCategoryDTO,
+        @PathVariable categoryId: Int
+    ): ResponseEntity<*> {
+        val category = categoryService.updateCategory(user, categoryData, categoryId)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(category)
     }
     @DeleteMapping(Uris.Category.DELETE_BY_ID)
     fun deleteCategory(
-        @PathVariable categoryId: Int,
-        @AuthenticationPrincipal user: User
-
+        @AuthenticationPrincipal user: User,
+        @PathVariable categoryId: Int
     ) : ResponseEntity<*>{
-        categoryService.deleteCategory(categoryId, user.id)
+        categoryService.deleteCategory(user, categoryId)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body("Category $categoryId was deleted successfully")

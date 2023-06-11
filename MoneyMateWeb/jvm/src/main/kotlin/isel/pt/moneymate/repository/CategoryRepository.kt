@@ -9,6 +9,16 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface CategoryRepository {
+        @SqlQuery(
+            """
+            SELECT c.user_id
+            FROM MoneyMate.category c 
+            WHERE c.category_id = :category_id
+            """
+        )
+        fun getUserOfCategory(
+            @Bind("category_id") categoryId: Int
+        ): Int?
 
         @SqlUpdate("INSERT INTO MoneyMate.category (category_name, user_id) VALUES (:name, :userId)")
         @GetGeneratedKeys("category_id")
@@ -18,9 +28,22 @@ interface CategoryRepository {
             SELECT c.*, u.*
             FROM MoneyMate.category c
             JOIN MoneyMate.users u ON c.user_id = u.user_id
+            WHERE c.user_id = :user_id
             LIMIT :limit OFFSET :offset
          """)
-        fun getCategories(@Bind("offset") offset: Int, @Bind("limit") limit: Int): List<Category>?
+        fun getCategories(
+            @Bind("user_id") userId: Int,
+            @Bind("offset") offset: Int,
+            @Bind("limit") limit: Int
+        ): List<Category>?
+
+    @SqlQuery("""
+            SELECT c.*, u.*
+            FROM MoneyMate.category c
+            JOIN MoneyMate.users u ON c.user_id = u.user_id
+            WHERE c.user_id = 0
+         """)
+    fun getSystemCategories(): List<Category>?
 
         @SqlQuery("SELECT c.* , u.* FROM MoneyMate.category c  JOIN MoneyMate.users u ON c.user_id = u.user_id WHERE c.category_id = :id ")
         fun getCategoryById(@Bind("id") categoryId: Int): Category?
