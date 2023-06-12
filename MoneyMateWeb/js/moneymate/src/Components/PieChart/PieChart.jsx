@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import './PieChart.css';
 
-const PieChart = ({ balance, category, title}) => {
+function PieChart ({ balance, category, title}) {
     const apexChartRef = useRef(null);
 
     useEffect(() => {
@@ -39,6 +39,8 @@ const PieChart = ({ balance, category, title}) => {
             legend: {
                 position: 'right',
                 fontSize: '14px',
+                fontWeight: 'bold',
+                fontFamily: "'Poppins', sans-serif",
                 width: 125,
                 offsetX: 0,
                 offsetY: 20,

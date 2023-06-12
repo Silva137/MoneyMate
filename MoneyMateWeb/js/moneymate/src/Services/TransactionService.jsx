@@ -26,12 +26,18 @@ class TransactionService {
             });
     }
 
-    updateWalletName(walletId, name) {
-        const form = { name }
-        return instance.patch(`/api/wallets/${walletId}`, form, {headers: authHeader()})
-            .then(response => {
-                return response.data
-            })
+    getSumBalanceByCategory(walletId, selectedDates) {
+        const params = {
+            startDate: selectedDates[0],
+            endDate: selectedDates[1]
+        }
+        return instance.get(`/api/transactions/wallets/${walletId}/categories/balance`, {
+            headers: authHeader(),
+            params: params
+        })
+        .then(response => {
+            return response.data
+        })
     }
 
     deleteWallet(walletId) {

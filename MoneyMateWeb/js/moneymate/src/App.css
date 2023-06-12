@@ -26,9 +26,18 @@
     color: #fff;
 }
 
-.sideByside-container {
+.row {
     display: flex;
     justify-content: start;
     align-items: center;
     gap: 50px;
 }
+
+.column {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    gap: 50px;
+}
+
