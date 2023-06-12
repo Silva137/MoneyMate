@@ -1,0 +1,37 @@
+.icons-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.icons-container > * {
+    margin-right: 10px;
+    margin-bottom: 20px;
+}
+
+.create-button {
+    margin-left: 10px;
+    margin-top: -10px;
+    width: 50px;
+    height: 50px;
+    border-radius: 47%;
+    background-color: #45c3e0;
+    color: #020000;
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.create-button:hover {
+    background-color: white;
+}
+
+.category-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
