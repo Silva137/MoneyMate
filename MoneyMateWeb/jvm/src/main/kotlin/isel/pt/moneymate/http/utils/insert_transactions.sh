@@ -1,8 +1,8 @@
 source ./export_fields.sh
 
 # Vars
-NUM_TRANSACTIONS_PER_WALLET=15
-USER_OBJ=".create_user_3"
+NUM_TRANSACTIONS_PER_WALLET=10
+USER_OBJ=".create_user_1"
 
 # Criar Utilizador
 source ./register_user.sh "POST" "$CREATE_USER" "Register User" "$USER_OBJ"

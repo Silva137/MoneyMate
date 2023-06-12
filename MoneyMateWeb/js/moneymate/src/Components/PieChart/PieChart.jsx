@@ -1,73 +1,72 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import './PieChart.css';
 
-class PieChart extends React.Component {
-    constructor(props) {
-        super(props);
-        const { balance, category } = this.props;
+const PieChart = ({ balance, category, title}) => {
+    const apexChartRef = useRef(null);
 
-        const dataPointSelectionHandler = (event, chartContext, config) => {
-            const categoryClicked = config.dataPointIndex;
-            console.log('Category clicked:', category[categoryClicked]);
-        };
+    useEffect(() => {
+        if (apexChartRef.current) {
+            const chartInstance = apexChartRef.current.chart;
+            chartInstance.updateOptions(getChartOptions());
+            chartInstance.updateSeries(balance);
+        }
+    }, [balance]);
 
-        const chartOptions = {
-            type: 'donut',
-            foreColor: '#f3f3f3',
-            events: {
-                dataPointSelection: dataPointSelectionHandler,
+
+    const getChartOptions = () => {
+        return {
+            chart: {
+                type: 'donut',
+                foreColor: '#f3f3f3',
             },
-        };
-
-        const fillOptions = {
-            type: 'gradient',
-        };
-
-        const strokeOptions = {
-            width: 0,
-        };
-
-        const legendOptions = {
-            position: 'right',
-            fontSize: '14px',
-            offsetY: -25,
-            offsetX: 0,
-            itemMargin: {
-                horizontal: 10,
-                vertical: 5,
+            title: {
+                text: title, // Add your desired title here
+                align: 'center',
+                offsetX: -110,
+                style: {
+                    fontSize: '24px',
+                    fontWeight: 'bold',
+                    fontFamily: "'Poppins', sans-serif",
+                },
             },
-        };
-
-        const dataLabelsOptions = {
-            enabled: true,
-            style: {
-                fontFamily: "'Poppins', sans-serif",
+            fill: {
+                type: 'gradient',
             },
-        };
-
-        const options = {
-            chart: chartOptions,
-            fill: fillOptions,
-            stroke: strokeOptions,
-            legend: legendOptions,
+            stroke: {
+                width: 0,
+            },
+            legend: {
+                position: 'right',
+                fontSize: '14px',
+                width: 125,
+                offsetX: 0,
+                offsetY: 20,
+                itemMargin: {
+                    horizontal: 10,
+                    vertical: 5,
+                },
+            },
             labels: category,
-            dataLabels: dataLabelsOptions,
+            dataLabels: {
+                enabled: true,
+                style: {
+                    fontFamily: "'Poppins', sans-serif",
+                },
+            },
         };
+    };
 
-        this.state = {
-            series: balance,
-            options: options,
-        };
-    }
-
-    render() {
-        return (
-            <div id="chart">
-                <ReactApexChart options={this.state.options} series={this.state.series} type="donut" />
-            </div>
-        );
-    }
-}
+    return (
+        <div id="chart">
+            <ReactApexChart
+                options={getChartOptions()}
+                series={balance}
+                type="donut"
+                ref={apexChartRef}
+            />
+        </div>
+    );
+};
 
 export default PieChart;

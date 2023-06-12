@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect} from 'react';
 import WalletCard from '../../Components/WalletCard/WalletCard';
 import '../../App.css'
 import './Wallets.css';
@@ -9,7 +9,6 @@ import {CgClose} from "react-icons/cg";
 import {MdDoneOutline} from "react-icons/md";
 import WalletService from "../../Services/WalletService.jsx";
 import WalletSelector from "../../Components/WalletSelector/WalletSelector.jsx";
-import {SessionContext} from "../../Utils/Session.jsx";
 
 function Wallets() {
     const [modal, setModal] = useState(false)
@@ -72,6 +71,7 @@ function Wallets() {
         <div className="bg-container">
             <div className="content-container">
                 <h1 className="page-title">Wallets</h1>
+                <WalletSelector className="wallet-selector" wallets={wallets} />
                 <p className="list-title">Private wallets</p>
                 <div className="list-container">
                     {isLoading ? (

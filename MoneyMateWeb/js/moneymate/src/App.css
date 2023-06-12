@@ -24,11 +24,11 @@
     font-size: 34px;
     font-weight: bold;
     color: #fff;
-    margin-bottom: 20px;
 }
 
 .sideByside-container {
     display: flex;
-    justify-content: space-between;
+    justify-content: start;
     align-items: center;
+    gap: 50px;
 }

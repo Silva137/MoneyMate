@@ -1,66 +1,98 @@
-import React, {useContext, useEffect, useState} from 'react';
-import '../../App.css'
-import './Statistics.css'
+import React, { useContext, useEffect, useState } from 'react';
+import '../../App.css';
+import './Statistics.css';
 import PieChart from "../../Components/PieChart/PieChart.jsx";
 import WalletService from "../../Services/WalletService.jsx";
 import TransactionService from "../../Services/TransactionService.jsx";
-import WalletSelector from "../../Components/WalletSelector/WalletSelector.jsx";
-import {SessionContext} from "../../Utils/Session.jsx";
+import { SessionContext } from "../../Utils/Session.jsx";
 import DatePicker from "../../Components/DatePicker/DatePicker.jsx";
+import dayjs from "dayjs";
+import { SyncLoader } from 'react-spinners';
 
 function Statistics() {
     const [wallets, setWallets] = useState([])
-    const { selectedWallet, setSelectedWallet } = useContext(SessionContext);
-    const balance = [23, 45, 67, 12, 78, 34, 56, 90, 11, 55];
-    const category = ['Car', 'Food', 'Travel', 'Entertainment', 'Shopping', 'Health', 'Education', 'Housing', 'Utilities', 'Miscellaneous']
+    const [selectedDates, setSelectedDates] = useState([dayjs().startOf('month').format('YYYY-MM-DD'), dayjs().endOf('month').format('YYYY-MM-DD')])
+    const { selectedWallet } = useContext(SessionContext)
+    const [balance, setBalance] = useState(null)
+    const [category, setCategory] = useState(null)
+    const [loading, setLoading] = useState(false)
 
-    useEffect( () => {
+    useEffect(() => {
         fetchPrivateWallets();
-        console.log(selectedWallet)
-        fetchChartsData();
     }, [])
+
+    useEffect(() => {
+        console.log('Selected WalletId: ' + selectedWallet)
+        console.log(selectedDates)
+        if (selectedDates.length !== 0) {
+            fetchChartsData()
+        }
+    }, [selectedDates])
 
     async function fetchPrivateWallets() {
         try {
-            const response = await WalletService.getWalletsOfUser();
-            setWallets(response.wallets);
+            const response = await WalletService.getWalletsOfUser()
+            setWallets(response.wallets)
         } catch (error) {
-            console.error('Error fetching private wallets of user:', error);
+            console.error('Error fetching private wallets of user:', error)
         }
     }
 
     async function fetchChartsData() {
         try {
-            const response = await TransactionService.getBalanceByCategory(selectedWallet);
+            setLoading(true)
+            const response = await TransactionService.getPosNegBalanceByCategory(selectedWallet, selectedDates)
             console.log(response)
-            //setWallets(response.wallets); //change to setBalance
+            const negBalances = response.neg.balanceList.map(item => Math.abs(item.balance))
+            const negCategories = response.neg.balanceList.map(item => item.category.name)
+            const posBalances = response.pos.balanceList.map(item => item.balance)
+            const posCategories = response.pos.balanceList.map(item => item.category.name)
+            setBalance([posBalances, negBalances])
+            setCategory([posCategories, negCategories])
         } catch (error) {
-            console.error('Error fetching charts data:', error);
+            console.error('Error fetching charts data:', error)
+        } finally {
+            setLoading(false)
         }
     }
 
-        const handleDateRangeChange = (ranges) => {
-            // Handle the selected date range here
-            console.log('Selected Date Range:', ranges);
-        }
+    const handleDatePickerChange = (dates) => {
+        setSelectedDates(dates)
+    }
 
-return (
+    return (
         <div>
             <div className="bg-container">
                 <div className="content-container">
                     <div className="sideByside-container">
                         <h1 className="page-title">Statistics</h1>
-                        <DatePicker/>
-                        <WalletSelector className="wallet-selector" wallets={wallets} />
-
+                        <DatePicker onChange={handleDatePickerChange} />
                     </div>
                     <div className="card-income">
-                        <h2>Income</h2>
-                        <PieChart balance={balance} category={category} />
+                        {loading ? (
+                            <div className="loader-container">
+                                <SyncLoader size={50} color={'#ffffff'} loading={loading} />
+                            </div>
+                        ) : (
+                            balance !== null && category !== null && balance[0].length > 0 && category[0].length > 0 ? (
+                                <PieChart balance={balance[0]} category={category[0]} title="Income" />
+                            ) : (
+                                <p>No Results Found</p>
+                            )
+                        )}
                     </div>
                     <div className="card-expense">
-                        <h2>Expenses</h2>
-                        <PieChart balance={balance} category={category} />
+                        {loading ? (
+                            <div className="loader-container">
+                                <SyncLoader size={50} color={'#ffffff'} loading={loading} />
+                            </div>
+                        ) : (
+                            balance !== null && category !== null && balance[1].length > 1 && category[1].length > 1 ? (
+                                <PieChart balance={balance[1]} category={category[1]} title="Expenses" />
+                            ) : (
+                                <p>No Results Found</p>
+                            )
+                        )}
                     </div>
                 </div>
             </div>

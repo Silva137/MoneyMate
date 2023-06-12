@@ -11,11 +11,19 @@ class TransactionService {
             })
     }
 
-    getBalanceByCategory(walletId) {
-        return instance.get(`/api/transactions/wallets/${walletId}/categories/balance`, {headers: authHeader()})
-            .then(response => {
-                return response.data
+    getPosNegBalanceByCategory(walletId, selectedDates) {
+        const params = {
+            startDate: selectedDates[0],
+            endDate: selectedDates[1]
+        };
+
+        return instance.get(`/api/transactions/wallets/${walletId}/categories/posneg/balance`, {
+                headers: authHeader(),
+                params: params
             })
+            .then(response => {
+                return response.data;
+            });
     }
 
     updateWalletName(walletId, name) {
