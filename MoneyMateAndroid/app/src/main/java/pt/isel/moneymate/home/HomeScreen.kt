@@ -1,11 +1,14 @@
 package pt.isel.moneymate.home
 
+import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,65 +20,98 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pt.isel.moneymate.R
-import pt.isel.moneymate.background.poppins
-import pt.isel.moneymate.theme.expenseRed
-import pt.isel.moneymate.theme.incomeGreen
 
+import pt.isel.moneymate.services.wallets.models.Wallet
+
+import pt.isel.moneymate.utils.BottomBar
+
+
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun HomeScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
+fun HomeScreen(
+    wallets: List<Wallet>,
+    selectedWalletId: Int?,
+    onWalletSelected: (Int) -> Unit,
+    onProfileClick: () -> Unit
+) {
+    Log.d("HomeScreen", "Rendering HomeScreen")
+
+    var showPopup by remember { mutableStateOf(false) }
+    val (bottomState, setBottomState) = remember { mutableStateOf("Home") }
+    val bottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+
+    Scaffold(
+        bottomBar = {
+            BottomBar(
+                onHomeRequested = { setBottomState("Home") },
+                onTransactionsRequested = { setBottomState("Transactions") },
+                onStatisticsRequested = { setBottomState("Statistics") },
+                onProfileRequested = { setBottomState("Profile") }
+            )
+        }
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.home_background),
-            contentDescription = "Background",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+        ModalBottomSheetLayout(
+            sheetState = bottomSheetState,
+            sheetContent = { BottomSheetContent(selectedTransaction) },
+            sheetShape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp),
         ) {
-            BankCard()
-            DateRow(date = "December 2023")
-            MonthReport()
+            Box(
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.home_background),
+                    contentDescription = "Background",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    BankCard(
+                        selectedWallet = wallets.find { it.id == selectedWalletId },
+                        onClick = { showPopup = true }
+                    )
+                    DateRow(date = "December 2023")
+                    MonthReport()
+                }
+            }
+
+            if (showPopup) {
+                WalletSelectionPopup(
+                    wallets = wallets,
+                    selectedWalletId = selectedWalletId,
+                    onWalletSelected = onWalletSelected
+                ) {
+                    showPopup = false
+                }
+            }
+
+            when (bottomState) {
+                "Home" -> {
+                    // Render the Home content
+                }
+                "Transactions" -> {
+                    // Render the Transactions content
+                }
+                "Statistics" -> {
+                    // Render the Statistics content
+                }
+                "Profile" -> {
+                    // Render the Profile content
+                }
+            }
         }
     }
 }
 
-@Composable
-fun DateRow(date: String) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        IconButton(onClick = { /* TODO: Move date to the previous month */ }) {
-            Icon(
-                painter = painterResource(id = R.drawable.arrow_back),
-                contentDescription = "Previous month",
-                tint = Color.White
-            )
-        }
-        Text(
-            text = date,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Light,
-            modifier = Modifier.padding(horizontal = 12.dp),
-            color = Color.White
-        )
-        IconButton(onClick = { /* TODO: Move date to the next month */ }) {
-            Icon(
-                painter = painterResource(id = R.drawable.arrow_forward),
-                contentDescription = "Next month",
-                tint = Color.White
-            )
-        }
-    }
-}
+
+
 
 @Composable
 fun BankCard(
-    balanceMoneyText: Int = 0
+    selectedWallet: Wallet?,
+    onClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -89,6 +125,7 @@ fun BankCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(220.dp)
+                .clickable { onClick() }
         )
         Column(
             modifier = Modifier
@@ -98,30 +135,31 @@ fun BankCard(
         ) {
             Text(
                 text = "Balance",
-                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
                 color = Color.White,
-                fontFamily = poppins,
-                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Start,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "$ $balanceMoneyText",
-                    fontSize = 22.sp,
-                    fontFamily = poppins,
-                    color = Color.White,
-                )
-                Text(
-                    text = "** ** ** 1234",
-                    fontSize = 18.sp,
-                    fontFamily = poppins,
-                    color = Color.White,)
-            }
+            Text(
+                text = "$ ${selectedWallet?.balance ?: 0}",
+                fontSize = 30.sp,
+                color = Color.White,
+                textAlign = TextAlign.Start
+            )
+            Text(
+                text = "** ** ** 1234",
+                fontSize = 14.sp,
+                color = Color.White,
+                textAlign = TextAlign.Start
+            )
         }
     }
+}
+
+@Composable
+fun DateRow(date: String) {
+    // Rest of the code...
 }
 
 @Composable
@@ -129,51 +167,47 @@ fun MonthReport(
     expenses: Double = 20.00,
     income: Double = 135.00
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth().height(50.dp),
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(0.5f)
-                .fillMaxHeight(),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.expenses_home),
-                contentDescription = "Expenses",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.fillMaxSize()
-            )
-            Text(
-                text = "-$expenses",
-                color = expenseRed,
-                fontSize = 20.sp,
-                fontFamily = poppins,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth().padding(start = 80.dp, end = 35.dp)
-            )
-        }
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.income_home),
-                contentDescription = "Income",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.fillMaxSize()
-            )
-            Text(
-                text = "+$income",
-                color = incomeGreen,
-                fontSize = 20.sp,
-                fontFamily = poppins,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth().padding(start = 80.dp,end = 35.dp)
-            )
-        }
-    }
+    // Rest of the code...
 }
+
+@Composable
+fun WalletSelectionPopup(
+    wallets: List<Wallet>,
+    selectedWalletId: Int?,
+    onWalletSelected: (Int) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val dismissDialog = {
+        onDismiss()
+    }
+
+    AlertDialog(
+        onDismissRequest = dismissDialog,
+        title = {
+            Text(text = "Select Wallet")
+        },
+        buttons = {
+            Row(
+                modifier = Modifier.padding(8.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                wallets.forEach { wallet ->
+                    Button(
+                        onClick = {
+                            onWalletSelected(wallet.id)
+                            dismissDialog()
+                        },
+                        modifier = Modifier.padding(4.dp)
+                    ) {
+                        Text(text = wallet.name)
+                    }
+                }
+            }
+        }
+    )
+}
+
+
 
 
 
@@ -183,22 +217,35 @@ fun MonthReportView() {
     MonthReport()
 }
 
-
 @Preview
 @Composable
 fun DateRowPreview() {
     DateRow("December 2023")
 }
 
-
 @Preview
 @Composable
 fun BankCardPreview() {
-    BankCard()
+    BankCard(selectedWallet = null, onClick = {})
 }
 
+/*
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen()
+    var selectedWalletId by remember { mutableStateOf(1) }
+
+    HomeScreen(
+        wallets = listOf(
+            Wallet(1, "Wallet 1", User(1,"shimi","shimi"), "2023-06-01", 1000),
+            Wallet(2, "Wallet 2",  User(1,"shimi","shimi"), "2023-06-01", 2000),
+            Wallet(3, "Wallet 3",  User(1,"shimi","shimi"), "2023-06-01", 3000)
+        ),
+        selectedWalletId = selectedWalletId,
+        onWalletSelected = { walletId ->
+            selectedWalletId = walletId
+        }
+    )
 }
+
+ */

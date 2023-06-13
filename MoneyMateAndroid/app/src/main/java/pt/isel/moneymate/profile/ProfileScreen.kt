@@ -35,6 +35,7 @@ import pt.isel.moneymate.theme.incomeGreen
 
 @Composable
 fun ProfileScreen(
+    username : String?,
     onAddButtonClick: () -> Unit = {},
     onCreateSharedWalletClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {}
@@ -49,7 +50,9 @@ fun ProfileScreen(
             modifier = Modifier.fillMaxSize()
         )
         Column(modifier = Modifier) {
-            ProfImg()
+            if (username != null) {
+                ProfImg(username)
+            }
             BalanceTexts()
             AddWallet(onAddButtonClick = onAddButtonClick)
             ProfileButton(icon = R.drawable.shared_icon, text = "Create Shared Wallet", onClick = onCreateSharedWalletClick)
@@ -60,7 +63,7 @@ fun ProfileScreen(
 }
 
 @Composable
-fun ProfImg() {
+fun ProfImg(username : String) {
     var imageUri: Any? by remember { mutableStateOf(R.drawable.icon_user) }
     val photoPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
@@ -105,7 +108,7 @@ fun ProfImg() {
         }
         Text(
             modifier = Modifier.padding(16.dp),
-            text = "Hi, \nWalter White!",
+            text = "Hi, \n$username!",
             color = Color.White,
             fontSize = 24.sp,
             fontWeight = FontWeight.SemiBold,
@@ -203,7 +206,7 @@ fun ProfileButton(icon: Int, text: String, onClick: () -> Unit) {
 @Preview
 @Composable
 fun ProfilePicPreview() {
-    ProfileScreen()
+    ProfileScreen("abc")
 }
 
 

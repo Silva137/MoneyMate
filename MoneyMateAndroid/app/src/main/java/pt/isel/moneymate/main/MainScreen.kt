@@ -1,5 +1,5 @@
 package pt.isel.moneymate.main
-
+/*
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -17,8 +17,10 @@ import pt.isel.moneymate.utils.BottomBar
 import pt.isel.moneymate.domain.Category
 import pt.isel.moneymate.domain.Transaction
 import pt.isel.moneymate.domain.TransactionType
+import pt.isel.moneymate.domain.User
 import pt.isel.moneymate.home.HomeScreen
 import pt.isel.moneymate.profile.ProfileScreen
+import pt.isel.moneymate.services.wallets.models.Wallet
 import pt.isel.moneymate.statistics.StatisticsScreen
 import pt.isel.moneymate.transactions.BottomSheetContent
 import pt.isel.moneymate.transactions.TransactionsScreen
@@ -29,7 +31,7 @@ import java.util.*
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @ExperimentalMaterialApi
 @Composable
-fun MainScreen() {
+fun MainScreen(onProfileClick: () -> Unit = {}, onHomeClick:() -> Unit = {}) {
     var bottomState by remember { mutableStateOf("Home") }
     val scope = rememberCoroutineScope()
     val bottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
@@ -61,10 +63,18 @@ fun MainScreen() {
                         .background(Color.LightGray)
                 ) {
                     when (bottomState) {
-                        "Home" -> HomeScreen()
+                        "Home" -> HomeScreen(
+                            wallets = listOf(
+                                Wallet(1, "Wallet 1", User(1,"shimi","shimi"), "2023-06-01", 1000),
+                                Wallet(2, "Wallet 2",  User(1,"shimi","shimi"), "2023-06-01", 2000),
+                                Wallet(3, "Wallet 3",  User(1,"shimi","shimi"), "2023-06-01", 3000)
+                            ),
+                            selectedWalletId =1 ,
+                            onWalletSelected ={}
+                        )
                         "Transactions" -> TransactionsScreen(transactions, scope, bottomSheetState, selectedTransaction)
                         "Statistics" -> StatisticsScreen()
-                        "Profile" -> ProfileScreen()
+                        "Profile" -> onProfileClick()
                     }
                 }
             }
@@ -144,3 +154,5 @@ val transactions = listOf(
         date = LocalDateTime.now()
     )
 )
+
+ */

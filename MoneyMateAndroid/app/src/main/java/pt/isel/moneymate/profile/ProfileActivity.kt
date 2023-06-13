@@ -5,6 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import pt.isel.moneymate.DependenciesContainer
+import pt.isel.moneymate.login.LoginViewModel
+import pt.isel.moneymate.utils.viewModelInit
 
 class ProfileActivity: ComponentActivity() {
     companion object {
@@ -16,10 +24,30 @@ class ProfileActivity: ComponentActivity() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            ProfileScreen()
+    private val dependencies by lazy { application as DependenciesContainer }
+
+    private val viewModel: ProfileViewMode by viewModels {
+        viewModelInit {
+            ProfileViewMode(dependencies.moneymateService, dependencies.sessionManager)
         }
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+
+        if (viewModel.state == ProfileState.IDLE) {
+            viewModel.getUsername()
+        }
+
+
+        setContent {
+            ProfileScreen(viewModel.username)
+        }
+    }
+
+    override fun onBackPressed() {
+        finish()
+    }
+
 }

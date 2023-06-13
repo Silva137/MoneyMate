@@ -1,5 +1,4 @@
-package pt.isel.moneymate.login
-
+package pt.isel.moneymate.register
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,36 +10,24 @@ import pt.isel.moneymate.services.MoneyMateService
 import pt.isel.moneymate.services.users.models.AuthenticationOutputModel
 import pt.isel.moneymate.session.SessionManager
 
-class LoginViewModel(
+class RegisterViewModel(
     private val moneymateService: MoneyMateService,
-    private val sessionManager: SessionManager
 ) : ViewModel() {
 
     private var _authenticationState by mutableStateOf(AuthenticationState.IDLE)
     val authenticationState: AuthenticationState
         get() = _authenticationState
 
-    private var _authenticationData by mutableStateOf<Result<AuthenticationOutputModel>?>(null)
-    val authenticationData: Result<AuthenticationOutputModel>?
-        get() = _authenticationData
-
-    fun login(email: String, password: String) {
+    fun register(username: String, password: String, email: String) {
         viewModelScope.launch {
             try {
                 _authenticationState = AuthenticationState.LOADING
-                _authenticationData = Result.success(moneymateService.usersService.login(email, password))
-                val outputModel: AuthenticationOutputModel = _authenticationData!!.getOrThrow()
-                sessionManager.setSession(
-                    accessToken = outputModel.access_token,
-                    refreshToken = outputModel.refresh_token,
-                    email = email
-                )
+                moneymateService.usersService.register(username, password, email)
                 _authenticationState = AuthenticationState.SUCCESS
             } catch (e: Exception) {
-                _authenticationData = Result.failure(e)
                 _authenticationState = AuthenticationState.ERROR
             }
-            Log.v("LOGIN", "DATA IS ${_authenticationData}")
+            Log.v("LOGIN", "Authentication state is $_authenticationState")
         }
     }
 
@@ -54,6 +41,4 @@ class LoginViewModel(
         ERROR
     }
 }
-
-
 

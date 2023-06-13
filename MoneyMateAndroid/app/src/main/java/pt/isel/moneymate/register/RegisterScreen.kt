@@ -1,5 +1,4 @@
-package pt.isel.moneymate.login
-
+package pt.isel.moneymate.register
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,20 +27,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pt.isel.moneymate.R
 import pt.isel.moneymate.background.poppins
-import pt.isel.moneymate.login.LoginViewModel.AuthenticationState
+import pt.isel.moneymate.register.RegisterViewModel.AuthenticationState
 
 
 @Composable
-fun LoginScreen(
+fun RegisterScreen(
     state: AuthenticationState,
-    onSignUpRequest : () -> Unit = {},
-    onLoginRequest : (String, String) -> Unit,
+    onLoginRequest : () -> Unit = {},
+    onSignUpRequest : (String, String, String) -> Unit,
     onForgotPasswordRequest : () -> Unit= {},
-    onLoginSuccessful : () -> Unit
+    onSignUpSuccessful : () -> Unit
 ) {
     LaunchedEffect(state) {
         if (state == AuthenticationState.SUCCESS)
-            onLoginSuccessful()
+            onSignUpSuccessful()
     }
 
 
@@ -61,31 +60,44 @@ fun LoginScreen(
             modifier = Modifier.fillMaxSize().padding(bottom = 50.dp),
             contentAlignment = Alignment.BottomCenter
         ) {
-            BlurBox(onSignUpRequest,onLoginRequest,onForgotPasswordRequest)
+            BlurBox(onLoginRequest,onSignUpRequest,onForgotPasswordRequest)
         }
     }
 }
 
 @Composable
-fun LoginFields(
-    onSignUpRequest : () -> Unit = {},
-    onLoginRequest : (String, String) -> Unit,
+fun RegisterFields(
+    onLoginRequest : () -> Unit = {},
+    onSignUpRequest : (String, String,String) -> Unit,
     onForgotPasswordRequest : () -> Unit= {}
 ) {
-    var email by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
-    val isFormValid by derivedStateOf { email.isNotBlank() && password.length >= 6 }
+    val isFormValid by derivedStateOf { username.isNotBlank() && password.length >= 6 && email.isNotBlank() }
 
     Column(
         Modifier
             .fillMaxSize()
             .padding(32.dp)
     ) {
-        Text(text = "Log in", fontSize = 48.sp, color = Color.White, fontFamily = poppins)
+        Text(text = "Sign up", fontSize = 48.sp, color = Color.White, fontFamily = poppins)
         Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             Spacer(modifier = Modifier.weight(1f))
 
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = username,
+                onValueChange = { username = it },
+                label = { Text(text = "Username", color = Color.White) },
+                singleLine = true,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.White,
+                    unfocusedBorderColor = Color.White
+                )
+            )
+            Spacer(modifier = Modifier.weight(1f))
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = email,
@@ -123,19 +135,19 @@ fun LoginFields(
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = {onLoginRequest(email,password)},
+                onClick = {onSignUpRequest(username,password,email)},
                 enabled = isFormValid,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Text(text = "Log In")
+                Text(text = "Sign Up")
             }
             Spacer(modifier = Modifier.weight(1f))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                TextButton(onClick = {onSignUpRequest()}) { Text(text = "Sign Up", color = Color.White) }
+                TextButton(onClick = {onLoginRequest()}) { Text(text = "Log in", color = Color.White) }
                 TextButton(onClick = {onForgotPasswordRequest}) { Text(text = "Forgot Password?", color = Color.White) }
             }
         }
@@ -145,8 +157,8 @@ fun LoginFields(
 
 
 @Composable
-fun BlurBox(onSignUpRequest : () -> Unit = {},
-            onLoginRequest : (String, String) -> Unit ,
+fun BlurBox(onLoginRequest : () -> Unit = {},
+            onSignUpRequest : (String, String, String) -> Unit ,
             onForgotPasswordRequest : () -> Unit= {}) {
     Box(
         modifier = Modifier
@@ -169,14 +181,14 @@ fun BlurBox(onSignUpRequest : () -> Unit = {},
                 shape = RoundedCornerShape(48.dp)
             )
     ){
-        LoginFields(onSignUpRequest,onLoginRequest,onForgotPasswordRequest)
+        RegisterFields(onLoginRequest,onSignUpRequest,onForgotPasswordRequest)
     }
 }
 
 @Preview
 @Composable
-fun LoginScreenPreview(){
-    LoginScreen(onLoginRequest = {_,_->}, state = AuthenticationState.IDLE, onLoginSuccessful = {})
+fun RegisterScreenPreview(){
+    RegisterScreen(onSignUpRequest = { _, _, _->}, state = AuthenticationState.IDLE, onSignUpSuccessful = {})
 }
 
 

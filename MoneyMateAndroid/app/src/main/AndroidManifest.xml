@@ -30,6 +30,7 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+        <activity android:name=".register.RegisterActivity"/>
         <activity android:name=".home.HomeActivity"/>
         <activity android:name=".main.MainActivity"/>
         <activity android:name=".statistics.StatisticsActivity"/>

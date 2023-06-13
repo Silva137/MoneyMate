@@ -14,19 +14,19 @@ class SessionManagerSharedPrefs(private val context: Context) : SessionManager {
     override val refreshToken: String?
         get() = prefs.getString(REFRESH_TOKEN, null)
 
-    override val username: String?
+    override val email: String?
         get() = prefs.getString(USERNAME, null)
 
 
     override fun setSession(
         accessToken: String,
         refreshToken: String,
-        username: String,
+        email: String,
     ) {
         prefs.edit()
             .putString(ACCESS_TOKEN, accessToken)
             .putString(REFRESH_TOKEN, refreshToken)
-            .putString(USERNAME, username)
+            .putString(USERNAME, email)
 
             .apply()
     }

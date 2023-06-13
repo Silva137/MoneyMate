@@ -56,11 +56,11 @@ fun StatisticsScreen(
             verticalArrangement = Arrangement.Center
         ) {
             PieChart(data = mapOf(
-                Pair("Sample-1", 150),
-                Pair("Sample-2", 120),
-                Pair("Sample-3", 110),
-                Pair("Sample-4", 170),
-                Pair("Sample-5", 120),
+                Pair("Food", 150),
+                Pair("Shopping", 50),
+                Pair("Cinema", 15),
+                Pair("Work", 250),
+                Pair("Health", 80),
             ))
         }
     }

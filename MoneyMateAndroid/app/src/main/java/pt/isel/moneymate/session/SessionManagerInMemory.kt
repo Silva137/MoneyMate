@@ -16,17 +16,17 @@ class SessionManagerInMemory : SessionManager {
     override val refreshToken
         get() = _refreshToken
 
-    override val username
+    override val email
         get() = _username
 
     override fun setSession(
         accessToken: String,
         refreshToken: String,
-        username: String,
+        email: String,
     ) {
         this._accessToken = accessToken
         this._refreshToken = refreshToken
-        this._username = username
+        this._username = email
     }
     override fun clearSession() {
         this._accessToken = null

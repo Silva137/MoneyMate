@@ -14,11 +14,11 @@ import pt.isel.moneymate.R
 
 @Composable
 fun BottomBar(
-        onHomeRequested: () -> Unit = {},
-        onTransactionsRequested: () -> Unit = {},
-        onStatisticsRequested: () -> Unit = {},
-        onProfileRequested: () -> Unit = {}
-    ) {
+    onHomeRequested: () -> Unit = {},
+    onTransactionsRequested: () -> Unit = {},
+    onStatisticsRequested: () -> Unit = {},
+    onProfileRequested: () -> Unit = {}
+) {
     val (selectedItem, setSelectedItem) = remember { mutableStateOf("Home") }
 
     BottomNavigation(
@@ -32,26 +32,63 @@ fun BottomBar(
 
         BottomNavigationItem(
             selected = selectedItem == "Home",
-            onClick = {setSelectedItem("Home");onHomeRequested()},
-            icon = { Icon(painter = painterResource(id = R.drawable.icon_home), contentDescription = null, modifier = Modifier.size(30.dp)) }
+            onClick = {
+                setSelectedItem("Home")
+                onHomeRequested()
+            },
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.icon_home),
+                    contentDescription = null,
+                    modifier = Modifier.size(30.dp)
+                )
+            }
         )
         BottomNavigationItem(
             selected = selectedItem == "Transactions",
-            onClick = {setSelectedItem("Transactions");onTransactionsRequested()},
-            icon = { Icon(painter = painterResource(id = R.drawable.icon_transactions), contentDescription = null, modifier = Modifier.size(30.dp))}
+            onClick = {
+                setSelectedItem("Transactions")
+                onTransactionsRequested()
+            },
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.icon_transactions),
+                    contentDescription = null,
+                    modifier = Modifier.size(30.dp)
+                )
+            }
         )
         BottomNavigationItem(
             selected = selectedItem == "Statistics",
-            onClick = {setSelectedItem("Statistics");onStatisticsRequested()},
-            icon = { Icon(painter = painterResource(id = R.drawable.icon_statistics), contentDescription = null, modifier = Modifier.size(30.dp))}
+            onClick = {
+                setSelectedItem("Statistics")
+                onStatisticsRequested()
+            },
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.icon_statistics),
+                    contentDescription = null,
+                    modifier = Modifier.size(30.dp)
+                )
+            }
         )
         BottomNavigationItem(
             selected = selectedItem == "Profile",
-            onClick = {setSelectedItem("Profile");onProfileRequested()},
-            icon = { Icon(painter = painterResource(id = R.drawable.icon_user), contentDescription = null, modifier = Modifier.size(30.dp))}
+            onClick = {
+                setSelectedItem("Profile")
+                onProfileRequested()
+            },
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.icon_user),
+                    contentDescription = null,
+                    modifier = Modifier.size(30.dp)
+                )
+            }
         )
     }
 }
+
 
 /*
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")

@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import okhttp3.OkHttpClient
 
 import pt.isel.moneymate.services.users.UsersService
+import pt.isel.moneymate.services.wallets.WalletService
 
 class MoneyMateService(
     apiEndpoint: String,
@@ -12,6 +13,7 @@ class MoneyMateService(
 ) {
 
     val usersService = UsersService(apiEndpoint, httpClient, jsonEncoder)
+    val walletsService = WalletService(apiEndpoint,httpClient,jsonEncoder)
     /*
 
     val gamesService = GamesService(apiSEndpoint, httpClient, jsonEncoder)

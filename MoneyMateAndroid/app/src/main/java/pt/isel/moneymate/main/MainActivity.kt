@@ -1,5 +1,5 @@
 package pt.isel.moneymate.main
-
+/*
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -28,8 +28,23 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MoneyMateTheme {
-                MainScreen()
+                MainScreen(onProfileClick = {
+                    ProfileActivity.navigate(this)
+                    finish()
+                },
+                onHomeClick = {
+                    HomeActivity.navigate(this)
+                    finish()
+                }
+                    )
             }
         }
     }
+
+    override fun onBackPressed() {
+
+    }
 }
+
+
+ */

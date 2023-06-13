@@ -1,4 +1,8 @@
-package pt.isel.moneymate.utils
+package isel.pt.moneymate.http.utils
+
+/**
+ * The Uris of the API
+ */
 
 object Uris {
 
@@ -13,6 +17,7 @@ object Uris {
 
     object Users {
         const val GET_BY_ID = "/users/{id}"
+        const val GET_USER = "/user"
         const val GET_USERS = "/users"
         const val UPDATE = "/users"
         const val DELETE = "/users"
@@ -45,36 +50,49 @@ object Uris {
         const val UPDATE_NAME = "/wallets/{walletId}"
 
         const val DELETE_BY_ID = "/wallets/{walletId}"
+    }
 
+    object Association{
         const val ASSOCIATE_USER = "/wallets/associate{walletId}/users{userId}"
         const val DESSASOCIATE_USER = "/wallets/dessacoiate{walletId}/users{userId}"
+
     }
 
     object Transactions {
+        // TODO PASSAR ESTES PEDIDOS PARA WALLET
+        const val GET_OVERALL_BALANCE = "/transactions/amount}"
+        const val GET_ALL_WALLETS_BALANCE = "/transactions/walletAmounts}"         // Soma de todas as transacoes de cada wallet
+
+
         /**Other Requests */
         const val CREATE = "/transactions/wallets/{walletId}/categories/{categoryId}"
         const val GET_BY_ID = "/transactions/{transactionId}"
         const val UPDATE = "/transactions/{transactionId}"
         const val DELETE_BY_ID = "/transactions/{transactionId}"
-
-        /**Requets of transactions Page (Common to both wallet types) */
-        const val GET_WALLET_TRANSACTIONS_SORTED_BY = "/transactions/wallets/{walletId}"
+        // TODO PASSAR PARA WALLET
         const val GET_WALLET_BALANCE = "/transactions/wallets/{walletId}/balance"    //should be a Wallet URI?
 
-        /**Requests of a PW Insights Page */
-        const val GET_PW_TRANSACTIONS_BY_CATEGORY = "/transactions/wallets/{walletId}/categories/{categoryId}"
-        const val GET_PW_CATEGORIES_BALANCE = "/transactions/wallets/{walletId}/categories/balance"
+        /**Requets of transactions Page (Common to both wallet types) */
+        const val GET_ALL = "/transactions/wallets/{walletId}"
+        const val GET_INCOMES = "/transactions/wallets/{walletId}/incomes"
+        const val GET_EXPENSES = "/transactions/wallets/{walletId}/expenses"
 
-        /**Requests of a SW Insights Page */
-        const val GET_SW_TRANSACTIONS_BY_USER = "/transactions/wallets/{shId}/users/{userId}"
-        const val GET_SW_USERS_BALANCE = "/transactions/wallets/{shId}/users/userAmounts"
+        /**Requests of a PW Insights Page */
+        const val GET_BY_CATEGORY = "/transactions/wallets/{walletId}/categories/{categoryId}"
+        const val GET_BALANCE_BY_CATEGORY = "/transactions/wallets/{walletId}/categories/balance"
+
 
         /**Requests of overViewPage */
-        const val GET_AMOUNT_FROM_WALLETS = "/transactions/amount}"         // Somas do lucro e da despesa
-        const val GET_ALL_GIVEN_CATEGORY_BY_DATE = "/transactions/categories/{categoryId}"
-        const val GET_AMOUNTS_BY_CATEGORY = "/transactions/categoryAmounts"
-        const val GET_AMOUNT_BY_WALLETS = "/transactions/walletAmounts}"         // Soma de todas as transacoes de cada wallet
+        const val GET_ALL_BY_CATEGORY = "/transactions/categories/{categoryId}"
+        const val GET_ALL_BALANCE_BY_CATEGORY = "/transactions/categoryAmounts"
 
-        const val GET_ALL_FROM_ASSOCIATION = "/transactions/wallets/{walletId}"
+        /**Requests of a SW Insights Page */
+        const val GET_BY_USER = "/transactions/wallets/{shId}/users/{userId}"
+        const val GET_BALANCE_BY_USER = "/transactions/wallets/{shId}/users/userAmounts"
+
+        /**Requests of a Regular Transactions */
+        const val GET_PERIODICAL = "/transactions/periodical"
+        const val UPDATE_FREQUENCY = "/transactions/{transactionId}/frquency"
+        const val UPDATE_AMOUNT = "/transactions/{transactionId}/amount"
     }
 }

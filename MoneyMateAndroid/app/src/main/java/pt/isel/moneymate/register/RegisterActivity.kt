@@ -1,4 +1,4 @@
-package pt.isel.moneymate.login
+package pt.isel.moneymate.register
 
 import android.app.Activity
 import android.content.Intent
@@ -7,47 +7,47 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import pt.isel.moneymate.DependenciesContainer
-import pt.isel.moneymate.home.HomeActivity
-import pt.isel.moneymate.register.RegisterActivity
+import pt.isel.moneymate.login.LoginActivity
 import pt.isel.moneymate.utils.viewModelInit
 
-class LoginActivity: ComponentActivity() {
+class RegisterActivity : ComponentActivity() {
 
     companion object {
         fun navigate(origin: Activity) {
             with(origin) {
-                val intent = Intent(this, LoginActivity::class.java)
+                val intent = Intent(this, RegisterActivity::class.java)
                 startActivity(intent)
             }
         }
     }
+
     private val dependencies by lazy { application as DependenciesContainer }
 
-    private val viewModel: LoginViewModel by viewModels {
+    private val viewModel: RegisterViewModel by viewModels {
         viewModelInit {
-            LoginViewModel(dependencies.moneymateService,dependencies.sessionManager)
+            RegisterViewModel(dependencies.moneymateService)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContent{
-            LoginScreen(
+        setContent {
+            RegisterScreen(
                 state = viewModel.authenticationState,
-                onLoginRequest = {email, password ->
-                    viewModel.login(email = email, password = password)
+                onSignUpRequest = { username, password, email ->
+                    viewModel.register(username = username, password = password, email = email)
                 },
-                onLoginSuccessful = {
-                    HomeActivity.navigate(this)
+                onSignUpSuccessful = {
+                    LoginActivity.navigate(origin = this)
                     finish()
                 },
-                onSignUpRequest = {
-                    RegisterActivity.navigate(origin = this)
+                onLoginRequest = {
+                    LoginActivity.navigate(origin = this)
                     finish()
-                }
+            }
 
-            )
+                )
         }
     }
 
