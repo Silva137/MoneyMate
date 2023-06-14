@@ -4,13 +4,15 @@
     margin-left: 8px;
     width: 33px;
     height: 33px;
-    background-color: #45c3e0;
+    background-color: #50dfff;
     border-radius: 10px;
     color: #020000;
     cursor: pointer;
     padding: 4px;
     border: none;
     margin-top: 10px;
+    margin-left: auto;
+
 }
 
 .edit-button-wallet:hover {
@@ -27,7 +29,7 @@
     width: 50px;
     height: 50px;
     border-radius: 47%;
-    background-color: #45c3e0;
+    background-color: #50dfff;
     color: #020000;
     font-size: 20px;
     display: flex;

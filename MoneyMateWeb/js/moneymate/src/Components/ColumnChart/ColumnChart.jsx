@@ -36,7 +36,6 @@ const ColumnChart = ({ balanceList, onClick, title }) => {
         title: {
             text: title,
             align: 'center',
-            offsetX: -80,
             offsetY: 10,
             style: {
                 fontSize: '24px',

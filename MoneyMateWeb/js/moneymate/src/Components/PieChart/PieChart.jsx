@@ -30,8 +30,7 @@ function PieChart ({ balance, category, title}) {
             },
             title: {
                 text: title,
-                align: 'center',
-                offsetX: -40,
+                align: 'left',
                 style: {
                     fontSize: '24px',
                     fontWeight: 'bold',

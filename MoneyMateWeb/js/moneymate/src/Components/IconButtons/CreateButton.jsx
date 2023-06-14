@@ -50,7 +50,7 @@ const createButton = ({createEntity, fetchEntities}) => {
                         </form>
                     </div>
                 </div>
-            )};
+            )}
         </div>
     );
 };

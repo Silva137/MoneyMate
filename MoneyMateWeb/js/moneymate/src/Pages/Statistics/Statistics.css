@@ -23,6 +23,7 @@
     width: 385px;
     height: 285px;
     position: relative;
+    padding-top: 150px;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.06));
     border-radius: 40px;
     backdrop-filter: blur(20px);
@@ -35,6 +36,7 @@
 .card-expense {
     width: 385px;
     height: 285px;
+    padding-top: 150px;
     position: relative;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.06));
     border-radius: 40px;
@@ -48,6 +50,7 @@
 .card-sum {
     width: 500px;
     height: 375px;
+    padding-top: 25px;
     position: relative;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.06));
     border-radius: 40px;
