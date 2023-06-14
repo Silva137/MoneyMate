@@ -1,24 +1,21 @@
 import React, {useState} from 'react';
+import './DisplayPage.css'
+import TransactionItem from "../TransactionItem/TransactionItem.jsx";
 
-const DisplayPage = ({close, onClickElement}) => {
-    const categories = [
-        { id: 1, name: 'Category 1' },
-        { id: 2, name: 'Category 2' },
-        { id: 3, name: 'Category 3' },
-    ];
+const DisplayPage = ({transactions, balance, categoryName, close, onClickElement}) => {
+
+
 
     return (
-        <div className="modal-overlay">
-            <div className="modal modal-large">
+        <div className="modal-overlay-display-page">
+            <div className="modal-display-page">
                 <button className="close-button" onClick={close}>
                     X
                 </button>
-                <h2 className="modal-title">Categories</h2>
-                <ul className="category-list">
-                    {categories.map((category) => (
-                        <li key={category.id} className="category-item">
-                            {category.name}
-                        </li>
+                <h2 className="modal-title-display-page">Transactions: {categoryName} {balance} € </h2>
+                <ul className="category-list-display-page">
+                    {transactions.map((transaction) => (
+                        <TransactionItem key={transaction.id} transaction={transaction} />
                     ))}
                 </ul>
             </div>

@@ -1,16 +1,17 @@
-.modal-overlay {
+.modal-overlay-display-page {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 9999;
+    z-index: 9999; /* Mostrar por cima de tudo */
 }
 
-.modal {
+.modal-display-page{
     position: absolute;
-    width: 400px;
+    width: 700px;
+    height: 700px;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -21,7 +22,11 @@
     flex-direction: column;
 }
 
-.modal-title {
+.modal-large-display-page {
+    width: 600px;
+}
+
+.modal-title-display-page {
     font-size: 24px;
     font-weight: bold;
     color: white;
@@ -42,126 +47,27 @@
     outline: none;
 }
 
-.save-button {
-    background-color: #7d54c4 !important;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-}
 
-.save-button:hover {
-    background-color: #6c4bbd !important
-}
-
-.save-button svg {
-    font-size: 20px;
-    margin-top: 1px;
-    margin-right: 10px;
-}
-
-.delete-button {
-    background-color: #d73b2f;
-    padding: 10px;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    display: flex;
-}
-
-.delete-button:hover {
-    background-color: #a82323;
-}
-
-.delete-button svg {
-    font-size: 20px;
-    margin-top: 1px;
-    margin-right: 10px;
-}
-
-.button-container {
-    display: flex;
-    justify-content: space-between;
-    gap: 50px;
-    margin-top: 20px;
-}
-
-.form-group {
-    position: relative;
-    padding: 25px 0 40px;
-    width: 100%;
-    max-width: 300px;
-}
-
-.form-field {
-    font-family: inherit;
-    width: 100%;
-    border: none;
-    border-bottom: 2px solid #9b9b9b;
-    outline: 0;
-    font-size: 17px;
-    color: #fff;
-    padding: 7px 0;
+.close-button-display-page {
+    position: absolute;
+    top: 5px;
+    right: -10px;
     background: transparent;
-    transition: border-color 0.2s;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
 }
 
-.form-field::placeholder {
-    color: transparent;
+.close-button-display-page:focus {
+    outline: none;
 }
 
-.form-field:placeholder-shown ~ .form-label {
-    font-size: 17px;
-    cursor: text;
-    top: 20px;
-}
-
-.form-label {
-    position: absolute;
-    top: 0;
-    display: block;
-    transition: 0.2s;
-    font-size: 17px;
-    color: #ffffff;
-    pointer-events: none;
-}
-
-.form-field:focus {
-    padding-bottom: 6px;
-    font-weight: 700;
-    border-width: 3px;
-    border-image: linear-gradient(to right, #464569, #7d54c4);
-    border-image-slice: 1;
-}
-
-.form-field:focus ~ .form-label {
-    position: absolute;
-    top: 0;
-    display: block;
-    transition: 0.2s;
-    font-size: 17px;
-    color: #7d54c4;
-    font-weight: 700;
-}
-
-.form-field:required,
-.form-field:invalid {
-    box-shadow: none;
-}
-
-.modal-large {
-    width: 600px;
-}
-
-.category-list {
+.category-list-display-page {
     list-style-type: none;
     padding: 0;
 }
 
-.category-item {
+.category-item-display-page {
     margin-bottom: 10px;
     color: #fff;
     font-size: 16px;

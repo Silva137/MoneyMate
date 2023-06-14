@@ -20,6 +20,8 @@ function Statistics() {
     const [loading, setLoading] = useState(false)
     const [balanceList, setBalanceList] = useState(null)
     const [modal, setModal] = useState(false);
+    const [selectedChartInfo, setSelectedChartInfo] = useState([]);
+
 
 
     /* useEffect(() => {
@@ -48,7 +50,10 @@ function Statistics() {
     async function onClick(index){
         // index represents the column clicked
         const categoryId = balanceList[index].category.id
-        //const transactions = await fetchTransactionsByCategory(categoryId)
+        const selectedBalance = balanceList[index].balance
+        const selectedCategory = balanceList[index].category.name
+        const response = await fetchTransactionsByCategory(categoryId)
+        setSelectedChartInfo([response.transactions, selectedBalance, selectedCategory]);
         setModal(true)
     }
     async function fetchTransactionsByCategory(categoryId){
@@ -148,6 +153,9 @@ function Statistics() {
                 </div>
                 {modal && (
                     <DisplayPage
+                        transactions={selectedChartInfo[0]}
+                        balance={selectedChartInfo[1]}
+                        categoryName={selectedChartInfo[2]}
                         close={() => setModal(false)}
                         onClickElement={() => {}}
                     />
