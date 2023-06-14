@@ -5,7 +5,7 @@ NUM_TRANSACTIONS_PER_WALLET=10
 USER_OBJ=".create_user_1"
 
 # Criar Utilizador
-source ./register_user.sh "POST" "$CREATE_USER" "Register User" "$USER_OBJ"
+source ./register_user.sh "POST" "$LOGIN_USER" "Register User" "$USER_OBJ"
 
 # Criar Categorias
 source ./send_request.sh "POST" "$CREATE_CATEGORY" "$TOKEN" "[REQUEST][2] - Create Category" ".create_category_1"
