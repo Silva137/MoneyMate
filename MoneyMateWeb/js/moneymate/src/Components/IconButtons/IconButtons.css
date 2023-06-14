@@ -1,6 +1,6 @@
 /* ------------------------- pencil edit button ------------------------ */
 
-.edit-button {
+.edit-button-wallet {
     margin-left: 8px;
     width: 33px;
     height: 33px;
@@ -13,11 +13,11 @@
     margin-top: 10px;
 }
 
-.edit-button:hover {
+.edit-button-wallet:hover {
     background-color: white;
 }
 
-.edit-button svg {
+.edit-button-wallet svg {
     font-size: 20px;
 }
 

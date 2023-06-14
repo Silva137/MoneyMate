@@ -4,11 +4,13 @@ import {useContext, useEffect} from "react";
 import {SessionContext} from "../../Utils/Session.jsx";
 
 function Logout() {
-    const {setIsAuthenticated, setLoggedUser } = useContext(SessionContext);
+    const {setIsAuthenticated, setLoggedUser } = useContext(SessionContext)
+    const {setSelectedWallet} = useContext(SessionContext)
     const navigate = useNavigate();
 
     useEffect(() => {
-        AuthService.logout(setIsAuthenticated, setLoggedUser);
+        AuthService.logout(setIsAuthenticated, setLoggedUser)
+        setSelectedWallet(null)
         navigate('/');
     }, [navigate]);
 

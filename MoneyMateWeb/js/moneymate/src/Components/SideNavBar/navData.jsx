@@ -3,6 +3,8 @@ import { IoMdCube } from "react-icons/io";
 import { RiUserFill, RiShutDownLine } from "react-icons/ri";
 import { FaChartPie } from "react-icons/fa";
 import { BsCreditCardFill } from "react-icons/bs";
+import createTransactionIcon from "../../assets/CreateButton.png";
+import {HiOutlinePlusSm} from "react-icons/all.js";
 
 export const navItems = [
     {
@@ -21,10 +23,14 @@ export const navItems = [
         link: "/profile"
     },
     {
+        icon: <HiOutlinePlusSm style={{ fontSize: "35px" }}/>,
+        text: "Create Transaction",
+        link: null
+    },
+    {
         icon: <TbArrowsExchange />,
         text: "Transactions",
         link: "/transactions"
-
     },
     {
         icon: <IoMdCube />,

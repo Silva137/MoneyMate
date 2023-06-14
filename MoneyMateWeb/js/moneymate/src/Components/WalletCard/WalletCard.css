@@ -65,7 +65,7 @@
     margin-bottom: 2rem;
 }
 
-.edit-button {
+.edit-button-wallet {
     width: 33px;
     height: 33px;
     background-color: #50dfff;
@@ -77,11 +77,11 @@
     margin-left: auto;
 }
 
-.edit-button:hover {
+.edit-button-wallet:hover {
     background-color: #45c3e0;
 }
 
-.edit-button svg {
+.edit-button-wallet svg {
     font-size: 25px;
 }
 

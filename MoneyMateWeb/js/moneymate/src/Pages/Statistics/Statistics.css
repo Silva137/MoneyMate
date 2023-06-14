@@ -1,27 +1,33 @@
 .content-container-statistics{
     padding-left: 150px;
     display: flex;
-    flex-direction: column;
-    justify-content: start;
-    align-items: start;
+    justify-content: center;
 }
 
 .chart-row {
     display: flex;
-    justify-content: start;
-    align-items: start;
     gap: 150px;
+}
+
+.chart-column {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 50px;
+    padding-top: 30px;
+    padding-right: 100px;
 }
 
 .card-income {
     width: 385px;
     height: 285px;
     position: relative;
-    padding-top: 15px;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.06));
     border-radius: 40px;
     backdrop-filter: blur(20px);
     box-shadow: 0 0 7px 1px rgb(119, 236, 166);
+    display: flex;
     justify-content: center;
     align-items: center;
 }
@@ -30,11 +36,11 @@
     width: 385px;
     height: 285px;
     position: relative;
-    padding-top: 15px;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.06));
     border-radius: 40px;
     backdrop-filter: blur(20px);
     box-shadow: 0 0 7px 1px rgb(255, 81, 81);
+    display: flex;
     justify-content: center;
     align-items: center;
 }
@@ -43,7 +49,6 @@
     width: 500px;
     height: 375px;
     position: relative;
-    padding-top: 25px;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.06));
     border-radius: 40px;
     backdrop-filter: blur(20px);

@@ -14,16 +14,24 @@ function PieChart ({ balance, category, title}) {
     }, [balance]);
 
 
+    const dataPointSelectionHandler = (event, chartContext, config) => {
+        const categoryClicked = config.dataPointIndex;
+        console.log('Category clicked:', category[categoryClicked]);
+    };
+
     const getChartOptions = () => {
         return {
             chart: {
                 type: 'donut',
                 foreColor: '#f3f3f3',
+                events: {
+                    dataPointSelection: dataPointSelectionHandler,
+                },
             },
             title: {
-                text: title, // Add your desired title here
+                text: title,
                 align: 'center',
-                offsetX: -110,
+                offsetX: -40,
                 style: {
                     fontSize: '24px',
                     fontWeight: 'bold',

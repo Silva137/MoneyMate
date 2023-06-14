@@ -3,12 +3,29 @@ import instance from "./AxiosInterceptor.jsx";
 
 class TransactionService {
 
-    createWallet(name) {
-        const form = { name }
-        return instance.post("/api/wallets", form,{headers: authHeader()})
+    createTransaction(walletId, categoryId, amount, title) {
+        const form = { amount, title }
+        return instance.post(`/api/transactions/wallets/${walletId}/categories/${categoryId}`, form,{headers: authHeader()})
             .then(response => {
                 return response.data
             })
+    }
+
+    getAllTransactions(walletId, selectedDates, sortedBy, orderBy) {
+        const params = {
+            sortedBy: sortedBy,
+            orderBy: orderBy,
+            startDate: selectedDates[0],
+            endDate: selectedDates[1]
+        };
+
+        return instance.get(`/api/transactions/wallets/${walletId}`, {
+            headers: authHeader(),
+            params: params
+        })
+            .then(response => {
+                return response.data;
+            });
     }
 
     getPosNegBalanceByCategory(walletId, selectedDates) {

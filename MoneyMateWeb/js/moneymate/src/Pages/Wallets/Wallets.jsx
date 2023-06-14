@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import WalletCard from '../../Components/WalletCard/WalletCard';
 import '../../App.css'
 import './Wallets.css';
@@ -9,6 +9,7 @@ import {CgClose} from "react-icons/cg";
 import {MdDoneOutline} from "react-icons/md";
 import WalletService from "../../Services/WalletService.jsx";
 import WalletSelector from "../../Components/WalletSelector/WalletSelector.jsx";
+import {SessionContext} from "../../Utils/Session.jsx";
 
 function Wallets() {
     const [modal, setModal] = useState(false)
@@ -16,17 +17,21 @@ function Wallets() {
     const [sharedWallets, setSharedWallets] = useState([])
     const [walletName, setWalletName] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const { selectedWallet } = useContext(SessionContext);
+
 
     useEffect( () => {
         fetchPrivateWallets();
         //fetchSharedWallets();
     }, []);
 
+    console.log(selectedWallet)
 
     async function fetchPrivateWallets() {
         try {
             setIsLoading(true);
             const response = await WalletService.getWalletsOfUser();
+            console.log(response)
             setWallets(response.wallets);
         } catch (error) {
             console.error('Error fetching private wallets of user:', error);

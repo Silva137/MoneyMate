@@ -59,7 +59,7 @@ function WalletCard({wallet, setWallets, setIsLoading}) {
         <div className="wallet-container">
             <div className="wallet-header">
                 <div className="wallet-name">{wallet.name}</div>
-                <button className="edit-button" onClick={handleEditButtonClick}>
+                <button className="edit-button-wallet" onClick={handleEditButtonClick}>
                     <RiPencilFill/>
                 </button>
             </div>

@@ -18,9 +18,10 @@ function Statistics() {
     const [category, setCategory] = useState(null)
     const [loading, setLoading] = useState(false)
 
-    useEffect(() => {
+   /* useEffect(() => {
         fetchPrivateWallets();
     }, [])
+    */
 
     useEffect(() => {
         console.log('Selected WalletId: ' + selectedWallet)
@@ -29,6 +30,7 @@ function Statistics() {
             fetchChartsData()
         }
     }, [selectedDates])
+
 
     async function fetchPrivateWallets() {
         try {
@@ -75,7 +77,7 @@ function Statistics() {
                     </div>
                 </div>
                 <div className="content-container-statistics">
-                    <div className="chart-row">
+                    <div className="chart-column">
                         <div className="card-income">
                             {loading ? (
                                 <div className="loader-container">
@@ -83,12 +85,27 @@ function Statistics() {
                                 </div>
                             ) : (
                                 balance !== null && category !== null && balance[0].length > 0 && category[0].length > 0 ? (
-                                    <PieChart balance={balance[0]} category={category[0]} title="Income" />
+                                    <PieChart balance={balance[0]} category={category[0]} title={`Income: ${sumArray(balance[0])}€`} />
                                 ) : (
                                     <p>No Results Found</p>
                                 )
                             )}
                         </div>
+                        <div className="card-expense">
+                            {loading ? (
+                                <div className="loader-container">
+                                    <SyncLoader size={50} color={'#ffffff'} loading={loading} />
+                                </div>
+                            ) : (
+                                balance !== null && category !== null && balance[1].length > 1 && category[1].length > 1 ? (
+                                    <PieChart balance={balance[1]} category={category[1]} title={`Expenses: -${sumArray(balance[1])}€`} />
+                                ) : (
+                                    <p>No Results Found</p>
+                                )
+                            )}
+                        </div>
+                    </div>
+                    <div className="chart-column">
                         <div className="card-sum">
                             {loading ? (
                                 <div className="loader-container">
@@ -103,23 +120,14 @@ function Statistics() {
                             )}
                         </div>
                     </div>
-                    <div className="card-expense">
-                        {loading ? (
-                            <div className="loader-container">
-                                <SyncLoader size={50} color={'#ffffff'} loading={loading} />
-                            </div>
-                        ) : (
-                            balance !== null && category !== null && balance[1].length > 1 && category[1].length > 1 ? (
-                                <PieChart balance={balance[1]} category={category[1]} title="Expenses" />
-                            ) : (
-                                <p>No Results Found</p>
-                            )
-                        )}
-                    </div>
                 </div>
             </div>
         </div>
     );
+}
+
+function sumArray(array){
+    return array.reduce((sum, value) => sum + value, 0)
 }
 
 export default Statistics;

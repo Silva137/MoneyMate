@@ -47,7 +47,7 @@ const EditButton = ({entity, fetchEntities, updateEntity, deleteEntity}) => {
 
     return (
         <div>
-            <button className="edit-button" onClick={handleButtonClick}>
+            <button className="edit-button-wallet" onClick={handleButtonClick}>
                 <RiPencilFill />
             </button>
 
