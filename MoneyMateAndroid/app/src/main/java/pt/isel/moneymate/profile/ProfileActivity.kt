@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import pt.isel.moneymate.DependenciesContainer
+import pt.isel.moneymate.home.HomeActivity
 import pt.isel.moneymate.login.LoginViewModel
 import pt.isel.moneymate.utils.viewModelInit
 
@@ -47,6 +48,7 @@ class ProfileActivity: ComponentActivity() {
     }
 
     override fun onBackPressed() {
+        HomeActivity.navigate(this)
         finish()
     }
 

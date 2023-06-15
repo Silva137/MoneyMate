@@ -73,7 +73,7 @@ object Uris {
         const val GET_WALLET_BALANCE = "/transactions/wallets/{walletId}/balance"    //should be a Wallet URI?
 
         /**Requets of transactions Page (Common to both wallet types) */
-        const val GET_ALL = "/transactions/wallets/{walletId}"
+        const val GET_ALL = "/transactions/wallets/"
         const val GET_INCOMES = "/transactions/wallets/{walletId}/incomes"
         const val GET_EXPENSES = "/transactions/wallets/{walletId}/expenses"
 

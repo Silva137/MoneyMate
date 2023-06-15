@@ -1,9 +1,11 @@
 package pt.isel.moneymate.home
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -20,92 +22,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pt.isel.moneymate.R
+import pt.isel.moneymate.domain.User
+import pt.isel.moneymate.profile.ProfileActivity
+import pt.isel.moneymate.profile.ProfileScreen
 
 import pt.isel.moneymate.services.wallets.models.Wallet
+import pt.isel.moneymate.transactions.BottomSheetContent
 
 import pt.isel.moneymate.utils.BottomBar
-
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun HomeScreen(
-    wallets: List<Wallet>,
-    selectedWalletId: Int?,
-    onWalletSelected: (Int) -> Unit,
-    onProfileClick: () -> Unit
-) {
-    Log.d("HomeScreen", "Rendering HomeScreen")
-
-    var showPopup by remember { mutableStateOf(false) }
-    val (bottomState, setBottomState) = remember { mutableStateOf("Home") }
-    val bottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
-
-    Scaffold(
-        bottomBar = {
-            BottomBar(
-                onHomeRequested = { setBottomState("Home") },
-                onTransactionsRequested = { setBottomState("Transactions") },
-                onStatisticsRequested = { setBottomState("Statistics") },
-                onProfileRequested = { setBottomState("Profile") }
-            )
-        }
-    ) {
-        ModalBottomSheetLayout(
-            sheetState = bottomSheetState,
-            sheetContent = { BottomSheetContent(selectedTransaction) },
-            sheetShape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp),
-        ) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.home_background),
-                    contentDescription = "Background",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    BankCard(
-                        selectedWallet = wallets.find { it.id == selectedWalletId },
-                        onClick = { showPopup = true }
-                    )
-                    DateRow(date = "December 2023")
-                    MonthReport()
-                }
-            }
-
-            if (showPopup) {
-                WalletSelectionPopup(
-                    wallets = wallets,
-                    selectedWalletId = selectedWalletId,
-                    onWalletSelected = onWalletSelected
-                ) {
-                    showPopup = false
-                }
-            }
-
-            when (bottomState) {
-                "Home" -> {
-                    // Render the Home content
-                }
-                "Transactions" -> {
-                    // Render the Transactions content
-                }
-                "Statistics" -> {
-                    // Render the Statistics content
-                }
-                "Profile" -> {
-                    // Render the Profile content
-                }
-            }
-        }
-    }
-}
-
-
 
 
 @Composable
@@ -208,8 +132,79 @@ fun WalletSelectionPopup(
 }
 
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@Composable
+fun HomeScreen(
+    wallets: List<Wallet>,
+    selectedWalletId: Int?,
+    onWalletSelected: (Int) -> Unit,
+    onProfileClick: () -> Unit,
+    onTransactionClick: () -> Unit
+) {
+    Log.d("HomeScreen", "Rendering HomeScreen")
 
+    var showPopup by remember { mutableStateOf(false) }
+    val (bottomState, setBottomState) = remember { mutableStateOf("Home") }
 
+    Scaffold(
+        bottomBar = {
+            BottomBar(
+                onHomeRequested = { setBottomState("Home") },
+                onTransactionsRequested = { setBottomState("Transactions") },
+                onStatisticsRequested = { setBottomState("Statistics") },
+                onProfileRequested = { setBottomState("Profile") }
+            )
+        },
+    ) {  _ ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize() // Occupy the entire available space
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.home_background),
+                contentDescription = "Background",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize() // Fill the entire available space
+            )
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                BankCard(
+                    selectedWallet = wallets.find { it.id == selectedWalletId },
+                    onClick = { showPopup = true }
+                )
+                DateRow(date = "December 2023")
+                MonthReport()
+            }
+        }
+
+        if (showPopup) {
+            WalletSelectionPopup(
+                wallets = wallets,
+                selectedWalletId = selectedWalletId,
+                onWalletSelected = onWalletSelected
+            ) {
+                showPopup = false
+            }
+        }
+
+        when (bottomState) {
+            "Home" -> {
+                // Render the Home content
+            }
+            "Transactions" -> {
+                onTransactionClick()
+            }
+            "Statistics" -> {
+                // Render the Statistics content
+            }
+            "Profile" -> {
+                onProfileClick()
+            }
+        }
+    }
+}
 
 @Preview
 @Composable
@@ -229,7 +224,6 @@ fun BankCardPreview() {
     BankCard(selectedWallet = null, onClick = {})
 }
 
-/*
 @Preview
 @Composable
 fun HomeScreenPreview() {
@@ -244,8 +238,8 @@ fun HomeScreenPreview() {
         selectedWalletId = selectedWalletId,
         onWalletSelected = { walletId ->
             selectedWalletId = walletId
-        }
+        },
+        onProfileClick = { },
+        onTransactionClick = {}
     )
 }
-
- */

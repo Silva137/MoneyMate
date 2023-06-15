@@ -3,6 +3,7 @@ package pt.isel.moneymate.home
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -17,9 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import pt.isel.moneymate.DependenciesContainer
 import pt.isel.moneymate.login.LoginViewModel
+import pt.isel.moneymate.profile.ProfileActivity
 import pt.isel.moneymate.profile.ProfileState
 import pt.isel.moneymate.statistics.StatisticsActivity
 import pt.isel.moneymate.theme.MoneyMateTheme
+import pt.isel.moneymate.transactions.TransactionsActivity
 import pt.isel.moneymate.utils.viewModelInit
 
 class HomeActivity : ComponentActivity() {
@@ -59,7 +62,12 @@ class HomeActivity : ComponentActivity() {
                     viewModel.selectedWalletId = walletId
                 },
                 onProfileClick = {
-                    // Handle profile click event
+                    ProfileActivity.navigate(this)
+                    finish()
+                },
+                onTransactionClick = {
+                    Log.v("ID","${viewModel.selectedWalletId}")
+                    TransactionsActivity.navigate(this,viewModel.selectedWalletId)
                 }
             )
         }

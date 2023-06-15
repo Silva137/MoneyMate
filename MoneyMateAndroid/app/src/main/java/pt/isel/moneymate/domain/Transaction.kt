@@ -7,7 +7,6 @@ data class Transaction(
     val type: TransactionType,
     val description: String,
     val amount: Double,
-    val date: LocalDateTime,
     val category: Category
 )
 

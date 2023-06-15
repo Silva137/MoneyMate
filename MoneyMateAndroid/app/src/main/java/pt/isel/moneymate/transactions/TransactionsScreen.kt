@@ -1,6 +1,8 @@
 package pt.isel.moneymate.transactions
 
+import DatePicker
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,19 +34,29 @@ import pt.isel.moneymate.domain.Transaction
 import pt.isel.moneymate.domain.TransactionType
 import pt.isel.moneymate.theme.expenseRed
 import pt.isel.moneymate.theme.incomeGreen
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.util.*
 
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TransactionsScreen(
-    transactions: List<Transaction> = listOf(),
-    scope: CoroutineScope,
-    bottomSheetState: ModalBottomSheetState,
-    selectedTransaction: MutableState<Transaction?>,
+    transactions: List<Transaction>? = listOf(),
+    onSearchClick: (startDate: LocalDate, endDate: LocalDate) -> Unit,
 ) {
 
+    var pickedStartDate by remember { mutableStateOf(LocalDate.now()) }
+    var pickedEndDate by remember { mutableStateOf(LocalDate.now()) }
+    var isSearchClicked by remember { mutableStateOf(false) }
+    val selectedTransaction = remember { mutableStateOf<Transaction?>(null) }
+    val transaction = Transaction(
+        type = TransactionType.EXPENSE,
+        description = "none",
+        category = Category("Food"),
+        amount = 30.00
+    )
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -73,7 +85,10 @@ fun TransactionsScreen(
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Start
                 )
-                IconButton(onClick = { /* handle search click */ }) {
+                IconButton(onClick = {
+                    onSearchClick(pickedStartDate, pickedEndDate)
+                    isSearchClicked = true
+                }) {
                     Icon(
                         modifier = Modifier.size(30.dp),
                         imageVector = Icons.Default.Search,
@@ -82,12 +97,18 @@ fun TransactionsScreen(
                     )
                 }
             }
-            TransactionsList(
-                transactions = transactions,
-                scope = scope,
-                bottomSheetState = bottomSheetState,
-                selectedTransaction = selectedTransaction
-            )
+            DatePicker(
+                onStartDateSelected = { pickedStartDate = it },
+                onEndDateSelected = { pickedEndDate = it })
+            if(isSearchClicked){
+                Log.v("Clicked","Ola")
+                TransactionsList(
+                    transactions = listOf(transaction),
+                    scope = MainScope(),
+                    bottomSheetState = ModalBottomSheetState(ModalBottomSheetValue.Hidden),
+                    selectedTransaction = selectedTransaction
+                )
+            }
         }
     }
 }
@@ -109,7 +130,9 @@ fun BottomSheetContent(selectedTransaction: MutableState<Transaction?>) {
 
         TextField(
             value = editedTransaction?.amount?.toString().orEmpty(),
-            onValueChange = { editedTransaction = editedTransaction?.copy(amount = it.toDoubleOrNull() ?: 0.0) },
+            onValueChange = {
+                editedTransaction = editedTransaction?.copy(amount = it.toDoubleOrNull() ?: 0.0)
+            },
             label = { Text("Amount") }
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -143,16 +166,22 @@ fun BottomSheetContent(selectedTransaction: MutableState<Transaction?>) {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TransactionsList(
-    transactions: List<Transaction>,
+    transactions: List<Transaction>?,
     scope: CoroutineScope,
     bottomSheetState: ModalBottomSheetState,
     selectedTransaction: MutableState<Transaction?>
-    ) {
+) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        items(transactions) { item ->
-            TransactionItem(item, scope, bottomSheetState,selectedTransaction)
+        if (transactions != null) {
+            items(transactions) { item ->
+                TransactionItem(item, scope, bottomSheetState, selectedTransaction)
+            }
+        } else {
+            item {
+                Text(text = "Loading transactions...")
+            }
         }
     }
 }
@@ -165,7 +194,8 @@ fun TransactionItem(
     bottomSheetState: ModalBottomSheetState,
     selectedTransaction: MutableState<Transaction?>
 ) {
-    val imageResource = if (transaction.type == TransactionType.EXPENSE) R.drawable.expense_item else R.drawable.income_item
+    val imageResource =
+        if (transaction.type == TransactionType.EXPENSE) R.drawable.expense_item else R.drawable.income_item
     val isExpense = transaction.type == TransactionType.EXPENSE
 
 
@@ -224,7 +254,7 @@ fun TransactionItem(
                 )
             }
             Text(
-                text = if(isExpense) "-${transaction.amount}" else "+${transaction.amount}",
+                text = if (isExpense) "-${transaction.amount}" else "+${transaction.amount}",
                 color = if (isExpense) expenseRed else incomeGreen,
                 fontSize = 20.sp,
                 fontFamily = poppins,
@@ -240,18 +270,17 @@ fun TransactionItem(
 @Preview
 @Composable
 fun TransactionItemPreview() {
+    val selectedTransaction = remember { mutableStateOf<Transaction?>(null) }
     val transaction = Transaction(
         type = TransactionType.EXPENSE,
         description = "none",
         category = Category("Food"),
-        amount = 12.34,
-        date = LocalDateTime.now()
+        amount = 12.34
     )
     TransactionsScreen(
         transactions = listOf(transaction),
-        scope = MainScope(),
-        bottomSheetState = ModalBottomSheetState(ModalBottomSheetValue.Hidden),
-        selectedTransaction = mutableStateOf(null)
+        onSearchClick = { startTime, endTime ->
+        }
     )
 }
 
@@ -260,76 +289,67 @@ fun TransactionItemPreview() {
 @Preview
 @Composable
 fun TransactionsListPreview() {
+    val selectedTransaction = remember { mutableStateOf<Transaction?>(null) }
     val transactions = listOf(
         Transaction(
             type = TransactionType.EXPENSE,
             description = "Lunch",
             category = Category("Food"),
-            amount = 12.34,
-            date = LocalDateTime.now()
+            amount = 12.34
         ),
         Transaction(
             type = TransactionType.INCOME,
             description = "Salary",
             category = Category("Work"),
-            amount = 5678.9,
-            date = LocalDateTime.now()
+            amount = 5678.9
         ),
         Transaction(
             type = TransactionType.EXPENSE,
             description = "Movie ticket",
             category = Category("Entertainment"),
-            amount = 9.99,
-            date = LocalDateTime.now()
+            amount = 9.99
         ),
         Transaction(
             type = TransactionType.EXPENSE,
             description = "Lunch",
             category = Category("Food"),
-            amount = 12.34,
-            date = LocalDateTime.now()
+            amount = 12.34
         ),
         Transaction(
             type = TransactionType.INCOME,
             description = "Salary",
             category = Category("Work"),
-            amount = 5678.9,
-            date = LocalDateTime.now()
+            amount = 5678.9
         ),
         Transaction(
             type = TransactionType.EXPENSE,
             description = "Movie ticket",
             category = Category("Entertainment"),
-            amount = 9.99,
-            date = LocalDateTime.now()
+            amount = 9.99
         ),
         Transaction(
             type = TransactionType.EXPENSE,
             description = "Lunch",
             category = Category("Food"),
-            amount = 12.34,
-            date = LocalDateTime.now()
+            amount = 12.34
         ),
         Transaction(
             type = TransactionType.INCOME,
             description = "Salary",
             category = Category("Work"),
-            amount = 5678.9,
-            date = LocalDateTime.now()
+            amount = 5678.9
         ),
         Transaction(
             type = TransactionType.EXPENSE,
             description = "Movie ticket",
             category = Category("Entertainment"),
-            amount = 9.99,
-            date = LocalDateTime.now()
+            amount = 9.99
         )
     )
     TransactionsScreen(
         transactions = transactions,
-        scope = MainScope(),
-        bottomSheetState = ModalBottomSheetState(ModalBottomSheetValue.Hidden),
-        selectedTransaction = mutableStateOf(null)
+        onSearchClick = { startTime, endTime ->
+        }
     )
 }
 

@@ -8,7 +8,7 @@ import pt.isel.moneymate.services.HTTPService
 import pt.isel.moneymate.services.users.models.AuthenticationOutputModel
 import pt.isel.moneymate.services.users.models.LoginInput
 import pt.isel.moneymate.services.users.models.RegisterInput
-import pt.isel.moneymate.services.users.models.getUserOutputModel
+import pt.isel.moneymate.services.users.models.UserDTO
 import pt.isel.moneymate.utils.send
 
 class UsersService(
@@ -37,13 +37,13 @@ class UsersService(
         request.send(httpClient) {}
     }
 
-    suspend fun getUsername(token: String?): getUserOutputModel? {
+    suspend fun getUsername(token: String?): UserDTO? {
         if (token == null) {
             return null
         }
         val request = get(link = Uris.Users.GET_USER, token = token)
         val user = request.send(httpClient) { response ->
-            handleResponse<getUserOutputModel>(response, getUserOutputModel::class.java)
+            handleResponse<UserDTO>(response, UserDTO::class.java)
         }
         return user
     }
