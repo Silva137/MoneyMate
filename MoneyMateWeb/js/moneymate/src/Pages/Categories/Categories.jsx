@@ -16,10 +16,19 @@ function Categories() {
     const iconsArray = Array.from({ length: 20 });
 
     useEffect( () => {
-        fetchUserCategories()
-        fetchSystemCategories()
+        fetchAllCategories()
+        //fetchUserCategories()
+        //fetchSystemCategories()
     }, []);
 
+    function fetchAllCategories(){
+        CategoryService.getAllCategories()
+            .then(response => {
+                    setUserCategories(response.userCategories.categories)
+                    setSystemCategories(response.systemCategories.categories)
+                }
+            );
+    }
     function fetchUserCategories(){
         CategoryService.getCategoriesOfUser()
             .then(response => setUserCategories(response.categories));

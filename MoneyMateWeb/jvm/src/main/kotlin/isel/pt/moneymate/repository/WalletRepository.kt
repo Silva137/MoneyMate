@@ -21,6 +21,18 @@ interface WalletRepository {
         @Bind("wallet_id") walletId: Int
     ): Int?
 
+    @SqlQuery(
+        """
+            SELECT COUNT(*) > 0
+            FROM MoneyMate.wallet w 
+            WHERE w.wallet_name = :wallet_name and w.user_id = :user_id
+            """
+    )
+    fun verifyNameExistence(
+        @Bind("wallet_name") name: String,
+        @Bind("user_id") userId: Int
+    ): Boolean
+
     @SqlUpdate("INSERT INTO MoneyMate.wallet(wallet_name, user_id) VALUES (:name,:user_id)")
     @GetGeneratedKeys("wallet_id")
     fun createWallet(@Bind("name") walletName: String, @Bind("user_id") userId: Int): Int
@@ -38,6 +50,8 @@ interface WalletRepository {
         FROM MoneyMate.wallet w
         JOIN MoneyMate.users u ON w.user_id = u.user_id
         WHERE w.user_id = :id
+        ORDER BY w.wallet_name
+
         LIMIT :limit OFFSET :offset
    """)
     fun getWalletsOfUser(@Bind("id") userId: Int, @Bind("offset") offset: Int, @Bind("limit") limit: Int): List<Wallet>?

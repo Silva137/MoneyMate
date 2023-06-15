@@ -34,3 +34,8 @@ fun List<Category>.toDTO(): CategoriesDTO{
     return CategoriesDTO(categories)
 }
 
+data class BothCategorieDTO(
+    val userCategories: CategoriesDTO,
+    val systemCategories: CategoriesDTO
+)
+

@@ -1,6 +1,7 @@
 package isel.pt.moneymate.services
 
 import isel.pt.moneymate.domain.User
+import isel.pt.moneymate.exceptions.AlreadyExistsException
 import isel.pt.moneymate.exceptions.NotFoundException
 import isel.pt.moneymate.exceptions.UnauthorizedException
 import isel.pt.moneymate.http.models.wallets.*
@@ -15,7 +16,15 @@ class WalletService(
     private val transactionService: TransactionService
 ) {
 
+    fun verifyNameExistence(name: String, userId: Int){
+        if (walletRepository.verifyNameExistence(name, userId)) {
+            throw AlreadyExistsException("Category with that name already exists")
+        }
+    }
+
     fun createWallet(walletInput: CreateWalletDTO, userId: Int): WalletWithBalanceDTO {
+        verifyNameExistence(walletInput.name, userId)
+
         val createdId = walletRepository.createWallet(walletInput.name, userId)
         return getWalletById(createdId)
     }
@@ -36,6 +45,7 @@ class WalletService(
 
     fun updateWallet(user: User, walletInput: UpdateWalletDTO, walletId : Int) : WalletWithBalanceDTO {
         verifyUserOnWallet(user.id, walletId)
+        verifyNameExistence(walletInput.name, user.id)
 
         walletRepository.updateWallet(walletInput.name, walletId)
         val updatedWallet = walletRepository.getWalletById(walletId)

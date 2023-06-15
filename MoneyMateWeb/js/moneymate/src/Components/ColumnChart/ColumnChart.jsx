@@ -111,7 +111,7 @@ const ColumnChart = ({ balanceList, onClick, title }) => {
 
     return (
         <div id="chart">
-            <ReactApexChart options={options} series={seriesData} type="bar" height={370} />
+            <ReactApexChart options={options} series={seriesData} type="bar" height={400} />
         </div>
     );
 };

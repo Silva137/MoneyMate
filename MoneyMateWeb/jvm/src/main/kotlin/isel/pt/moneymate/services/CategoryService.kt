@@ -2,10 +2,7 @@ package isel.pt.moneymate.services
 
 import isel.pt.moneymate.domain.Category
 import isel.pt.moneymate.domain.User
-import isel.pt.moneymate.exceptions.ForbiddenException
-import isel.pt.moneymate.exceptions.InvalidParameterException
-import isel.pt.moneymate.exceptions.NotFoundException
-import isel.pt.moneymate.exceptions.UnauthorizedException
+import isel.pt.moneymate.exceptions.*
 import isel.pt.moneymate.http.models.categories.*
 import isel.pt.moneymate.repository.CategoryRepository
 import isel.pt.moneymate.repository.TransactionRepository
@@ -23,13 +20,26 @@ class CategoryService(
 ){
     var systemCategories: List<Category>? = null
 
+    fun verifyNameExistence(name: String, userId: Int){
+        if (categoryRepository.verifyNameExistence(name, userId)) {
+            throw AlreadyExistsException("Category with that name already exists")
+        }
+    }
+
     fun createCategory(categoryInput: CreateCategoryDTO, userId: Int): CategoryDTO {
+        verifyNameExistence(categoryInput.name, userId)
         val categoryId = categoryRepository.createCategory(categoryInput.name, userId)
         return getCategoryById(categoryId)
     }
 
+    fun getAllCategories(userId: Int, offset: Int, limit: Int): BothCategorieDTO {
+        val categoriesOfUser = getCategoriesGivenUser(userId, offset, limit)
+        val systemCategories = getSystemCategories(offset, limit)
+        return BothCategorieDTO(categoriesOfUser, systemCategories)
+    }
+
     fun getCategoriesGivenUser(userId: Int, offset: Int, limit: Int): CategoriesDTO {
-        val categories = categoryRepository.getCategories(userId, offset, limit)
+        val categories = categoryRepository.getCategoriesOfUser(userId, offset, limit)
             ?: throw NotFoundException("No categories found")
         return categories.toDTO()
     }
@@ -51,6 +61,7 @@ class CategoryService(
     fun updateCategory(user: User, categoryInput : UpdateCategoryDTO, categoryId: Int) : CategoryDTO {
         isSystemCategory(categoryId)
         verifyUserOnCategory(user.id, categoryId)
+        verifyNameExistence(categoryInput.name, user.id)
 
         categoryRepository.updateCategoryName(categoryInput.name, categoryId)
         return getCategoryById(categoryId)
@@ -74,7 +85,7 @@ class CategoryService(
     }
 
     fun getSystemCategories(){
-        if (systemCategories.isNullOrEmpty())
+        //if (systemCategories.isNullOrEmpty())
             systemCategories = categoryRepository.getSystemCategories()
         if (systemCategories == null)
             throw NotFoundException("System categories not found")

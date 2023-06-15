@@ -17,7 +17,7 @@ const CategoryIcon = ({ category, fetchEntities, updateEntity, deleteEntity, sho
             <div className="category-info">
 
                 <div className="category-name">
-                    {category.name}
+                    {category.name}<span>&nbsp;</span>
                 </div>
 
                 {showEditButton && (
