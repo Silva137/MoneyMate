@@ -12,8 +12,12 @@ function CategoriesDropdownButton({ onChange }) {
 
     const fetchCategories = async () => {
         try {
-            const response = await CategoryService.getCategoriesOfUser();
-            setCategories(response.categories);
+            //const response = await CategoryService.getCategoriesOfUser();
+            const response = await CategoryService.getAllCategories();
+            const userCategories = response.userCategories.categories;
+            const systemCategories = response.systemCategories.categories;
+            const allCategories = userCategories.concat(systemCategories);
+            setCategories(allCategories);
         } catch (error) {
             console.error('Error fetching categories:', error);
         }

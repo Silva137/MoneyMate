@@ -1,11 +1,20 @@
 import React from 'react';
 import ReactApexChart from 'react-apexcharts';
 
-const ColumnChart = ({ balance, category, title }) => {
+const ColumnChart = ({ balanceList, onClick, title }) => {
+
+    function onClickColumn(columnIndex, event, chartContext, config){
+        console.log(columnIndex)
+        console.log(balanceList[columnIndex])
+        console.log(event)
+        console.log(chartContext)
+        console.log(config)
+    }
+
     const seriesData = [
         {
-            name: 'Cash Flow',
-            data: balance,
+            name: 'Amount',
+            data: balanceList.map(item => item.balance),
         },
     ];
 
@@ -16,11 +25,17 @@ const ColumnChart = ({ balance, category, title }) => {
             toolbar: {
                 show: false, // Hide the toolbar with export buttons
             },
+            events: {
+                dataPointSelection: (event, chartContext, config) => {
+                    onClick(config.dataPointIndex)
+                    console.log("Handle Click");
+                    onClickColumn(config.dataPointIndex, event, chartContext, config)
+                },
+            },
         },
         title: {
             text: title,
             align: 'center',
-            offsetX: -80,
             offsetY: 10,
             style: {
                 fontSize: '24px',
@@ -82,7 +97,7 @@ const ColumnChart = ({ balance, category, title }) => {
                     fontFamily: "'Poppins', sans-serif",
                 },
             },
-            categories: category,
+            categories: balanceList.map(item => item.category.name),
             labels: {
                 rotate: -90,
                 style: {
@@ -96,7 +111,7 @@ const ColumnChart = ({ balance, category, title }) => {
 
     return (
         <div id="chart">
-            <ReactApexChart options={options} series={seriesData} type="bar" height={370} />
+            <ReactApexChart options={options} series={seriesData} type="bar" height={400} />
         </div>
     );
 };

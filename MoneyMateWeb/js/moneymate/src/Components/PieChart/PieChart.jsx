@@ -30,8 +30,7 @@ function PieChart ({ balance, category, title}) {
             },
             title: {
                 text: title,
-                align: 'center',
-                offsetX: -40,
+                align: 'left',
                 style: {
                     fontSize: '24px',
                     fontWeight: 'bold',
@@ -68,7 +67,7 @@ function PieChart ({ balance, category, title}) {
     };
 
     return (
-        <div id="chart">
+        <div id="chart" className="pie-chart">
             <ReactApexChart
                 options={getChartOptions()}
                 series={balance}
@@ -77,6 +76,7 @@ function PieChart ({ balance, category, title}) {
             />
         </div>
     );
+
 };
 
 export default PieChart;

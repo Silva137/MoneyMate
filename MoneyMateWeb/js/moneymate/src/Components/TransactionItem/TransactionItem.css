@@ -1,0 +1,58 @@
+.transaction-item {
+    display: flex;
+    background-color: #37364f;
+    border-radius: 30px;
+    padding: 20px;
+    margin-bottom: 10px;
+    border: #1f1e2c 4px solid;
+    width: 600px;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.left-column {
+    justify-content: start;
+    align-items: start;
+    width: 100%;
+    color: white;
+}
+
+.right-column {
+    justify-content: end;
+    align-items: end;
+    width: 100%;
+}
+
+.transaction-title {
+    font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    color: white;
+
+}
+
+.transaction-date {
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    color: white;
+
+}
+
+.transaction-amount {
+    font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    color: white;
+
+}
+
+.day-of-week {
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+
+}

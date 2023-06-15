@@ -13,9 +13,14 @@ class CategoryService {
         }
     }
 
-    getCategoriesOfUser() {
+    getAllCategories() {
         return this.basicGet("/api/categories")
     }
+
+    getCategoriesOfUser() {
+        return this.basicGet("/api/usercategories")
+    }
+
 
     getSystemCategories() {
         return this.basicGet("/api/systemcategories")

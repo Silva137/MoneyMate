@@ -17,6 +17,7 @@ export TRANSACTION_ID_CREATED="1"
 
 export HOST=http://localhost:8080
 export CREATE_USER=$HOST"/auth/register"
+export LOGIN_USER=$HOST"/auth/login"
 export GET_USERS=$HOST"/users"
 export UPDATE_USER=$HOST"/users"
 

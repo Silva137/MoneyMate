@@ -1,13 +1,6 @@
 .dropdown-select {
-    width: 100%;
-    padding: 0.5rem;
+    width: 200px!important;
     font-size: 16px;
-    border: 2px solid #7d54c4;
-    border-radius: 0.25rem;
+    border: 2px solid rgb(196, 196, 196) !important;
+    border-radius: 1.1rem!important;
 }
-
-.dropdown-select:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgb(255, 255, 255);
-}
-

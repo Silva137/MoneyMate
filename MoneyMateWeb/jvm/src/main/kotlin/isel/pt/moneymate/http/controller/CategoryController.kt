@@ -28,7 +28,19 @@ class CategoryController(private val categoryService : CategoryService) {
     fun getCategories(
         @AuthenticationPrincipal user: User,
         @RequestParam(defaultValue = "0") offset: Int,
-        @RequestParam(defaultValue = "10") limit: Int
+        @RequestParam(defaultValue = "100") limit: Int
+    ): ResponseEntity<*> {
+        val categories = categoryService.getAllCategories(user.id, offset, limit)
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(categories)
+    }
+
+    @GetMapping(Uris.Category.GET_USER_CATEGORIES)
+    fun getUserCategories(
+        @AuthenticationPrincipal user: User,
+        @RequestParam(defaultValue = "0") offset: Int,
+        @RequestParam(defaultValue = "100") limit: Int
     ): ResponseEntity<*> {
         val categories = categoryService.getCategoriesGivenUser(user.id, offset, limit)
         return ResponseEntity
@@ -39,7 +51,7 @@ class CategoryController(private val categoryService : CategoryService) {
     @GetMapping(Uris.Category.GET_SYSTEM_CATEGORIES)
     fun getSystemCategories(
         @RequestParam(defaultValue = "0") offset: Int,
-        @RequestParam(defaultValue = "10") limit: Int
+        @RequestParam(defaultValue = "100") limit: Int
     ): ResponseEntity<*> {
         val categories = categoryService.getSystemCategories(offset, limit)
         return ResponseEntity

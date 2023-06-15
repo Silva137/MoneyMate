@@ -7,6 +7,7 @@ import {MdDoneOutline} from "react-icons/md";
 import TransactionService from "../../services/TransactionService";
 import {SessionContext} from "../../Utils/Session.jsx";
 import CategoriesDropdownButton from "../CategoriesDropdownButton/CategoriesDropdownButton.jsx";
+import WalletsDropdownButton from "../WalletsDropdownButton/WalletsDropdownButton.jsx";
 
 const SideNavBar = ({ children }) => {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -14,7 +15,8 @@ const SideNavBar = ({ children }) => {
     const [amount, setAmount] = useState(0)
     const [title, setTitle] = useState("")
     const [selectedCategory, setSelectedCategory] = useState(null);
-    const {selectedWallet} = useContext(SessionContext)
+    const [selectedWallet, setSelectedWallet] = useState(null);
+    //const {selectedWallet} = useContext(SessionContext)
 
 
     const location = useLocation();
@@ -43,6 +45,10 @@ const SideNavBar = ({ children }) => {
 
     const handleSelectedCategoryChange = (category) => {
         setSelectedCategory(category)
+    }
+
+    const handleSelectedWalletChange = (wallet) => {
+        setSelectedWallet(wallet)
     }
 
     async function handleCreateTransactionClick(event) {
@@ -103,6 +109,10 @@ const SideNavBar = ({ children }) => {
                             </div>
                             <div className="form-group field">
                                 <CategoriesDropdownButton onChange={handleSelectedCategoryChange} />
+                            </div>
+
+                            <div className="form-group field">
+                                <WalletsDropdownButton onChange={handleSelectedWalletChange} />
                             </div>
                             <button type="submit" className="save-button">
                                 <MdDoneOutline /> Create Transaction

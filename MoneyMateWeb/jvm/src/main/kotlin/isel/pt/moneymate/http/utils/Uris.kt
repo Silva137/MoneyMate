@@ -31,6 +31,7 @@ object Uris {
          */
         const val CREATE = "/categories"
         const val GET_CATEGORIES = "/categories"
+        const val GET_USER_CATEGORIES = "/usercategories"
         const val GET_SYSTEM_CATEGORIES = "/systemcategories"
         const val GET_BY_ID = "/categories/{categoryId}"
         const val UPDATE = "/categories/{categoryId}"

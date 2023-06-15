@@ -20,28 +20,43 @@ interface CategoryRepository {
             @Bind("category_id") categoryId: Int
         ): Int?
 
-        @SqlUpdate("INSERT INTO MoneyMate.category (category_name, user_id) VALUES (:name, :userId)")
-        @GetGeneratedKeys("category_id")
-        fun createCategory(@Bind("name") name: String, @Bind("userId") userId: Int) : Int
+        @SqlQuery(
+            """
+            SELECT COUNT(*) > 0
+            FROM MoneyMate.category c 
+            WHERE c.category_name = :category_name and (c.user_id = :user_id OR c.user_id = 0)
+            """
+        )
+        fun verifyNameExistence(
+            @Bind("category_name") name: String,
+            @Bind("user_id") userId: Int
+        ): Boolean
 
-        @SqlQuery("""
+    @SqlQuery("""
             SELECT c.*, u.*
             FROM MoneyMate.category c
             JOIN MoneyMate.users u ON c.user_id = u.user_id
             WHERE c.user_id = :user_id
+            ORDER BY c.category_name
             LIMIT :limit OFFSET :offset
+
          """)
-        fun getCategories(
-            @Bind("user_id") userId: Int,
-            @Bind("offset") offset: Int,
-            @Bind("limit") limit: Int
-        ): List<Category>?
+    fun getCategoriesOfUser(
+        @Bind("user_id") userId: Int,
+        @Bind("offset") offset: Int,
+        @Bind("limit") limit: Int
+    ): List<Category>?
+
+        @SqlUpdate("INSERT INTO MoneyMate.category (category_name, user_id) VALUES (:name, :userId)")
+        @GetGeneratedKeys("category_id")
+        fun createCategory(@Bind("name") name: String, @Bind("userId") userId: Int) : Int
 
     @SqlQuery("""
             SELECT c.*, u.*
             FROM MoneyMate.category c
             JOIN MoneyMate.users u ON c.user_id = u.user_id
             WHERE c.user_id = 0
+            ORDER BY c.category_name
          """)
     fun getSystemCategories(): List<Category>?
 

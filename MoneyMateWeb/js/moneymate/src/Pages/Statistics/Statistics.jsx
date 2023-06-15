@@ -9,6 +9,7 @@ import { SessionContext } from "../../Utils/Session.jsx";
 import DatePicker from "../../Components/DatePicker/DatePicker.jsx";
 import dayjs from "dayjs";
 import { SyncLoader } from 'react-spinners';
+import DisplayPage from "../../Components/DisplayPage/DisplayPage.jsx";
 
 function Statistics() {
     const [wallets, setWallets] = useState([])
@@ -17,11 +18,16 @@ function Statistics() {
     const [balance, setBalance] = useState(null)
     const [category, setCategory] = useState(null)
     const [loading, setLoading] = useState(false)
+    const [balanceList, setBalanceList] = useState(null)
+    const [modal, setModal] = useState(false);
+    const [selectedChartInfo, setSelectedChartInfo] = useState([]);
 
-   /* useEffect(() => {
-        fetchPrivateWallets();
-    }, [])
-    */
+
+
+    /* useEffect(() => {
+         fetchPrivateWallets();
+     }, [])
+     */
 
     useEffect(() => {
         console.log('Selected WalletId: ' + selectedWallet)
@@ -41,28 +47,52 @@ function Statistics() {
         }
     }
 
+    async function onClick(index){
+        // index represents the column clicked
+        const categoryId = balanceList[index].category.id
+        const selectedBalance = balanceList[index].balance
+        const selectedCategory = balanceList[index].category.name
+        const response = await fetchTransactionsByCategory(categoryId)
+        setSelectedChartInfo([response.transactions, selectedBalance, selectedCategory]);
+        setModal(true)
+    }
+    async function fetchTransactionsByCategory(categoryId){
+        return TransactionService.getTransactionsByCategory(selectedWallet, categoryId, selectedDates)
+    }
+
+    async function fetchSumBalanceByCategory(selectedWallet, selectedDates){
+        const balanceResponse = await TransactionService.getSumBalanceByCategory(selectedWallet, selectedDates)
+        const balanceList = balanceResponse.balanceList
+        setBalanceList(balanceList)
+        console.log(balanceResponse)
+    }
+
+    async function fetchPosNegBalanceByCategory(selectedWallet, selectedDates){
+        const posAndNegResponse = await TransactionService.getPosNegBalanceByCategory(selectedWallet, selectedDates)
+
+        const negBalances = posAndNegResponse.neg.balanceList.map(item => Math.abs(item.balance))
+        const negCategories = posAndNegResponse.neg.balanceList.map(item => item.category.name)
+        const posBalances = posAndNegResponse.pos.balanceList.map(item => item.balance)
+        const posCategories = posAndNegResponse.pos.balanceList.map(item => item.category.name)
+
+        setBalance([posBalances, negBalances])
+        setCategory([posCategories, negCategories])
+        console.log(posAndNegResponse)
+
+    }
+
+
     async function fetchChartsData() {
         try {
             setLoading(true)
-            const response = await TransactionService.getPosNegBalanceByCategory(selectedWallet, selectedDates)
-            const response2 = await TransactionService.getSumBalanceByCategory(selectedWallet, selectedDates)
-            console.log(response)
-            console.log(response2)
-            const sumBalances = response2.balanceList.map(item => item.balance)
-            const sumCategories = response2.balanceList.map(item => item.category.name)
-            const negBalances = response.neg.balanceList.map(item => Math.abs(item.balance))
-            const negCategories = response.neg.balanceList.map(item => item.category.name)
-            const posBalances = response.pos.balanceList.map(item => item.balance)
-            const posCategories = response.pos.balanceList.map(item => item.category.name)
-            setBalance([posBalances, negBalances, sumBalances])
-            setCategory([posCategories, negCategories, sumCategories])
+            await fetchSumBalanceByCategory(selectedWallet, selectedDates)
+            await fetchPosNegBalanceByCategory(selectedWallet, selectedDates)
         } catch (error) {
             console.error('Error fetching charts data:', error)
         } finally {
             setLoading(false)
         }
     }
-
     const handleDatePickerChange = (dates) => {
         setSelectedDates(dates)
     }
@@ -112,8 +142,8 @@ function Statistics() {
                                     <SyncLoader size={50} color={'#ffffff'} loading={loading} />
                                 </div>
                             ) : (
-                                balance !== null && category !== null && balance[2].length > 0 && category[2].length > 0 ? (
-                                    <ColumnChart balance={balance[2]} category={category[2]} title="Category Balance" />
+                                balanceList !== null && balanceList.length > 0? (
+                                    <ColumnChart balanceList={balanceList} onClick={(index) => onClick(index)} title={`Balance: ${sumArray(balanceList.map(item => item.balance))}€`} />
                                 ) : (
                                     <p>No Results Found</p>
                                 )
@@ -121,6 +151,15 @@ function Statistics() {
                         </div>
                     </div>
                 </div>
+                {modal && (
+                    <DisplayPage
+                        transactions={selectedChartInfo[0]}
+                        balance={selectedChartInfo[1]}
+                        categoryName={selectedChartInfo[2]}
+                        close={() => setModal(false)}
+                        onClickElement={() => {}}
+                    />
+                )}
             </div>
         </div>
     );

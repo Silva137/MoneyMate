@@ -11,16 +11,16 @@
     "name": "teste_category_1"
   },
   "create_category_1":{
-    "name": "Compras"
+    "name": "Compras Pessoais"
   },
   "create_category_2":{
-    "name": "Lazer"
+    "name": "Despesas Bebé"
   },
   "create_category_3":{
-    "name": "Desporto"
+    "name": "Cotas Ginásio"
   },
   "create_category_4":{
-    "name": "Saude"
+    "name": "Gastos Diários"
   },
   "create_category_5":{
     "name": "Carro"

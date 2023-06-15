@@ -28,19 +28,21 @@ class TransactionService {
             });
     }
 
-    getPosNegBalanceByCategory(walletId, selectedDates) {
+    async getPosNegBalanceByCategory(walletId, selectedDates) {
+
         const params = {
             startDate: selectedDates[0],
             endDate: selectedDates[1]
         };
 
         return instance.get(`/api/transactions/wallets/${walletId}/categories/posneg/balance`, {
-                headers: authHeader(),
-                params: params
-            })
+            headers: authHeader(),
+            params: params
+        })
             .then(response => {
                 return response.data;
             });
+
     }
 
     getSumBalanceByCategory(walletId, selectedDates) {
@@ -55,6 +57,25 @@ class TransactionService {
         .then(response => {
             return response.data
         })
+    }
+
+    async getTransactionsByCategory(walletId, categoryId, selectedDates){
+        try{
+            const params = {
+                startDate: selectedDates[0],
+                endDate: selectedDates[1]
+            }
+            const response = await instance.get(`/api/transactions/wallets/${walletId}/categories/${categoryId}`, {
+                headers: authHeader(),
+                params: params
+            })
+
+            return response.data
+
+        }catch (error){
+            console.error('Error getting transactions');
+
+        }
     }
 
     deleteWallet(walletId) {
