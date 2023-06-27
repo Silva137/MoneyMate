@@ -1,7 +1,6 @@
 package pt.isel.moneymate.profile
 
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -10,7 +9,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -29,8 +27,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import pt.isel.moneymate.R
 import pt.isel.moneymate.background.poppins
-import pt.isel.moneymate.theme.expenseRed
-import pt.isel.moneymate.theme.incomeGreen
 
 
 @Composable
@@ -64,7 +60,7 @@ fun ProfileScreen(
 
 @Composable
 fun ProfImg(username : String) {
-    var imageUri: Any? by remember { mutableStateOf(R.drawable.icon_user) }
+    var imageUri: Any? by remember { mutableStateOf(R.drawable.icon_profile) }
     val photoPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) {

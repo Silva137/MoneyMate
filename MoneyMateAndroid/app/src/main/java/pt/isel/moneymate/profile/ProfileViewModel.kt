@@ -6,13 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import pt.isel.moneymate.services.MoneyMateService
 import pt.isel.moneymate.session.SessionManager
 
-class ProfileViewMode(
+class ProfileViewModel(
     private val moneymateService: MoneyMateService,
     private val sessionManager: SessionManager
 ) : ViewModel() {

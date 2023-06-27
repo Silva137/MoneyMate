@@ -53,7 +53,6 @@ class HomeActivity : ComponentActivity() {
 
         setContent {
 
-
             HomeScreen(
                 wallets = viewModel.wallets,
                 selectedWalletId = viewModel.selectedWalletId,

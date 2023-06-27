@@ -6,13 +6,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
 import pt.isel.moneymate.DependenciesContainer
 import pt.isel.moneymate.home.HomeActivity
-import pt.isel.moneymate.login.LoginViewModel
 import pt.isel.moneymate.utils.viewModelInit
 
 class ProfileActivity: ComponentActivity() {
@@ -27,9 +22,9 @@ class ProfileActivity: ComponentActivity() {
 
     private val dependencies by lazy { application as DependenciesContainer }
 
-    private val viewModel: ProfileViewMode by viewModels {
+    private val viewModel: ProfileViewModel by viewModels {
         viewModelInit {
-            ProfileViewMode(dependencies.moneymateService, dependencies.sessionManager)
+            ProfileViewModel(dependencies.moneymateService, dependencies.sessionManager)
         }
     }
 

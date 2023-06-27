@@ -1,158 +1,120 @@
 package pt.isel.moneymate.main
-/*
+
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import pt.isel.moneymate.utils.BottomBar
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import pt.isel.moneymate.R
 import pt.isel.moneymate.domain.Category
 import pt.isel.moneymate.domain.Transaction
 import pt.isel.moneymate.domain.TransactionType
 import pt.isel.moneymate.domain.User
 import pt.isel.moneymate.home.HomeScreen
+import pt.isel.moneymate.home.HomeViewModel
 import pt.isel.moneymate.profile.ProfileScreen
+import pt.isel.moneymate.profile.ProfileViewModel
 import pt.isel.moneymate.services.wallets.models.Wallet
 import pt.isel.moneymate.statistics.StatisticsScreen
+import pt.isel.moneymate.statistics.StatisticsViewModel
 import pt.isel.moneymate.transactions.BottomSheetContent
 import pt.isel.moneymate.transactions.TransactionsScreen
+import pt.isel.moneymate.transactions.TransactionsViewModel
+import pt.isel.moneymate.utils.bottomNavigation.BottomBarScreen
+import pt.isel.moneymate.utils.bottomNavigation.BottomNavGraph
 import java.time.LocalDateTime
 
 import java.util.*
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
-@ExperimentalMaterialApi
 @Composable
-fun MainScreen(onProfileClick: () -> Unit = {}, onHomeClick:() -> Unit = {}) {
-    var bottomState by remember { mutableStateOf("Home") }
-    val scope = rememberCoroutineScope()
-    val bottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
-    val selectedTransaction = remember { mutableStateOf<Transaction?>(null) }
-
-    ModalBottomSheetLayout(
-        sheetState = bottomSheetState,
-        sheetContent = { BottomSheetContent(selectedTransaction) },
-        sheetShape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp),
+fun MainScreen(
+    homeViewModel: HomeViewModel,
+    transactionsViewModel: TransactionsViewModel,
+    statisticsViewModel: StatisticsViewModel,
+    profileViewModel: ProfileViewModel
+) {
+    val navController = rememberNavController()
+    Scaffold(
+        bottomBar = { BottomBar(navController = navController) }
     ) {
-        Scaffold(
-            bottomBar = {
-                BottomBar(
-                    onHomeRequested = { bottomState = "Home" },
-                    onTransactionsRequested = { bottomState = "Transactions" },
-                    onStatisticsRequested = { bottomState = "Statistics" },
-                    onProfileRequested = { bottomState = "Profile" }
-                )
-            },
-        ) { _ ->
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.LightGray)
-                ) {
-                    when (bottomState) {
-                        "Home" -> HomeScreen(
-                            wallets = listOf(
-                                Wallet(1, "Wallet 1", User(1,"shimi","shimi"), "2023-06-01", 1000),
-                                Wallet(2, "Wallet 2",  User(1,"shimi","shimi"), "2023-06-01", 2000),
-                                Wallet(3, "Wallet 3",  User(1,"shimi","shimi"), "2023-06-01", 3000)
-                            ),
-                            selectedWalletId =1 ,
-                            onWalletSelected ={}
-                        )
-                        "Transactions" -> TransactionsScreen(transactions, scope, bottomSheetState, selectedTransaction)
-                        "Statistics" -> StatisticsScreen()
-                        "Profile" -> onProfileClick()
-                    }
-                }
-            }
+        BottomNavGraph(
+            navController = navController,
+            homeViewModel = homeViewModel,
+            transactionsViewModel = transactionsViewModel,
+            statisticsViewModel = statisticsViewModel,
+            profileViewModel = profileViewModel
+        )
+    }
+}
+
+@Composable
+fun BottomBar(navController: NavHostController) {
+    val screens = listOf(
+        BottomBarScreen.Home,
+        BottomBarScreen.Transactions,
+        BottomBarScreen.Statistics,
+        BottomBarScreen.Profile
+        )
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
+    BottomNavigation(
+        modifier = Modifier
+            .height(85.dp)
+            .padding(8.dp)
+            .clip(shape = RoundedCornerShape(25.dp)),
+        backgroundColor = Color(0xFF2C2633),
+        contentColor = Color(0xFFFFFFFF),
+    ) {
+        screens.forEach { screen ->
+            AddItem(
+                screen = screen,
+                currentDestination = currentDestination,
+                navController = navController
+            )
         }
     }
 }
 
-@ExperimentalMaterialApi
-@Preview
 @Composable
-fun MainScreenPreview() {
-    MainScreen()
-}
-
-val transactions = listOf(
-    Transaction(
-        type = TransactionType.EXPENSE,
-        description = "Lunch",
-        category = Category("Food"),
-        amount = 12.34,
-        date = LocalDateTime.now()
-    ),
-    Transaction(
-        type = TransactionType.INCOME,
-        description = "Salary",
-        category = Category("Work"),
-        amount = 5678.9,
-        date = LocalDateTime.now()
-    ),
-    Transaction(
-        type = TransactionType.EXPENSE,
-        description = "Movie ticket",
-        category = Category("Entertainment"),
-        amount = 9.99,
-        date = LocalDateTime.now()
-    ),
-    Transaction(
-        type = TransactionType.EXPENSE,
-        description = "Lunch",
-        category = Category("Food"),
-        amount = 12.34,
-        date = LocalDateTime.now()
-    ),
-    Transaction(
-        type = TransactionType.INCOME,
-        description = "Salary",
-        category = Category("Work"),
-        amount = 5678.9,
-        date = LocalDateTime.now()
-    ),
-    Transaction(
-        type = TransactionType.EXPENSE,
-        description = "Movie ticket",
-        category = Category("Entertainment"),
-        amount = 9.99,
-        date = LocalDateTime.now()
-    ),
-    Transaction(
-        type = TransactionType.EXPENSE,
-        description = "Lunch",
-        category = Category("Food"),
-        amount = 12.34,
-        date = LocalDateTime.now()
-    ),
-    Transaction(
-        type = TransactionType.INCOME,
-        description = "Salary",
-        category = Category("Work"),
-        amount = 5678.9,
-        date = LocalDateTime.now()
-    ),
-    Transaction(
-        type = TransactionType.EXPENSE,
-        description = "Movie ticket",
-        category = Category("Entertainment"),
-        amount = 9.99,
-        date = LocalDateTime.now()
+fun RowScope.AddItem(
+    screen: BottomBarScreen,
+    currentDestination: NavDestination?,
+    navController: NavHostController
+) {
+    BottomNavigationItem(
+        label = {
+            Text(text = screen.title)
+        },
+        icon = {
+            Icon(
+                painter = painterResource(id = screen.icon),
+                contentDescription = "Navigation Icon",
+                modifier = Modifier.size(30.dp)
+            )
+        },
+        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+        unselectedContentColor = LocalContentColor.current.copy(alpha = ContentAlpha.disabled),
+        onClick = {
+            navController.navigate(screen.route) {
+                popUpTo(navController.graph.findStartDestination().id)
+                launchSingleTop = true
+            }
+        }
     )
-)
-
- */
+}

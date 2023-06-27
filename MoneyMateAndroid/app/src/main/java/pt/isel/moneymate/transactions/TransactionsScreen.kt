@@ -35,8 +35,6 @@ import pt.isel.moneymate.domain.TransactionType
 import pt.isel.moneymate.theme.expenseRed
 import pt.isel.moneymate.theme.incomeGreen
 import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
 import java.util.*
 
 
@@ -44,7 +42,7 @@ import java.util.*
 @Composable
 fun TransactionsScreen(
     transactions: List<Transaction>? = listOf(),
-    onSearchClick: (startDate: LocalDate, endDate: LocalDate) -> Unit,
+    onSearchClick: (startDate: LocalDate, endDate: LocalDate) -> Unit = { _, _ -> }
 ) {
 
     var pickedStartDate by remember { mutableStateOf(LocalDate.now()) }
@@ -86,7 +84,9 @@ fun TransactionsScreen(
                     textAlign = TextAlign.Start
                 )
                 IconButton(onClick = {
-                    onSearchClick(pickedStartDate, pickedEndDate)
+                    if (onSearchClick != null) {
+                        onSearchClick(pickedStartDate, pickedEndDate)
+                    }
                     isSearchClicked = true
                 }) {
                     Icon(
@@ -230,7 +230,7 @@ fun TransactionItem(
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.icon_user),
+                    painter = painterResource(id = R.drawable.icon_profile),
                     contentDescription = "Category Icon",
                     modifier = Modifier.size(32.dp)
                 )

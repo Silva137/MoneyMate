@@ -1,9 +1,7 @@
 package pt.isel.moneymate.transactions
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,14 +9,12 @@ import kotlinx.coroutines.launch
 import pt.isel.moneymate.domain.Category
 import pt.isel.moneymate.domain.Transaction
 import pt.isel.moneymate.domain.TransactionType
-import pt.isel.moneymate.home.HomeViewModel
 import pt.isel.moneymate.services.MoneyMateService
-import pt.isel.moneymate.services.wallets.models.Wallet
 import pt.isel.moneymate.session.SessionManager
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class TransactionViewModel(
+class TransactionsViewModel(
     private val moneymateService: MoneyMateService,
     private val sessionManager: SessionManager
 ) : ViewModel() {

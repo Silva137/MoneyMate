@@ -44,7 +44,6 @@ fun LoginScreen(
             onLoginSuccessful()
     }
 
-
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter,
@@ -55,7 +54,6 @@ fun LoginScreen(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
-
         )
         Box(
             modifier = Modifier.fillMaxSize().padding(bottom = 50.dp),
@@ -94,7 +92,8 @@ fun LoginFields(
                 singleLine = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color.White,
-                    unfocusedBorderColor = Color.White
+                    unfocusedBorderColor = Color.White,
+                    textColor = Color.White
                 )
             )
 
@@ -107,7 +106,8 @@ fun LoginFields(
                 singleLine = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color.White,
-                    unfocusedBorderColor = Color.White
+                    unfocusedBorderColor = Color.White,
+                    textColor = Color.White
                 ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),

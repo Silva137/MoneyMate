@@ -52,9 +52,7 @@ fun RegisterScreen(
             painter = painterResource(id = R.drawable.login_background),
             contentDescription = "Background",
             contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-
+            modifier = Modifier.fillMaxSize()
         )
         Box(
             modifier = Modifier.fillMaxSize().padding(bottom = 50.dp),
@@ -94,7 +92,8 @@ fun RegisterFields(
                 singleLine = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color.White,
-                    unfocusedBorderColor = Color.White
+                    unfocusedBorderColor = Color.White,
+                    textColor = Color.White
                 )
             )
             Spacer(modifier = Modifier.weight(1f))
@@ -106,7 +105,8 @@ fun RegisterFields(
                 singleLine = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color.White,
-                    unfocusedBorderColor = Color.White
+                    unfocusedBorderColor = Color.White,
+                    textColor = Color.White
                 )
             )
 
@@ -119,7 +119,8 @@ fun RegisterFields(
                 singleLine = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color.White,
-                    unfocusedBorderColor = Color.White
+                    unfocusedBorderColor = Color.White,
+                    textColor = Color.White
                 ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -173,8 +174,8 @@ fun BlurBox(onLoginRequest : () -> Unit = {},
             )
             .background(
                 brush = Brush.linearGradient(
-                    0f to Color.White.copy(alpha = 0.7f),
-                    0.95f to Color.White.copy(alpha = 0.1f),
+                    0f to Color.White.copy(alpha = 0.3f),
+                    1f to Color.White.copy(alpha = 0.1f),
                     start = Offset(20.75f, 52.5f),
                     end = Offset(429.46f, 850f)
                 ),

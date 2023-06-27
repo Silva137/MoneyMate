@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import pt.isel.moneymate.DependenciesContainer
 import pt.isel.moneymate.home.HomeActivity
+import pt.isel.moneymate.main.MainActivity
 import pt.isel.moneymate.register.RegisterActivity
 import pt.isel.moneymate.utils.viewModelInit
 
@@ -39,7 +40,7 @@ class LoginActivity: ComponentActivity() {
                     viewModel.login(email = email, password = password)
                 },
                 onLoginSuccessful = {
-                    HomeActivity.navigate(this)
+                    MainActivity.navigate(this)
                     finish()
                 },
                 onSignUpRequest = {

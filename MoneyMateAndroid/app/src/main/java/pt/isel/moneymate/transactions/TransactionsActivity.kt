@@ -8,8 +8,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import pt.isel.moneymate.DependenciesContainer
-import pt.isel.moneymate.domain.Transaction
-import pt.isel.moneymate.profile.ProfileViewMode
 import pt.isel.moneymate.utils.viewModelInit
 
 class TransactionsActivity: ComponentActivity() {
@@ -25,9 +23,9 @@ class TransactionsActivity: ComponentActivity() {
 
     private val dependencies by lazy { application as DependenciesContainer }
 
-    private val viewModel: TransactionViewModel by viewModels {
+    private val viewModel: TransactionsViewModel by viewModels {
         viewModelInit {
-            TransactionViewModel(dependencies.moneymateService, dependencies.sessionManager)
+            TransactionsViewModel(dependencies.moneymateService, dependencies.sessionManager)
         }
     }
 
