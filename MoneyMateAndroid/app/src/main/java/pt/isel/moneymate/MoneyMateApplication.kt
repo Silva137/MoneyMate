@@ -6,6 +6,7 @@ import okhttp3.OkHttpClient
 import pt.isel.moneymate.services.MoneyMateService
 import pt.isel.moneymate.session.SessionManager
 import pt.isel.moneymate.session.SessionManagerSharedPrefs
+import pt.isel.moneymate.utils.AuthInterceptor
 
 interface DependenciesContainer {
     val moneymateService: MoneyMateService
@@ -20,7 +21,13 @@ class MoneyMateApplication : DependenciesContainer, Application() {
 
     override val sessionManager: SessionManager by lazy {SessionManagerSharedPrefs(context = this)}
 
-    override val moneymateService: MoneyMateService by lazy { MoneyMateService(API_ENDPOINT, OkHttpClient(),jsonEncoder) }
+    override val moneymateService: MoneyMateService by lazy {
+        val interceptor = AuthInterceptor(sessionManager, API_ENDPOINT)
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(interceptor)
+            .build()
+        MoneyMateService(API_ENDPOINT, okHttpClient, jsonEncoder)
+    }
 
 
     companion object{
