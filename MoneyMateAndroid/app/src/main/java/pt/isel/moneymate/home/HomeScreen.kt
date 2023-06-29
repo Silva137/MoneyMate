@@ -5,23 +5,33 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import pt.isel.moneymate.R
 import pt.isel.moneymate.domain.User
 import pt.isel.moneymate.services.wallets.models.Wallet
-import androidx.lifecycle.viewmodel.compose.viewModel
-
+import pt.isel.moneymate.background.poppins
+import pt.isel.moneymate.services.transactions.models.WalletBalanceDTO
+import pt.isel.moneymate.theme.dialogBackground
+import pt.isel.moneymate.theme.expenseRed
+import pt.isel.moneymate.theme.incomeGreen
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -30,13 +40,12 @@ fun HomeScreen(
     wallets: List<Wallet>,
     selectedWalletId: Int?,
     onWalletSelected: (Int) -> Unit = {},
-    onProfileClick: () -> Unit = {},
-    onTransactionClick: () -> Unit = {}
+    walletBalance: WalletBalanceDTO
 ) {
     Log.d("HomeScreen", "Rendering HomeScreen")
 
     var showPopup by remember { mutableStateOf(false) }
-    val (bottomState, setBottomState) = remember { mutableStateOf("Home") }
+    var showBottomSheet by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -56,8 +65,9 @@ fun HomeScreen(
                 selectedWallet = wallets.find { it.id == selectedWalletId },
                 onClick = { showPopup = true }
             )
-            DateRow(date = "December 2023")
-            MonthReport()
+            DateRow()
+            MonthReport( walletBalance.expenseSum, walletBalance.incomeSum)
+            AddTransactionButton(onClick = { showBottomSheet = true })
         }
     }
 
@@ -70,6 +80,65 @@ fun HomeScreen(
             showPopup = false
         }
     }
+
+    if (showBottomSheet) {
+        AddTransactionBottomSheet(
+            onClose = { showBottomSheet = false },
+            //onTransactionCreated = { /* Implement transaction creation logic here */ }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun AddTransactionBottomSheet(
+    onClose: () -> Unit,
+    //onTransactionCreated: (Transaction) -> Unit
+) {
+    BottomSheetScaffold(
+        sheetContent = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = "Add Transaction",
+                    style = TextStyle(
+                        fontSize = 24.sp,
+                        fontFamily = poppins,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    ),
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                // Add transaction form elements here
+                // Example: TextFields, Dropdowns, Buttons, etc.
+            }
+        },
+        sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        scaffoldState = rememberBottomSheetScaffoldState(),
+        sheetPeekHeight = 0.dp,
+        backgroundColor = Color.Transparent
+    ) {
+        // Content of the screen
+    }
+}
+
+@Composable
+private fun AddTransactionButton(
+    onClick: () -> Unit
+) {
+    Image(
+        painter = painterResource(id = R.drawable.add_transaction),
+        contentDescription = "Background",
+        contentScale = ContentScale.FillBounds,
+        modifier = Modifier
+            .padding(top = 55.dp)
+            .height(85.dp)
+            .width(85.dp)
+            .clickable { onClick() }
+    )
 }
 
 @Composable
@@ -100,20 +169,22 @@ fun BankCard(
             Text(
                 text = "Balance",
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
+                fontSize = 28.sp,
                 color = Color.White,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
             Text(
-                text = "$ ${selectedWallet?.balance ?: 0}",
-                fontSize = 30.sp,
+                text = "€ ${selectedWallet?.balance ?: 0}",
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 32.sp,
                 color = Color.White,
                 textAlign = TextAlign.Start
             )
+            Spacer(modifier = Modifier.height(20.dp))
             Text(
-                text = "** ** ** 1234",
-                fontSize = 14.sp,
+                text = "*** *** *** 1234",
+                fontSize = 16.sp,
                 color = Color.White,
                 textAlign = TextAlign.Start
             )
@@ -122,16 +193,73 @@ fun BankCard(
 }
 
 @Composable
-fun DateRow(date: String) {
-    // Rest of the code...
+fun DateRow() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 30.dp, top = 25.dp, bottom = 5.dp)
+    ) {
+        Text(
+            text = "Month Report",
+            fontSize = 22.sp,
+            fontFamily = poppins,
+            fontWeight = FontWeight.SemiBold,
+            color = Color.White
+        )
+    }
 }
 
 @Composable
 fun MonthReport(
-    expenses: Double = 20.00,
-    income: Double = 135.00
+    expenses: Double,
+    income: Double
 ) {
-    // Rest of the code...
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(165.dp),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.5f)
+                .fillMaxHeight(),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.expenses_home),
+                contentDescription = "Expenses",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.fillMaxSize()
+            )
+            Text(
+                text = "-$expenses€",
+                color = expenseRed,
+                fontSize = 24.sp,
+                fontFamily = poppins,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center,
+            )
+        }
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.income_home),
+                contentDescription = "Income",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.fillMaxSize()
+            )
+            Text(
+                text = "+$income€",
+                color = incomeGreen,
+                fontSize = 24.sp,
+                fontFamily = poppins,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center,
+            )
+        }
+    }
 }
 
 
@@ -142,46 +270,87 @@ fun WalletSelectionPopup(
     onWalletSelected: (Int) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val dismissDialog = {
-        onDismiss()
-    }
 
-    AlertDialog(
-        onDismissRequest = dismissDialog,
-        title = {
-            Text(text = "Select Wallet")
-        },
-        buttons = {
-            Row(
-                modifier = Modifier.padding(8.dp),
-                horizontalArrangement = Arrangement.Center
+    Dialog(
+        onDismissRequest = { onDismiss()},
+        properties = DialogProperties(
+            dismissOnClickOutside = true,
+            dismissOnBackPress = true
+        )
+    ) {
+        Surface(
+            color = dialogBackground, // Set the background color to DarkGray
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
             ) {
+                Text(
+                    text = "Select a Wallet",
+                    style = TextStyle(
+                        fontSize = 24.sp,
+                        fontFamily = poppins,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
+                Spacer(modifier = Modifier.height(16.dp))
                 wallets.forEach { wallet ->
-                    Button(
-                        onClick = {
-                            onWalletSelected(wallet.id)
-                            dismissDialog()
-                        },
-                        modifier = Modifier.padding(4.dp)
-                    ) {
-                        Text(text = wallet.name)
-                    }
+                    WalletListItem(
+                        wallet = wallet,
+                        isSelected = wallet.id == selectedWalletId,
+                        onWalletSelected = onWalletSelected
+                    )
+                    Divider(
+                        color = Color.DarkGray,
+                        thickness = 3.dp,
+                    )
                 }
             }
         }
-    )
+    }
 }
+
+
+//TODO: and if the walletList is too long?
+@Composable
+fun WalletListItem(
+    wallet: Wallet,
+    isSelected: Boolean,
+    onWalletSelected: (Int) -> Unit
+) {
+    val fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold
+
+    Row(
+        modifier = Modifier
+            .padding(8.dp)
+            .clickable { onWalletSelected(wallet.id) }
+    ) {
+        Text(
+            text = wallet.name,
+            modifier = Modifier.weight(1f),
+            style = TextStyle(
+                fontSize = 15.sp,
+                fontFamily = poppins,
+                fontWeight = fontWeight,
+                color = Color.White
+            )
+        )
+        if (isSelected) {
+            Icon(
+                Icons.Default.Check,
+                contentDescription = "Selected",
+                tint = incomeGreen
+            )
+        }
+    }
+}
+
 
 @Preview
 @Composable
 fun MonthReportView() {
-    MonthReport()
-}
-
-@Preview
-@Composable
-fun DateRowPreview() {
-    DateRow("December 2023")
+    MonthReport( 100.0, 200.0)
 }
 
 @Preview
@@ -205,7 +374,6 @@ fun HomeScreenPreview() {
         onWalletSelected = { walletId ->
             selectedWalletId = walletId
         },
-        onProfileClick = { },
-        onTransactionClick = {}
+        walletBalance = WalletBalanceDTO(22.00, 1300.0),
     )
 }

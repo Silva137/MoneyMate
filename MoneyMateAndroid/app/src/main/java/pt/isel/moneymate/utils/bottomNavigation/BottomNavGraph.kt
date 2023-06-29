@@ -1,24 +1,19 @@
 package pt.isel.moneymate.utils.bottomNavigation
 
-import android.util.Log
-import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import pt.isel.moneymate.DependenciesContainer
 import pt.isel.moneymate.home.HomeScreen
 import pt.isel.moneymate.home.HomeViewModel
-import pt.isel.moneymate.profile.ProfileActivity
 import pt.isel.moneymate.profile.ProfileScreen
 import pt.isel.moneymate.profile.ProfileViewModel
+import pt.isel.moneymate.services.transactions.models.WalletBalanceDTO
 import pt.isel.moneymate.statistics.StatisticsScreen
 import pt.isel.moneymate.statistics.StatisticsViewModel
-import pt.isel.moneymate.transactions.TransactionsActivity
 import pt.isel.moneymate.transactions.TransactionsScreen
 import pt.isel.moneymate.transactions.TransactionsViewModel
-import pt.isel.moneymate.utils.viewModelInit
-import java.time.LocalDate
 
 @Composable
 fun BottomNavGraph(
@@ -34,7 +29,7 @@ fun BottomNavGraph(
         startDestination = BottomBarScreen.Home.route
     ) {
         composable(route = BottomBarScreen.Home.route) {
-            if (homeViewModel.state == HomeViewModel.WalletState.IDLE) {
+            LaunchedEffect(true) {
                 homeViewModel.fetchWallets()
             }
 
@@ -44,7 +39,8 @@ fun BottomNavGraph(
                 onWalletSelected = { walletId ->
                     // Update the selected wallet ID
                     homeViewModel.selectedWalletId = walletId
-                }
+                },
+                WalletBalanceDTO(22.00, 1300.0)
             )
         }
         composable(route = BottomBarScreen.Transactions.route) {

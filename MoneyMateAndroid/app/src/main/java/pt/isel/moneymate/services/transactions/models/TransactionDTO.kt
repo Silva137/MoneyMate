@@ -15,3 +15,9 @@ class TransactionDTO (
     val createdAt: LocalDateTime,
     val periodical: Int
 )
+
+data class WalletBalanceDTO(
+    val incomeSum: Double,
+    val expenseSum: Double,
+)
+

@@ -32,8 +32,7 @@ class LoginViewModel(
                 val outputModel: AuthenticationOutputModel = _authenticationData!!.getOrThrow()
                 sessionManager.setSession(
                     accessToken = outputModel.access_token,
-                    refreshToken = outputModel.refresh_token,
-                    email = email
+                    refreshToken = outputModel.refresh_token
                 )
                 _authenticationState = AuthenticationState.SUCCESS
             } catch (e: Exception) {

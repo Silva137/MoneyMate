@@ -14,19 +14,15 @@ class SessionManagerSharedPrefs(private val context: Context) : SessionManager {
     override val refreshToken: String?
         get() = prefs.getString(REFRESH_TOKEN, null)
 
-    override val email: String?
-        get() = prefs.getString(USERNAME, null)
 
 
     override fun setSession(
-        accessToken: String,
-        refreshToken: String,
-        email: String,
+        accessToken: String?,
+        refreshToken: String?
     ) {
         prefs.edit()
             .putString(ACCESS_TOKEN, accessToken)
             .putString(REFRESH_TOKEN, refreshToken)
-            .putString(USERNAME, email)
 
             .apply()
     }
@@ -35,7 +31,6 @@ class SessionManagerSharedPrefs(private val context: Context) : SessionManager {
         prefs.edit()
             .remove(ACCESS_TOKEN)
             .remove(REFRESH_TOKEN)
-            .remove(USERNAME)
             .apply()
     }
 
@@ -43,6 +38,5 @@ class SessionManagerSharedPrefs(private val context: Context) : SessionManager {
         private const val SESSION_PREFS = "session"
         private const val ACCESS_TOKEN = "accessToken"
         private const val REFRESH_TOKEN = "refreshToken"
-        private const val USERNAME = "username"
     }
 }

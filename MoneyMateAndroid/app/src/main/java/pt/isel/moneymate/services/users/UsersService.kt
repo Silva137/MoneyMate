@@ -37,6 +37,16 @@ class UsersService(
         request.send(httpClient) {}
     }
 
+    suspend fun refresh(
+        refreshToken: String
+    ): AuthenticationOutputModel{
+        val request = postNoAuth(link = Uris.Authentication.REFRESH_TOKEN, body = refreshToken)
+        val tokens = request.send(httpClient){ response ->
+            handleResponse<AuthenticationOutputModel>(response, AuthenticationOutputModel::class.java)
+        }
+        return tokens
+    }
+
     suspend fun getUsername(token: String?): UserDTO? {
         if (token == null) {
             return null

@@ -34,21 +34,26 @@ class LoginActivity: ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent{
-            LoginScreen(
-                state = viewModel.authenticationState,
-                onLoginRequest = {email, password ->
-                    viewModel.login(email = email, password = password)
-                },
-                onLoginSuccessful = {
-                    MainActivity.navigate(this)
-                    finish()
-                },
-                onSignUpRequest = {
-                    RegisterActivity.navigate(origin = this)
-                    finish()
-                }
-
-            )
+            if(dependencies.sessionManager.isLoggedIn()) {
+                MainActivity.navigate(this)
+                finish()
+            }
+            else {
+                LoginScreen(
+                    state = viewModel.authenticationState,
+                    onLoginRequest = { email, password ->
+                        viewModel.login(email = email, password = password)
+                    },
+                    onLoginSuccessful = {
+                        MainActivity.navigate(this)
+                        finish()
+                    },
+                    onSignUpRequest = {
+                        RegisterActivity.navigate(origin = this)
+                        finish()
+                    }
+                )
+            }
         }
     }
 

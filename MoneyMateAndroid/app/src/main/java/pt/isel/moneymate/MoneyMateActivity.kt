@@ -7,9 +7,7 @@ import pt.isel.moneymate.utils.viewModelInit
 
 open class MoneyMateActivity : ComponentActivity() {
 
-    protected val dependenciesContainer by lazy {
-        (application as DependenciesContainer)
-    }
+    protected val dependenciesContainer by lazy { (application as DependenciesContainer) }
 
     protected inline fun <reified T > getViewModel(
         crossinline constructor: (

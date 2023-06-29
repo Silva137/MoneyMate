@@ -1,17 +1,14 @@
 package pt.isel.moneymate.main
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -19,25 +16,12 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import pt.isel.moneymate.R
-import pt.isel.moneymate.domain.Category
-import pt.isel.moneymate.domain.Transaction
-import pt.isel.moneymate.domain.TransactionType
-import pt.isel.moneymate.domain.User
-import pt.isel.moneymate.home.HomeScreen
 import pt.isel.moneymate.home.HomeViewModel
-import pt.isel.moneymate.profile.ProfileScreen
 import pt.isel.moneymate.profile.ProfileViewModel
-import pt.isel.moneymate.services.wallets.models.Wallet
-import pt.isel.moneymate.statistics.StatisticsScreen
 import pt.isel.moneymate.statistics.StatisticsViewModel
-import pt.isel.moneymate.transactions.BottomSheetContent
-import pt.isel.moneymate.transactions.TransactionsScreen
 import pt.isel.moneymate.transactions.TransactionsViewModel
 import pt.isel.moneymate.utils.bottomNavigation.BottomBarScreen
 import pt.isel.moneymate.utils.bottomNavigation.BottomNavGraph
-import java.time.LocalDateTime
-
 import java.util.*
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
