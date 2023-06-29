@@ -59,7 +59,11 @@ fun BottomNavGraph(
         }
         composable(route = BottomBarScreen.Profile.route) {
             ProfileScreen(
-                username = "teste"
+                username = "teste",
+                onAddButtonClick = { walletName ->
+                    profileViewModel.createWallet(walletName)
+
+                }
             )
         }
     }

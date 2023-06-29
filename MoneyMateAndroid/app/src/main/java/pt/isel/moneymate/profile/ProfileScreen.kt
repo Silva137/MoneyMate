@@ -1,28 +1,36 @@
 package pt.isel.moneymate.profile
 
+import android.app.Dialog
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Blue
+import androidx.compose.ui.graphics.Color.Companion.Green
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import pt.isel.moneymate.R
@@ -32,7 +40,7 @@ import pt.isel.moneymate.background.poppins
 @Composable
 fun ProfileScreen(
     username : String?,
-    onAddButtonClick: () -> Unit = {},
+    onAddButtonClick: (String) -> Unit = {},
     onCreateSharedWalletClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {}
 ) {
@@ -136,8 +144,12 @@ fun BalanceTexts(
     )
 }
 
+
 @Composable
-fun AddWallet(onAddButtonClick: () -> Unit) {
+fun AddWallet(onAddButtonClick: (String) -> Unit) {
+    var showDialog by remember { mutableStateOf(false) }
+    var walletName by remember { mutableStateOf("") }
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -147,7 +159,7 @@ fun AddWallet(onAddButtonClick: () -> Unit) {
             painter = painterResource(id = R.drawable.add_wallet),
             contentDescription = "Add Wallet",
             modifier = Modifier
-                .clickable { onAddButtonClick() }
+                .clickable { showDialog = true }
                 .size(150.dp)
         )
         Image(
@@ -156,10 +168,127 @@ fun AddWallet(onAddButtonClick: () -> Unit) {
             modifier = Modifier.size(250.dp)
         )
     }
+
+    if (showDialog) {
+        CustomDialog(
+            onDismiss = { showDialog = false },
+            onSaveWallet = onAddButtonClick
+        )
+    }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ProfileButton(icon: Int, text: String, onClick: () -> Unit) {
+fun CustomDialog(
+    onDismiss: () -> Unit,
+    onSaveWallet: (String) -> Unit
+) {
+    var walletName by remember { mutableStateOf("") }
+
+    Dialog(
+        onDismissRequest = { onDismiss() },
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Card(
+            elevation = 5.dp,
+            shape = RoundedCornerShape(15.dp),
+            modifier = Modifier
+                .width(300.dp)
+                .height(IntrinsicSize.Min)
+                .border(2.dp, color = Green, shape = RoundedCornerShape(15.dp))
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(15.dp),
+                verticalArrangement = Arrangement.spacedBy(25.dp)
+            ) {
+                TextField(
+                    value = walletName,
+                    onValueChange = { walletName = it },
+                    singleLine = true,
+                    label = {
+                        Text(
+                            text = "Wallet Name",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = TextFieldDefaults.textFieldColors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(30.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(60.dp)
+                            .weight(1f)
+                            .clickable { onDismiss() }
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.profile_button),
+                            contentDescription = "Cancel",
+                            contentScale = ContentScale.FillBounds
+                        )
+                        Text(
+                            text = "Cancel",
+                            color = Color.White,
+                            fontSize = 20.sp,
+                            fontFamily = poppins,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(top = 4.dp)
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .size(60.dp)
+                            .weight(1f)
+                            .clickable {
+                                onSaveWallet(walletName)
+                                onDismiss()
+                            }
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.profile_button),
+                            contentDescription = "Create",
+                            contentScale = ContentScale.FillBounds
+                        )
+                        Text(
+                            text = "Create",
+                            color = Color.White,
+                            fontSize = 20.sp,
+                            fontFamily = poppins,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(top = 4.dp)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+@Composable
+fun ProfileButton(icon: Int? = null, text: String, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth().height(70.dp)
@@ -181,12 +310,14 @@ fun ProfileButton(icon: Int, text: String, onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(30.dp)
         ) {
-            Icon(
-                painter = painterResource(id = icon),
-                contentDescription = "Category Icon",
-                modifier = Modifier.size(40.dp),
-                tint = Color.White
-            )
+            icon?.let {
+                Icon(
+                    painter = painterResource(id = it),
+                    contentDescription = "Category Icon",
+                    modifier = Modifier.size(40.dp),
+                    tint = Color.White
+                )
+            }
             Text(
                 text = text,
                 color = Color.White,

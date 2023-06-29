@@ -36,6 +36,18 @@ class ProfileViewModel(
             Log.v("USERNAME","$username")
         }
     }
+
+    fun createWallet(walletName: String){
+        viewModelScope.launch {
+            try {
+                val token = sessionManager.accessToken
+                val result = Result.success(moneymateService.walletsService.createWallet(token,walletName))
+            } catch (e: Exception) {
+            }
+        }
+    }
+
+
 }
 
 enum class ProfileState {
