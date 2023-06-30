@@ -5,9 +5,14 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,6 +23,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,9 +32,10 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import pt.isel.moneymate.R
 import pt.isel.moneymate.domain.User
-import pt.isel.moneymate.services.wallets.models.Wallet
 import pt.isel.moneymate.background.poppins
+import pt.isel.moneymate.domain.Category
 import pt.isel.moneymate.services.transactions.models.WalletBalanceDTO
+import pt.isel.moneymate.services.wallets.models.Wallet
 import pt.isel.moneymate.theme.dialogBackground
 import pt.isel.moneymate.theme.expenseRed
 import pt.isel.moneymate.theme.incomeGreen
@@ -38,14 +45,16 @@ import pt.isel.moneymate.theme.incomeGreen
 @Composable
 fun HomeScreen(
     wallets: List<Wallet>,
+    categories: List<Category>,
     selectedWalletId: Int?,
     onWalletSelected: (Int) -> Unit = {},
-    walletBalance: WalletBalanceDTO
+    walletBalance: WalletBalanceDTO,
+    onCategoriesDropdownClick: () -> Unit,
 ) {
     Log.d("HomeScreen", "Rendering HomeScreen")
 
-    var showPopup by remember { mutableStateOf(false) }
-    var showBottomSheet by remember { mutableStateOf(false) }
+    var showPopupSelectWallet by remember { mutableStateOf(false) }
+    var showPopupAddTransaction by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -63,67 +72,33 @@ fun HomeScreen(
         ) {
             BankCard(
                 selectedWallet = wallets.find { it.id == selectedWalletId },
-                onClick = { showPopup = true }
+                onClick = { showPopupSelectWallet = true }
             )
             DateRow()
             MonthReport( walletBalance.expenseSum, walletBalance.incomeSum)
-            AddTransactionButton(onClick = { showBottomSheet = true })
+            AddTransactionButton(onClick = { showPopupAddTransaction = true })
         }
     }
 
-    if (showPopup) {
+    if (showPopupSelectWallet) {
         WalletSelectionPopup(
             wallets = wallets,
             selectedWalletId = selectedWalletId,
-            onWalletSelected = onWalletSelected
-        ) {
-            showPopup = false
-        }
+            onWalletSelected = onWalletSelected,
+            onDismiss = { showPopupSelectWallet = false }
+        )
     }
 
-    if (showBottomSheet) {
-        AddTransactionBottomSheet(
-            onClose = { showBottomSheet = false },
-            //onTransactionCreated = { /* Implement transaction creation logic here */ }
+    if (showPopupAddTransaction) {
+        AddTransactionPopup(
+            categories = categories,
+            onDismiss = { showPopupAddTransaction = false },
+            onCategoriesDropdownClick = onCategoriesDropdownClick
         )
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun AddTransactionBottomSheet(
-    onClose: () -> Unit,
-    //onTransactionCreated: (Transaction) -> Unit
-) {
-    BottomSheetScaffold(
-        sheetContent = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = "Add Transaction",
-                    style = TextStyle(
-                        fontSize = 24.sp,
-                        fontFamily = poppins,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    ),
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-                // Add transaction form elements here
-                // Example: TextFields, Dropdowns, Buttons, etc.
-            }
-        },
-        sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-        scaffoldState = rememberBottomSheetScaffoldState(),
-        sheetPeekHeight = 0.dp,
-        backgroundColor = Color.Transparent
-    ) {
-        // Content of the screen
-    }
-}
+
 
 @Composable
 private fun AddTransactionButton(
@@ -262,6 +237,99 @@ fun MonthReport(
     }
 }
 
+@Composable
+fun AddTransactionPopup(
+    categories: List<Category>,
+    onDismiss: () -> Unit,
+    onCategoriesDropdownClick: () -> Unit
+){
+    var transactionTitle by remember { mutableStateOf("") }
+    var transactionAmount by remember { mutableStateOf("") }
+    var selectedIndex by remember { mutableStateOf(-1) }
+
+
+    Dialog(
+        onDismissRequest = { onDismiss() },
+        properties = DialogProperties(
+            dismissOnClickOutside = true,
+            dismissOnBackPress = true
+        )
+    ) {
+        Surface(
+            color = dialogBackground,
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Create Transaction",
+                    style = TextStyle(
+                        fontSize = 24.sp,
+                        fontFamily = poppins,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = transactionTitle,
+                    onValueChange = { transactionTitle = it },
+                    label = { Text(text = "Title", color = Color.White) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.White,
+                        unfocusedBorderColor = Color.White,
+                        textColor = Color.White
+                    )
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = transactionAmount,
+                    onValueChange = { transactionAmount = it },
+                    label = { Text(text = "Amount", color = Color.White) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.White,
+                        unfocusedBorderColor = Color.White,
+                        textColor = Color.White
+                    )
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                LargeDropdownMenu(
+                    label = "Select a category",
+                    items = categories.map { it.name },
+                    selectedIndex = selectedIndex,
+                    onItemSelected = { index, _ -> selectedIndex = index },
+                    onCategoriesDropdownClicked = onCategoriesDropdownClick
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Button(
+                        onClick = {
+                            // Handle the logic for creating the transaction
+                            // You can access the transactionTitle and transactionAmount here
+                            // and perform the necessary actions (e.g., save to a database)
+                            onDismiss()
+                        }
+                    ) {
+                        Text("Create")
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 
 @Composable
 fun WalletSelectionPopup(
@@ -279,7 +347,7 @@ fun WalletSelectionPopup(
         )
     ) {
         Surface(
-            color = dialogBackground, // Set the background color to DarkGray
+            color = dialogBackground,
             shape = RoundedCornerShape(8.dp)
         ) {
             Column(
@@ -301,10 +369,7 @@ fun WalletSelectionPopup(
                         isSelected = wallet.id == selectedWalletId,
                         onWalletSelected = onWalletSelected
                     )
-                    Divider(
-                        color = Color.DarkGray,
-                        thickness = 3.dp,
-                    )
+                    Divider(color = Color.DarkGray, thickness = 3.dp)
                 }
             }
         }
@@ -346,6 +411,126 @@ fun WalletListItem(
     }
 }
 
+@Composable
+fun <T> LargeDropdownMenu(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    label: String,
+    notSetLabel: String? = null,
+    items: List<T>,
+    selectedIndex: Int = -1,
+    onItemSelected: (index: Int, item: T) -> Unit,
+    selectedItemToString: (T) -> String = { it.toString() },
+    drawItem: @Composable (T, Boolean, Boolean, () -> Unit) -> Unit = { item, selected, itemEnabled, onClick ->
+        LargeDropdownMenuItem(
+            text = item.toString(),
+            selected = selected,
+            enabled = itemEnabled,
+            onClick = onClick,
+        )
+    },
+    onCategoriesDropdownClicked: () -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(modifier = modifier.height(IntrinsicSize.Min)) {
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = items.getOrNull(selectedIndex)?.let { selectedItemToString(it) } ?: "",
+            onValueChange = { },
+            label = { Text(text = label, color = Color.White) },
+            shape = RoundedCornerShape(12.dp),
+            enabled = enabled,
+            trailingIcon = { Icon(Icons.Filled.ArrowDropUp, "trailingIcon", tint = Color.White) },
+            readOnly = true,
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = Color.White,
+                unfocusedBorderColor = Color.White,
+                textColor = Color.White
+            )
+        )
+        // Transparent clickable surface on top of OutlinedTextField
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 8.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .clickable(enabled = enabled) {
+                    expanded = true
+                    onCategoriesDropdownClicked()
+                },
+            color = Color.Transparent,
+        ) { }
+    }
+
+    if (expanded) {
+        Dialog(
+            onDismissRequest = { expanded = false },
+        ) {
+            Surface(
+                modifier.height(450.dp),
+                color = dialogBackground,
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                val listState = rememberLazyListState()
+                if (selectedIndex > -1) {
+                    LaunchedEffect("ScrollToSelected") {
+                        listState.scrollToItem(index = selectedIndex)
+                    }
+                }
+
+                LazyColumn(modifier = Modifier.fillMaxWidth(), state = listState) {
+                    if (notSetLabel != null) {
+                        item {
+                            LargeDropdownMenuItem(
+                                text = notSetLabel,
+                                selected = false,
+                                enabled = false,
+                                onClick = { },
+                            )
+                        }
+                    }
+                    itemsIndexed(items) { index, item ->
+                        val selectedItem = index == selectedIndex
+                        drawItem(item, selectedItem, true) {
+                            onItemSelected(index, item)
+                            expanded = false
+                        }
+
+                        if (index < items.lastIndex) {
+                            Divider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.DarkGray, thickness = 3.dp)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun LargeDropdownMenuItem(
+    text: String,
+    selected: Boolean,
+    enabled: Boolean,
+    onClick: () -> Unit,
+) {
+    val contentColor = when {
+        selected -> incomeGreen
+        else -> Color.White
+    }
+    CompositionLocalProvider(LocalContentColor provides contentColor) {
+        Box(modifier = Modifier
+            .clickable(enabled) { onClick() }
+            .fillMaxWidth()
+            .padding(16.dp)) {
+            Text(
+                text = text,
+            )
+        }
+    }
+
+}
+
 
 @Preview
 @Composable
@@ -375,5 +560,11 @@ fun HomeScreenPreview() {
             selectedWalletId = walletId
         },
         walletBalance = WalletBalanceDTO(22.00, 1300.0),
+        categories = listOf(
+            Category(1, "Saude", User(1,"silva","silva")),
+            Category(2, "Desporto", User(1,"silva","silva")),
+            Category(3, "Carro", User(1,"silva","silva"))
+        ),
+        onCategoriesDropdownClick = {},
     )
 }

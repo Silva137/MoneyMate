@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import isel.pt.moneymate.http.utils.Uris
 import okhttp3.OkHttpClient
 import pt.isel.moneymate.services.HTTPService
+import pt.isel.moneymate.services.category.models.CreateCategory
 import pt.isel.moneymate.services.transactions.models.TransactionsDTO
 import pt.isel.moneymate.utils.send
 
@@ -13,6 +14,14 @@ class TransactionService(
     jsonEncoder: Gson
 ) : HTTPService(apiEndpoint,httpClient,jsonEncoder) {
 
+
+    suspend fun createTransaction(token: String?, /*add Paramaters*/) {
+        if (token == null) {
+            return
+        }
+        //val request = post(link = Uris.Category.CREATE, token = token, body = CreateCategory(categoryName))
+        //request.send(httpClient){}
+    }
 
     suspend fun getWalletTransactions(walletId : Int, token : String?, startDate : String, endDate : String) : TransactionsDTO? {
         if(token == null) {

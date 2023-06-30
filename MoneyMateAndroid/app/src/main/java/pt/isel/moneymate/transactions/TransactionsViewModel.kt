@@ -40,7 +40,7 @@ class TransactionsViewModel(
                             convertType(transactionDTO.amount),
                             transactionDTO.title,
                             transactionDTO.amount.toDouble(),
-                            Category(transactionDTO.category.name)
+                            Category(transactionDTO.category.id,transactionDTO.category.name, transactionDTO.category.user)
                         )
                     }
                     _transactions = transactionList

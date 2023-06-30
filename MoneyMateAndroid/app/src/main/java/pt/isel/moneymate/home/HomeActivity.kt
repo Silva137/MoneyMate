@@ -9,6 +9,8 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import pt.isel.moneymate.DependenciesContainer
+import pt.isel.moneymate.domain.Category
+import pt.isel.moneymate.domain.User
 import pt.isel.moneymate.services.transactions.models.WalletBalanceDTO
 import pt.isel.moneymate.utils.viewModelInit
 
@@ -47,7 +49,13 @@ class HomeActivity : ComponentActivity() {
                     // Update the selected wallet ID
                     viewModel.selectedWalletId = walletId
                 },
-                WalletBalanceDTO(22.00, 1300.0)
+                walletBalance = WalletBalanceDTO(22.00, 1300.0),
+                categories = listOf(
+                    Category(1, "Saude", User(1,"silva","silva")),
+                    Category(2, "Desporto", User(1,"silva","silva")),
+                    Category(3, "Carro", User(1,"silva","silva"))
+                ),
+                onCategoriesDropdownClick = {viewModel.fetchCategories()}
             )
         }
     }

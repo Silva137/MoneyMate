@@ -32,6 +32,7 @@ import pt.isel.moneymate.background.poppins
 import pt.isel.moneymate.domain.Category
 import pt.isel.moneymate.domain.Transaction
 import pt.isel.moneymate.domain.TransactionType
+import pt.isel.moneymate.domain.User
 import pt.isel.moneymate.theme.expenseRed
 import pt.isel.moneymate.theme.incomeGreen
 import java.time.LocalDate
@@ -52,9 +53,12 @@ fun TransactionsScreen(
     val transaction = Transaction(
         type = TransactionType.EXPENSE,
         description = "none",
-        category = Category("Food"),
+        category = Category(1, "Saude", User(1,"silva","silva")),
         amount = 30.00
     )
+
+
+
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -274,7 +278,7 @@ fun TransactionItemPreview() {
     val transaction = Transaction(
         type = TransactionType.EXPENSE,
         description = "none",
-        category = Category("Food"),
+        category = Category(1, "Saude", User(1,"silva","silva")),
         amount = 12.34
     )
     TransactionsScreen(
@@ -294,56 +298,32 @@ fun TransactionsListPreview() {
         Transaction(
             type = TransactionType.EXPENSE,
             description = "Lunch",
-            category = Category("Food"),
+            category = Category(1, "Saude", User(1,"silva","silva")),
             amount = 12.34
         ),
         Transaction(
             type = TransactionType.INCOME,
             description = "Salary",
-            category = Category("Work"),
+            category = Category(1, "Work", User(1,"silva","silva")),
             amount = 5678.9
         ),
         Transaction(
             type = TransactionType.EXPENSE,
             description = "Movie ticket",
-            category = Category("Entertainment"),
+            category = Category(1, "Entertainment", User(1,"silva","silva")),
             amount = 9.99
         ),
         Transaction(
             type = TransactionType.EXPENSE,
             description = "Lunch",
-            category = Category("Food"),
+            category = Category(1, "Food", User(1,"silva","silva")),
             amount = 12.34
         ),
         Transaction(
             type = TransactionType.INCOME,
             description = "Salary",
-            category = Category("Work"),
+            category = Category(1, "Sport", User(1,"silva","silva")),
             amount = 5678.9
-        ),
-        Transaction(
-            type = TransactionType.EXPENSE,
-            description = "Movie ticket",
-            category = Category("Entertainment"),
-            amount = 9.99
-        ),
-        Transaction(
-            type = TransactionType.EXPENSE,
-            description = "Lunch",
-            category = Category("Food"),
-            amount = 12.34
-        ),
-        Transaction(
-            type = TransactionType.INCOME,
-            description = "Salary",
-            category = Category("Work"),
-            amount = 5678.9
-        ),
-        Transaction(
-            type = TransactionType.EXPENSE,
-            description = "Movie ticket",
-            category = Category("Entertainment"),
-            amount = 9.99
         )
     )
     TransactionsScreen(

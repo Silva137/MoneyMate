@@ -1,5 +1,7 @@
 package pt.isel.moneymate.services.transactions.models
 
+import pt.isel.moneymate.domain.Category
+import pt.isel.moneymate.domain.User
 import pt.isel.moneymate.services.category.models.CategoryDTO
 import pt.isel.moneymate.services.users.models.UserDTO
 import pt.isel.moneymate.services.wallets.models.WalletDTO
@@ -9,9 +11,9 @@ class TransactionDTO (
     val id: Int,
     val title: String,
     val amount: Float,
-    val user: UserDTO,
+    val user: User,
     val wallet: WalletDTO,
-    val category: CategoryDTO,
+    val category: Category,
     val createdAt: LocalDateTime,
     val periodical: Int
 )
