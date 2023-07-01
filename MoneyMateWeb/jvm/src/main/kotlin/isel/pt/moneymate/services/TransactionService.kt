@@ -239,4 +239,10 @@ class TransactionService(
         if(userOfWallet != userId)
             throw UnauthorizedException("User does not have permission to perform this action on Wallet $walletId")
     }
+
+    fun getWalletBalance(user: User,walletId: Int,startDate: Date, endDate: Date): WalletBalanceDTO{
+        verifyUserOnWallet(user.id,walletId)
+        val walletBalance = transactionRepository.getWalletBalance(walletId,startDate,endDate)
+        return walletBalance.toDTO()
+    }
 }

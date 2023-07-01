@@ -351,4 +351,18 @@ interface TransactionRepository {
     fun deleteTransactionsOfWallet(
         @Bind("wallet_id") walletId: Int,
     )
+    @SqlQuery("""
+        SELECT 
+            SUM( CASE WHEN transactions.amount >=0 THEN transactions.amount ELSE 0 END) AS income_sum,
+            SUM( CASE WHEN transactions.amount < 0 THEN transactions.amount ELSE 0 END) AS expense_sum
+        FROM MoneyMate.transactions transactions
+        WHERE transactions.wallet_id = :wallet_id
+        AND transactions.date_of_creation BETWEEN :start_date AND :end_date
+    """)
+    fun getWalletBalance(
+        @Bind("wallet_id")walletId: Int,
+        @Bind("start_date") startDate: Date,
+        @Bind("end_date") endDate: Date,
+
+    ) : WalletBalance
 }

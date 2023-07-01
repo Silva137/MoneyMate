@@ -17,7 +17,7 @@ import java.sql.Date
 @RestController
 class TransactionController(private val transactionService: TransactionService) {
 
-    /*
+
     // TODO Passar para wallet Controller
     /**
      * Handles the request to get the sume of all lucrative transactions
@@ -28,14 +28,19 @@ class TransactionController(private val transactionService: TransactionService) 
      * @return the sum of the values of th transactions
      */
     @GetMapping(Uris.Transactions.GET_WALLET_BALANCE)
-    fun getWalletBalance(@PathVariable walletId: Int): ResponseEntity<*> {
-        val sum = transactionService.getWalletBalance(walletId)
+    fun getWalletBalance(
+        @AuthenticationPrincipal user: User,
+        @PathVariable walletId: Int,
+        @RequestParam startDate: Date,
+        @RequestParam endDate: Date,
+    ): ResponseEntity<*> {
+        val sum = transactionService.getWalletBalance(user,walletId,startDate,endDate)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(sum)
     }
 
-     */
+
 
 
     /**
