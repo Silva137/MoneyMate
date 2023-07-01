@@ -5,6 +5,7 @@ import isel.pt.moneymate.http.utils.Uris
 import okhttp3.OkHttpClient
 import pt.isel.moneymate.services.HTTPService
 import pt.isel.moneymate.services.category.models.CreateCategory
+import pt.isel.moneymate.services.transactions.models.CreateTransaction
 import pt.isel.moneymate.services.transactions.models.TransactionsDTO
 import pt.isel.moneymate.utils.send
 
@@ -15,12 +16,12 @@ class TransactionService(
 ) : HTTPService(apiEndpoint,httpClient,jsonEncoder) {
 
 
-    suspend fun createTransaction(token: String?, /*add Paramaters*/) {
+    suspend fun createTransaction(token: String?, categoryId: Int, walletId: Int, amount: Float, title: String) {
         if (token == null) {
             return
         }
-        //val request = post(link = Uris.Category.CREATE, token = token, body = CreateCategory(categoryName))
-        //request.send(httpClient){}
+        val request = post(link = "/transactions/wallets/$walletId/categories/$categoryId", token = token, body = CreateTransaction(amount, title))
+        request.send(httpClient){}
     }
 
     suspend fun getWalletTransactions(walletId : Int, token : String?, startDate : String, endDate : String) : TransactionsDTO? {

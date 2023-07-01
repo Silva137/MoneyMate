@@ -70,12 +70,24 @@ class HomeViewModel(
         }
     }
 
+    fun createTransaction(walletId: Int, categoryId: Int, amount: Float, title: String) {
+        viewModelScope.launch {
+            try {
+                val token = sessionManager.accessToken
+                val response = Result.success(moneymateService.transactionsService.createTransaction(token, categoryId, walletId, amount, title))
+                if(response.isSuccess){
+                    fetchWallets()
+                }
+            } catch (e: Exception) {
+                Log.e("ERROR", "Failed to create transaction", e)
+            }
+        }
+    }
+
 
     enum class WalletState {
         IDLE,
         GETTING_WALLETS,
         FINISHED
     }
-
-
 }

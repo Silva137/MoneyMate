@@ -27,14 +27,11 @@ class TransactionsViewModel(
 
 
         fun fetchTransactions(walletId : Int, startDate : LocalDate, endDate: LocalDate){
-            val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            val formattedStartDate = startDate.format(formatter)
-            val formattedEndDate = endDate.format(formatter)
             viewModelScope.launch {
                 _state = TransactionState.GETTING_TRANSACTIONS
                 try{
                     val token = sessionManager.accessToken
-                    val response = Result.success(moneymateService.transactionsService.getWalletTransactions(walletId,token,formattedStartDate,formattedEndDate))
+                    val response = Result.success(moneymateService.transactionsService.getWalletTransactions(walletId,token,startDate.toString(),endDate.toString()))
                     val transactionList = response.getOrNull()?.transactions?.map { transactionDTO ->
                         Transaction(
                             convertType(transactionDTO.amount),
@@ -45,7 +42,6 @@ class TransactionsViewModel(
                     }
                     _transactions = transactionList
                     _state = TransactionState.FINISHED
-
                 }catch (e: Exception){
 
                 }

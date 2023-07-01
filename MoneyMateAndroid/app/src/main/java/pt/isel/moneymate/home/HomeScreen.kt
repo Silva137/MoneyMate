@@ -50,6 +50,7 @@ fun HomeScreen(
     onWalletSelected: (Int) -> Unit = {},
     walletBalance: WalletBalanceDTO,
     onCategoriesDropdownClick: () -> Unit,
+    onCreateTransactionButtonClick: (Int, Float, String) -> Unit,
 ) {
     Log.d("HomeScreen", "Rendering HomeScreen")
 
@@ -93,7 +94,8 @@ fun HomeScreen(
         AddTransactionPopup(
             categories = categories,
             onDismiss = { showPopupAddTransaction = false },
-            onCategoriesDropdownClick = onCategoriesDropdownClick
+            onCategoriesDropdownClick = onCategoriesDropdownClick,
+            onCreateTransactionButtonClick = onCreateTransactionButtonClick
         )
     }
 }
@@ -241,11 +243,13 @@ fun MonthReport(
 fun AddTransactionPopup(
     categories: List<Category>,
     onDismiss: () -> Unit,
-    onCategoriesDropdownClick: () -> Unit
+    onCategoriesDropdownClick: () -> Unit,
+    onCreateTransactionButtonClick: (Int, Float, String) -> Unit
 ){
     var transactionTitle by remember { mutableStateOf("") }
     var transactionAmount by remember { mutableStateOf("") }
     var selectedIndex by remember { mutableStateOf(-1) }
+    var showError by remember { mutableStateOf(false) }
 
 
     Dialog(
@@ -315,9 +319,11 @@ fun AddTransactionPopup(
                 ) {
                     Button(
                         onClick = {
-                            // Handle the logic for creating the transaction
-                            // You can access the transactionTitle and transactionAmount here
-                            // and perform the necessary actions (e.g., save to a database)
+                            onCreateTransactionButtonClick(
+                                categories[selectedIndex].id,
+                                transactionAmount.toFloat(),
+                                transactionTitle
+                            )
                             onDismiss()
                         }
                     ) {
@@ -555,16 +561,17 @@ fun HomeScreenPreview() {
             Wallet(2, "Wallet 2",  User(1,"shimi","shimi"), "2023-06-01", 2000),
             Wallet(3, "Wallet 3",  User(1,"shimi","shimi"), "2023-06-01", 3000)
         ),
-        selectedWalletId = selectedWalletId,
-        onWalletSelected = { walletId ->
-            selectedWalletId = walletId
-        },
-        walletBalance = WalletBalanceDTO(22.00, 1300.0),
         categories = listOf(
             Category(1, "Saude", User(1,"silva","silva")),
             Category(2, "Desporto", User(1,"silva","silva")),
             Category(3, "Carro", User(1,"silva","silva"))
         ),
+        selectedWalletId = selectedWalletId,
+        onWalletSelected = { walletId ->
+            selectedWalletId = walletId
+        },
+        walletBalance = WalletBalanceDTO(22.00, 1300.0),
         onCategoriesDropdownClick = {},
+        onCreateTransactionButtonClick = {_,_,_->},
     )
 }

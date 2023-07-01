@@ -44,18 +44,18 @@ class HomeActivity : ComponentActivity() {
 
             HomeScreen(
                 wallets = viewModel.wallets,
-                selectedWalletId = viewModel.selectedWalletId,
-                onWalletSelected = { walletId ->
-                    // Update the selected wallet ID
-                    viewModel.selectedWalletId = walletId
-                },
-                walletBalance = WalletBalanceDTO(22.00, 1300.0),
                 categories = listOf(
                     Category(1, "Saude", User(1,"silva","silva")),
                     Category(2, "Desporto", User(1,"silva","silva")),
                     Category(3, "Carro", User(1,"silva","silva"))
                 ),
-                onCategoriesDropdownClick = {viewModel.fetchCategories()}
+                selectedWalletId = viewModel.selectedWalletId,
+                onWalletSelected = { walletId ->
+                    viewModel.selectedWalletId = walletId
+                },
+                walletBalance = WalletBalanceDTO(22.00, 1300.0),
+                onCategoriesDropdownClick = {viewModel.fetchCategories()},
+                onCreateTransactionButtonClick = {_,_,_->}
             )
         }
     }

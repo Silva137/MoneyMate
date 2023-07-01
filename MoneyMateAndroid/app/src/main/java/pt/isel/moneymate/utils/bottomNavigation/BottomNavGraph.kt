@@ -5,8 +5,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import pt.isel.moneymate.domain.Category
-import pt.isel.moneymate.domain.User
 import pt.isel.moneymate.home.HomeScreen
 import pt.isel.moneymate.home.HomeViewModel
 import pt.isel.moneymate.profile.ProfileScreen
@@ -44,12 +42,18 @@ fun BottomNavGraph(
                 },
                 walletBalance = WalletBalanceDTO(22.00, 1300.0),
                 categories = homeViewModel.categories,
-                onCategoriesDropdownClick = {homeViewModel.fetchCategories()} //TODO add boolean to see if is already fetched
+                onCategoriesDropdownClick = {homeViewModel.fetchCategories()}, //TODO add boolean to see if is already fetched
+                onCreateTransactionButtonClick = {categoryId, amount, title ->
+                    homeViewModel.createTransaction(homeViewModel.selectedWalletId, categoryId, amount, title)
+                }
             )
         }
         composable(route = BottomBarScreen.Transactions.route) {
             TransactionsScreen(
-                transactions = listOf(),
+                transactions = transactionsViewModel.transactions,
+                onSearchClick = {startTime, endTime ->
+                    transactionsViewModel.fetchTransactions(homeViewModel.selectedWalletId,startTime,endTime)
+                }
             )
         }
         composable(route = BottomBarScreen.Statistics.route) {
@@ -62,7 +66,6 @@ fun BottomNavGraph(
                 username = "teste",
                 onAddButtonClick = { walletName ->
                     profileViewModel.createWallet(walletName)
-
                 }
             )
         }

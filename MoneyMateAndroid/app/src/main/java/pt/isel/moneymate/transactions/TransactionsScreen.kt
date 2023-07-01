@@ -3,6 +3,7 @@ package pt.isel.moneymate.transactions
 import DatePicker
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.DatePicker
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.commandiron.wheel_picker_compose.WheelDatePicker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -50,13 +52,6 @@ fun TransactionsScreen(
     var pickedEndDate by remember { mutableStateOf(LocalDate.now()) }
     var isSearchClicked by remember { mutableStateOf(false) }
     val selectedTransaction = remember { mutableStateOf<Transaction?>(null) }
-    val transaction = Transaction(
-        type = TransactionType.EXPENSE,
-        description = "none",
-        category = Category(1, "Saude", User(1,"silva","silva")),
-        amount = 30.00
-    )
-
 
 
     Box(
@@ -101,13 +96,18 @@ fun TransactionsScreen(
                     )
                 }
             }
+
             DatePicker(
-                onStartDateSelected = { pickedStartDate = it },
-                onEndDateSelected = { pickedEndDate = it })
+                onStartDateSelected = { pickedStartDate = it},
+                onEndDateSelected = { pickedEndDate = it},
+                startDate = pickedStartDate,
+                endDate = pickedEndDate
+            )
+
             if(isSearchClicked){
                 Log.v("Clicked","Ola")
                 TransactionsList(
-                    transactions = listOf(transaction),
+                    transactions = transactions,
                     scope = MainScope(),
                     bottomSheetState = ModalBottomSheetState(ModalBottomSheetValue.Hidden),
                     selectedTransaction = selectedTransaction
@@ -117,54 +117,6 @@ fun TransactionsScreen(
     }
 }
 
-@Composable
-fun BottomSheetContent(selectedTransaction: MutableState<Transaction?>) {
-    var editedTransaction by remember { mutableStateOf(selectedTransaction.value) }
-
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text("Edit transaction")
-        Spacer(modifier = Modifier.height(16.dp))
-
-        TextField(
-            value = editedTransaction?.description.orEmpty(),
-            onValueChange = { editedTransaction = editedTransaction?.copy(description = it) },
-            label = { Text("Description") }
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        TextField(
-            value = editedTransaction?.amount?.toString().orEmpty(),
-            onValueChange = {
-                editedTransaction = editedTransaction?.copy(amount = it.toDoubleOrNull() ?: 0.0)
-            },
-            label = { Text("Amount") }
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Button(
-                onClick = { selectedTransaction.value = null },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Delete")
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Button(
-                onClick = {
-                    selectedTransaction.value = editedTransaction
-                },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Save")
-            }
-        }
-    }
-}
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -264,6 +216,55 @@ fun TransactionItem(
                 fontFamily = poppins,
                 fontWeight = FontWeight.SemiBold,
             )
+        }
+    }
+}
+
+@Composable
+fun BottomSheetContent(selectedTransaction: MutableState<Transaction?>) {
+    var editedTransaction by remember { mutableStateOf(selectedTransaction.value) }
+
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text("Edit transaction")
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextField(
+            value = editedTransaction?.description.orEmpty(),
+            onValueChange = { editedTransaction = editedTransaction?.copy(description = it) },
+            label = { Text("Description") }
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextField(
+            value = editedTransaction?.amount?.toString().orEmpty(),
+            onValueChange = {
+                editedTransaction = editedTransaction?.copy(amount = it.toDoubleOrNull() ?: 0.0)
+            },
+            label = { Text("Amount") }
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Button(
+                onClick = { selectedTransaction.value = null },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Delete")
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Button(
+                onClick = {
+                    selectedTransaction.value = editedTransaction
+                },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Save")
+            }
         }
     }
 }
