@@ -32,20 +32,25 @@ fun BottomNavGraph(
             LaunchedEffect(true) {
                 homeViewModel.fetchWallets()
             }
-
+            if (homeViewModel.state == HomeViewModel.WalletState.FINISHED) {
+                LaunchedEffect(true) { homeViewModel.getWalletBalance() }
+            }
             HomeScreen(
                 wallets = homeViewModel.wallets,
                 selectedWalletId = homeViewModel.selectedWalletId,
                 onWalletSelected = { walletId ->
                     // Update the selected wallet ID
                     homeViewModel.selectedWalletId = walletId //TODO change the viewModal logic
+                    homeViewModel.getWalletBalance()
                 },
-                walletBalance = WalletBalanceDTO(22.00, 1300.0),
+                walletBalance = homeViewModel.balance,
                 categories = homeViewModel.categories,
                 onCategoriesDropdownClick = {homeViewModel.fetchCategories()}, //TODO add boolean to see if is already fetched
                 onCreateTransactionButtonClick = {categoryId, amount, title ->
                     homeViewModel.createTransaction(homeViewModel.selectedWalletId, categoryId, amount, title)
                 }
+                onCategoriesDropdownClick = { homeViewModel.fetchCategories() } //TODO add boolean to see if is already fetched
+
             )
         }
         composable(route = BottomBarScreen.Transactions.route) {

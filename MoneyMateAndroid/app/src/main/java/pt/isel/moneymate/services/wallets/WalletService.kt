@@ -1,12 +1,16 @@
 package pt.isel.moneymate.services.wallets
 
+import android.util.Log
 import com.google.gson.Gson
 import isel.pt.moneymate.http.utils.Uris
 import okhttp3.OkHttpClient
 import pt.isel.moneymate.services.HTTPService
+import pt.isel.moneymate.services.transactions.models.WalletBalanceDTO
 import pt.isel.moneymate.services.wallets.models.CreateWallet
+import pt.isel.moneymate.services.wallets.models.WalletDTO
 import pt.isel.moneymate.services.wallets.models.getWalletResponse
 import pt.isel.moneymate.utils.send
+import java.time.LocalDate
 
 class WalletService(
     apiEndpoint: String,
@@ -32,5 +36,16 @@ class WalletService(
         }
         val request = post(link = Uris.Wallets.CREATE, token = token, body = CreateWallet(walletName))
         request.send(httpClient){}
+    }
+
+    suspend fun getWalletBalance(token: String?, walletId: Int, startDate: LocalDate, endDate: LocalDate) : WalletBalanceDTO? {
+        if (token == null) {
+            return null
+        }
+        val request = get(link = "/transactions/wallets/${walletId}/balance?startDate=${startDate}&endDate=${endDate}",token)
+        val walletBalance = request.send(httpClient){ response ->
+            handleResponse<WalletBalanceDTO>(response,WalletBalanceDTO::class.java)
+        }
+        return walletBalance
     }
 }

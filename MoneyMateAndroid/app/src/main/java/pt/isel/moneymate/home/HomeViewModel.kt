@@ -10,8 +10,12 @@ import kotlinx.coroutines.launch
 import pt.isel.moneymate.domain.Category
 
 import pt.isel.moneymate.services.MoneyMateService
+import pt.isel.moneymate.services.transactions.models.WalletBalanceDTO
 import pt.isel.moneymate.services.wallets.models.Wallet
 import pt.isel.moneymate.session.SessionManager
+import java.time.LocalDate
+import java.time.YearMonth
+import java.util.*
 
 class HomeViewModel(
     private val moneymateService: MoneyMateService,
@@ -27,21 +31,27 @@ class HomeViewModel(
     private var _categories: List<Category> by mutableStateOf(emptyList())
     val categories: List<Category> get() = _categories
 
+    private var _balance: WalletBalanceDTO by mutableStateOf(WalletBalanceDTO(0, 0))
+    val balance: WalletBalanceDTO get() = _balance
+
 
     var selectedWalletId: Int by mutableStateOf(0)
-         set
+        set
 
 
-    fun fetchWallets(){
+    fun fetchWallets() {
         viewModelScope.launch {
             _state = WalletState.GETTING_WALLETS
-            try{
+            try {
                 val token = sessionManager.accessToken
                 val walletsResponse = Result.success(moneymateService.walletsService.getWallets(token))
                 _wallets = walletsResponse.getOrNull()?.wallets ?: emptyList()
-                selectedWalletId = _wallets.firstOrNull()?.id ?: 0
+
+                if (selectedWalletId == 0) {
+                    selectedWalletId = _wallets.firstOrNull()?.id ?: 0
+                }
                 _state = WalletState.FINISHED
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 Log.e("ERROR", "Failed to fetch wallets", e)
             }
         }
@@ -51,7 +61,8 @@ class HomeViewModel(
         viewModelScope.launch {
             try {
                 val token = sessionManager.accessToken
-                val categoriesResponse = Result.success(moneymateService.categoriesService.getCategories(token))
+                val categoriesResponse =
+                    Result.success(moneymateService.categoriesService.getCategories(token))
                 val bothCategoriesDTO = categoriesResponse.getOrNull()
 
                 _categories = if (bothCategoriesDTO != null) {
@@ -69,7 +80,6 @@ class HomeViewModel(
             }
         }
     }
-
     fun createTransaction(walletId: Int, categoryId: Int, amount: Float, title: String) {
         viewModelScope.launch {
             try {
@@ -85,9 +95,47 @@ class HomeViewModel(
     }
 
 
-    enum class WalletState {
-        IDLE,
-        GETTING_WALLETS,
-        FINISHED
+    fun getWalletBalance() {
+        viewModelScope.launch {
+            try {
+                val token = sessionManager.accessToken
+                val dateRange = getCurrentMonthRange()
+                val walletResponse = Result.success(
+                    moneymateService.walletsService.getWalletBalance(
+                        token,
+                        selectedWalletId,
+                        dateRange.first,
+                        dateRange.second
+                    )
+                )
+                _balance = WalletBalanceDTO(walletResponse.getOrNull()?.incomeSum ?: 0,walletResponse.getOrNull()?.expenseSum ?: 0)
+                Log.v("BALANCE","${_balance}")
+
+            } catch (e: Exception) {
+                Log.e("ERROR", "Failed to getBalance ", e)
+            }
+        }
     }
 }
+
+
+
+        enum class WalletState {
+            IDLE,
+            GETTING_WALLETS,
+            FINISHED
+        }
+
+        fun getCurrentMonthRange(): Pair<LocalDate, LocalDate> {
+            val calendar = Calendar.getInstance()
+            val currentYear = calendar.get(Calendar.YEAR)
+            val currentMonth = calendar.get(Calendar.MONTH) + 1 // Calendar.MONTH is zero-based
+
+            val firstDayOfMonth = LocalDate.of(currentYear, currentMonth, 1)
+            val lastDayOfMonth = YearMonth.of(currentYear, currentMonth).atEndOfMonth()
+
+            return Pair(firstDayOfMonth, lastDayOfMonth)
+        }
+
+    }
+

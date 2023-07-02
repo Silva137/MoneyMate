@@ -188,8 +188,8 @@ fun DateRow() {
 
 @Composable
 fun MonthReport(
-    expenses: Double,
-    income: Double
+    expenses: Int,
+    income: Int
 ) {
     Row(
         modifier = Modifier
@@ -209,7 +209,7 @@ fun MonthReport(
                 modifier = Modifier.fillMaxSize()
             )
             Text(
-                text = "-$expenses€",
+                text = "$expenses€",
                 color = expenseRed,
                 fontSize = 24.sp,
                 fontFamily = poppins,
@@ -541,7 +541,7 @@ fun LargeDropdownMenuItem(
 @Preview
 @Composable
 fun MonthReportView() {
-    MonthReport( 100.0, 200.0)
+    MonthReport( 100, 200)
 }
 
 @Preview
@@ -561,6 +561,11 @@ fun HomeScreenPreview() {
             Wallet(2, "Wallet 2",  User(1,"shimi","shimi"), "2023-06-01", 2000),
             Wallet(3, "Wallet 3",  User(1,"shimi","shimi"), "2023-06-01", 3000)
         ),
+        selectedWalletId = selectedWalletId,
+        onWalletSelected = { walletId ->
+            selectedWalletId = walletId
+        },
+        walletBalance = WalletBalanceDTO(22, 1300),
         categories = listOf(
             Category(1, "Saude", User(1,"silva","silva")),
             Category(2, "Desporto", User(1,"silva","silva")),

@@ -44,6 +44,13 @@ class HomeActivity : ComponentActivity() {
 
             HomeScreen(
                 wallets = viewModel.wallets,
+                selectedWalletId = viewModel.selectedWalletId,
+                onWalletSelected = { walletId ->
+                    // Update the selected wallet ID
+                    viewModel.selectedWalletId = walletId
+                    viewModel.getWalletBalance()
+                },
+                walletBalance = viewModel.balance,
                 categories = listOf(
                     Category(1, "Saude", User(1,"silva","silva")),
                     Category(2, "Desporto", User(1,"silva","silva")),

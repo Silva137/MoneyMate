@@ -19,7 +19,7 @@ class TransactionDTO (
 )
 
 data class WalletBalanceDTO(
-    val incomeSum: Double,
-    val expenseSum: Double,
+    val incomeSum: Int,
+    val expenseSum: Int,
 )
 
