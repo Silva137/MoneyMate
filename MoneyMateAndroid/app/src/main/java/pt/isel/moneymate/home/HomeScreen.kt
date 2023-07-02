@@ -35,6 +35,7 @@ import pt.isel.moneymate.domain.User
 import pt.isel.moneymate.background.poppins
 import pt.isel.moneymate.domain.Category
 import pt.isel.moneymate.services.transactions.models.WalletBalanceDTO
+import pt.isel.moneymate.services.users.models.UserDTO
 import pt.isel.moneymate.services.wallets.models.Wallet
 import pt.isel.moneymate.theme.dialogBackground
 import pt.isel.moneymate.theme.expenseRed
@@ -567,15 +568,10 @@ fun HomeScreenPreview() {
         },
         walletBalance = WalletBalanceDTO(22, 1300),
         categories = listOf(
-            Category(1, "Saude", User(1,"silva","silva")),
-            Category(2, "Desporto", User(1,"silva","silva")),
-            Category(3, "Carro", User(1,"silva","silva"))
+            Category(1, "Saude", UserDTO(1,"silva","silva")),
+            Category(2, "Desporto", UserDTO(1,"silva","silva")),
+            Category(3, "Carro", UserDTO(1,"silva","silva"))
         ),
-        selectedWalletId = selectedWalletId,
-        onWalletSelected = { walletId ->
-            selectedWalletId = walletId
-        },
-        walletBalance = WalletBalanceDTO(22.00, 1300.0),
         onCategoriesDropdownClick = {},
         onCreateTransactionButtonClick = {_,_,_->},
     )

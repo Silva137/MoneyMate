@@ -24,18 +24,25 @@ class TransactionService(
         request.send(httpClient){}
     }
 
-    suspend fun getWalletTransactions(walletId : Int, token : String?, startDate : String, endDate : String) : TransactionsDTO? {
-        if(token == null) {
+    suspend fun getWalletTransactions(
+        token: String?,
+        walletId: Int,
+        startDate: String,
+        endDate: String,
+        sortedBy: String,
+        orderBy: String
+    ): TransactionsDTO? {
+        if (token == null) {
             return null
         }
 
-        val request = get(link = Uris.Transactions.GET_ALL + "${walletId}?sortedBy=byprice&orderBy=ASC&startDate=${startDate}&endDate=${endDate}&limit&offset",token)
-        val transactions = request.send(httpClient){ response ->
-            handleResponse<TransactionsDTO>(response,TransactionsDTO::class.java)
+        val request = get(
+            link = Uris.Transactions.GET_ALL + "${walletId}?sortedBy=$sortedBy&orderBy=$orderBy&startDate=$startDate&endDate=$endDate&limit&offset",
+            token
+        )
+        val transactions = request.send(httpClient) { response ->
+            handleResponse<TransactionsDTO>(response, TransactionsDTO::class.java)
         }
         return transactions
     }
-
-
-
 }

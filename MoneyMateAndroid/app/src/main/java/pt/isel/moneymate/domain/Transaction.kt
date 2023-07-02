@@ -7,8 +7,9 @@ data class Transaction(
     val type: TransactionType,
     val description: String,
     val amount: Double,
-    val category: Category
-)
+    val category: Category,
+    val createdAt: LocalDateTime,
+    )
 
 enum class TransactionType {
     EXPENSE,

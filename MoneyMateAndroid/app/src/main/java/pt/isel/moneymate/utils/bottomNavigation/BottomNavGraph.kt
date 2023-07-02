@@ -14,6 +14,7 @@ import pt.isel.moneymate.statistics.StatisticsScreen
 import pt.isel.moneymate.statistics.StatisticsViewModel
 import pt.isel.moneymate.transactions.TransactionsScreen
 import pt.isel.moneymate.transactions.TransactionsViewModel
+import java.time.LocalDate
 
 @Composable
 fun BottomNavGraph(
@@ -49,15 +50,18 @@ fun BottomNavGraph(
                 onCreateTransactionButtonClick = {categoryId, amount, title ->
                     homeViewModel.createTransaction(homeViewModel.selectedWalletId, categoryId, amount, title)
                 }
-                onCategoriesDropdownClick = { homeViewModel.fetchCategories() } //TODO add boolean to see if is already fetched
-
             )
         }
         composable(route = BottomBarScreen.Transactions.route) {
+            val dateRange = homeViewModel.getCurrentMonthRange()
+            LaunchedEffect(true) {
+                transactionsViewModel.fetchTransactions(homeViewModel.selectedWalletId, dateRange.first, dateRange.second, "bydate", "DESC")
+            }
+
             TransactionsScreen(
                 transactions = transactionsViewModel.transactions,
                 onSearchClick = {startTime, endTime ->
-                    transactionsViewModel.fetchTransactions(homeViewModel.selectedWalletId,startTime,endTime)
+                    transactionsViewModel.fetchTransactions(homeViewModel.selectedWalletId,startTime,endTime, "bydate", "DESC")
                 }
             )
         }

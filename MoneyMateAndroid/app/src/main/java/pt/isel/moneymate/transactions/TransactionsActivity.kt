@@ -37,7 +37,7 @@ class TransactionsActivity: ComponentActivity() {
             TransactionsScreen(
                 transactions = viewModel.transactions,
                 onSearchClick = {startTime, endTime ->
-                    viewModel.fetchTransactions(walletId,startTime,endTime)
+                    viewModel.fetchTransactions(walletId,startTime,endTime,"bydate", "ASC")
                 }
             )
         }

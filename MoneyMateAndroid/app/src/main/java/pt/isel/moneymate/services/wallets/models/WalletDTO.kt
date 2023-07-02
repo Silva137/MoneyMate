@@ -1,6 +1,6 @@
 package pt.isel.moneymate.services.wallets.models
 
-import pt.isel.moneymate.domain.User
+import java.util.Date
 import pt.isel.moneymate.services.users.models.UserDTO
 
 data class WalletDTO (

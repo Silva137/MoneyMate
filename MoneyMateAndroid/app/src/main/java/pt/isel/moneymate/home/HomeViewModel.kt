@@ -116,26 +116,27 @@ class HomeViewModel(
             }
         }
     }
+    enum class WalletState {
+        IDLE,
+        GETTING_WALLETS,
+        FINISHED
+    }
+
+    fun getCurrentMonthRange(): Pair<LocalDate, LocalDate> {
+        val calendar = Calendar.getInstance()
+        val currentYear = calendar.get(Calendar.YEAR)
+        val currentMonth = calendar.get(Calendar.MONTH) + 1 // Calendar.MONTH is zero-based
+
+        val firstDayOfMonth = LocalDate.of(currentYear, currentMonth, 1)
+        val lastDayOfMonth = YearMonth.of(currentYear, currentMonth).atEndOfMonth()
+
+        return Pair(firstDayOfMonth, lastDayOfMonth)
+    }
 }
 
 
 
-        enum class WalletState {
-            IDLE,
-            GETTING_WALLETS,
-            FINISHED
-        }
 
-        fun getCurrentMonthRange(): Pair<LocalDate, LocalDate> {
-            val calendar = Calendar.getInstance()
-            val currentYear = calendar.get(Calendar.YEAR)
-            val currentMonth = calendar.get(Calendar.MONTH) + 1 // Calendar.MONTH is zero-based
 
-            val firstDayOfMonth = LocalDate.of(currentYear, currentMonth, 1)
-            val lastDayOfMonth = YearMonth.of(currentYear, currentMonth).atEndOfMonth()
 
-            return Pair(firstDayOfMonth, lastDayOfMonth)
-        }
-
-    }
 

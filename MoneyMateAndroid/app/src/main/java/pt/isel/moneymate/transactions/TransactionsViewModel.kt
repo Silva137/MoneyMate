@@ -1,5 +1,6 @@
 package pt.isel.moneymate.transactions
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,6 +13,7 @@ import pt.isel.moneymate.domain.TransactionType
 import pt.isel.moneymate.services.MoneyMateService
 import pt.isel.moneymate.session.SessionManager
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class TransactionsViewModel(
@@ -26,27 +28,28 @@ class TransactionsViewModel(
     val transactions: List<Transaction>? get() = _transactions
 
 
-        fun fetchTransactions(walletId : Int, startDate : LocalDate, endDate: LocalDate){
-            viewModelScope.launch {
-                _state = TransactionState.GETTING_TRANSACTIONS
-                try{
-                    val token = sessionManager.accessToken
-                    val response = Result.success(moneymateService.transactionsService.getWalletTransactions(walletId,token,startDate.toString(),endDate.toString()))
-                    val transactionList = response.getOrNull()?.transactions?.map { transactionDTO ->
-                        Transaction(
-                            convertType(transactionDTO.amount),
-                            transactionDTO.title,
-                            transactionDTO.amount.toDouble(),
-                            Category(transactionDTO.category.id,transactionDTO.category.name, transactionDTO.category.user)
-                        )
-                    }
-                    _transactions = transactionList
-                    _state = TransactionState.FINISHED
-                }catch (e: Exception){
-
-                }
+    fun fetchTransactions(walletId : Int, startDate : LocalDate, endDate: LocalDate,sortedBy: String, orderBy: String){
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
+        viewModelScope.launch {
+            _state = TransactionState.GETTING_TRANSACTIONS
+            try{
+                val token = sessionManager.accessToken
+                val response = Result.success(moneymateService.transactionsService.getWalletTransactions(token,walletId,startDate.toString(),endDate.toString(), sortedBy, orderBy))
+                _transactions = response.getOrNull()?.transactions?.map { transactionDTO ->
+                    Transaction(
+                        convertType(transactionDTO.amount),
+                        transactionDTO.title,
+                        transactionDTO.amount.toDouble(),
+                        Category(transactionDTO.category.id,transactionDTO.category.name, transactionDTO.category.user),
+                        LocalDateTime.parse(transactionDTO.createdAt.substring(0, 23), formatter)
+                    )
+                } ?: emptyList()
+                _state = TransactionState.FINISHED
+            }catch (e: Exception){
+                Log.e("ERROR", "Failed to fetch transactions", e)
             }
         }
+    }
 
 
     private fun convertType(amount : Float) : TransactionType {
@@ -56,16 +59,6 @@ class TransactionsViewModel(
             TransactionType.EXPENSE
         }
     }
-
-
-
-
-
-
-
-
-
-
 
     enum class TransactionState {
         IDLE,

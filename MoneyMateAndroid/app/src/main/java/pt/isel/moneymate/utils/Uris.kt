@@ -68,7 +68,7 @@ object Uris {
         const val DELETE_BY_ID = "/transactions/{transactionId}"
 
         /**Requets of transactions Page (Common to both wallet types) */
-        const val GET_ALL = "/transactions/wallets/{walletId}"
+        const val GET_ALL = "/transactions/wallets/"
         const val GET_INCOMES = "/transactions/wallets/{walletId}/incomes"
         const val GET_EXPENSES = "/transactions/wallets/{walletId}/expenses"
 

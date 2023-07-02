@@ -3,7 +3,6 @@ package pt.isel.moneymate.transactions
 import DatePicker
 import android.annotation.SuppressLint
 import android.util.Log
-import android.widget.DatePicker
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,27 +24,24 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.commandiron.wheel_picker_compose.WheelDatePicker
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 import pt.isel.moneymate.R
 import pt.isel.moneymate.background.poppins
 import pt.isel.moneymate.domain.Category
 import pt.isel.moneymate.domain.Transaction
 import pt.isel.moneymate.domain.TransactionType
-import pt.isel.moneymate.domain.User
+import pt.isel.moneymate.services.users.models.UserDTO
 import pt.isel.moneymate.theme.expenseRed
 import pt.isel.moneymate.theme.incomeGreen
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TransactionsScreen(
-    transactions: List<Transaction>? = listOf(),
-    onSearchClick: (startDate: LocalDate, endDate: LocalDate) -> Unit = { _, _ -> }
+    transactions: List<Transaction>?,
+    onSearchClick: (startDate: LocalDate, endDate: LocalDate) -> Unit = { _, _ -> },
 ) {
 
     var pickedStartDate by remember { mutableStateOf(LocalDate.now()) }
@@ -83,15 +79,13 @@ fun TransactionsScreen(
                     textAlign = TextAlign.Start
                 )
                 IconButton(onClick = {
-                    if (onSearchClick != null) {
-                        onSearchClick(pickedStartDate, pickedEndDate)
-                    }
+                    onSearchClick(pickedStartDate, pickedEndDate)
                     isSearchClicked = true
                 }) {
                     Icon(
                         modifier = Modifier.size(30.dp),
                         imageVector = Icons.Default.Search,
-                        contentDescription = "Settings",
+                        contentDescription = "Search",
                         tint = Color.White
                     )
                 }
@@ -104,27 +98,29 @@ fun TransactionsScreen(
                 endDate = pickedEndDate
             )
 
+            TransactionsList(
+                transactions = transactions,
+                selectedTransaction = selectedTransaction
+            )
+
+            /*
             if(isSearchClicked){
                 Log.v("Clicked","Ola")
                 TransactionsList(
                     transactions = transactions,
-                    scope = MainScope(),
-                    bottomSheetState = ModalBottomSheetState(ModalBottomSheetValue.Hidden),
                     selectedTransaction = selectedTransaction
                 )
             }
+             */
         }
     }
 }
 
 
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TransactionsList(
     transactions: List<Transaction>?,
-    scope: CoroutineScope,
-    bottomSheetState: ModalBottomSheetState,
     selectedTransaction: MutableState<Transaction?>
 ) {
     LazyColumn(
@@ -132,7 +128,7 @@ fun TransactionsList(
     ) {
         if (transactions != null) {
             items(transactions) { item ->
-                TransactionItem(item, scope, bottomSheetState, selectedTransaction)
+                TransactionItem(item, selectedTransaction)
             }
         } else {
             item {
@@ -142,28 +138,22 @@ fun TransactionsList(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TransactionItem(
     transaction: Transaction,
-    scope: CoroutineScope,
-    bottomSheetState: ModalBottomSheetState,
     selectedTransaction: MutableState<Transaction?>
 ) {
-    val imageResource =
-        if (transaction.type == TransactionType.EXPENSE) R.drawable.expense_item else R.drawable.income_item
+    val imageResource = if (transaction.type == TransactionType.EXPENSE) R.drawable.expense_item else R.drawable.income_item
     val isExpense = transaction.type == TransactionType.EXPENSE
 
 
     Box(
         modifier = Modifier
-            .width(315.dp)
+            .fillMaxWidth(0.9f)
             .height(80.dp)
             .clickable {
                 selectedTransaction.value = transaction
-                scope.launch {
-                    bottomSheetState.show()
-                }
+                //more logic here
             }
     ) {
         Image(
@@ -202,7 +192,7 @@ fun TransactionItem(
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = "03 Apr 2023",
+                    text = formatDate(transaction.createdAt),
                     color = Color.White,
                     fontSize = 14.sp,
                     fontFamily = poppins,
@@ -210,7 +200,7 @@ fun TransactionItem(
                 )
             }
             Text(
-                text = if (isExpense) "-${transaction.amount}" else "+${transaction.amount}",
+                text = if (isExpense) "${transaction.amount}" else "+${transaction.amount}",
                 color = if (isExpense) expenseRed else incomeGreen,
                 fontSize = 20.sp,
                 fontFamily = poppins,
@@ -271,7 +261,6 @@ fun BottomSheetContent(selectedTransaction: MutableState<Transaction?>) {
 
 
 @SuppressLint("UnrememberedMutableState")
-@OptIn(ExperimentalMaterialApi::class)
 @Preview
 @Composable
 fun TransactionItemPreview() {
@@ -279,8 +268,9 @@ fun TransactionItemPreview() {
     val transaction = Transaction(
         type = TransactionType.EXPENSE,
         description = "none",
-        category = Category(1, "Saude", User(1,"silva","silva")),
-        amount = 12.34
+        category = Category(1, "Saude", UserDTO(1,"silva","silva")),
+        amount = 12.34,
+        createdAt = LocalDateTime.now()
     )
     TransactionsScreen(
         transactions = listOf(transaction),
@@ -290,7 +280,6 @@ fun TransactionItemPreview() {
 }
 
 @SuppressLint("UnrememberedMutableState")
-@OptIn(ExperimentalMaterialApi::class)
 @Preview
 @Composable
 fun TransactionsListPreview() {
@@ -299,32 +288,37 @@ fun TransactionsListPreview() {
         Transaction(
             type = TransactionType.EXPENSE,
             description = "Lunch",
-            category = Category(1, "Saude", User(1,"silva","silva")),
-            amount = 12.34
+            category = Category(1, "Saude", UserDTO(1,"silva","silva")),
+            amount = 12.34,
+            createdAt = LocalDateTime.now()
         ),
         Transaction(
             type = TransactionType.INCOME,
             description = "Salary",
-            category = Category(1, "Work", User(1,"silva","silva")),
-            amount = 5678.9
+            category = Category(1, "Work", UserDTO(1,"silva","silva")),
+            amount = 5678.9,
+            createdAt = LocalDateTime.now()
         ),
         Transaction(
             type = TransactionType.EXPENSE,
             description = "Movie ticket",
-            category = Category(1, "Entertainment", User(1,"silva","silva")),
-            amount = 9.99
+            category = Category(1, "Entertainment", UserDTO(1,"silva","silva")),
+            amount = 9.99,
+            createdAt = LocalDateTime.now()
         ),
         Transaction(
             type = TransactionType.EXPENSE,
             description = "Lunch",
-            category = Category(1, "Food", User(1,"silva","silva")),
-            amount = 12.34
+            category = Category(1, "Food", UserDTO(1,"silva","silva")),
+            amount = 12.34,
+            createdAt = LocalDateTime.now()
         ),
         Transaction(
             type = TransactionType.INCOME,
             description = "Salary",
-            category = Category(1, "Sport", User(1,"silva","silva")),
-            amount = 5678.9
+            category = Category(1, "Sport", UserDTO(1,"silva","silva")),
+            amount = 5678.9,
+            createdAt = LocalDateTime.now()
         )
     )
     TransactionsScreen(
@@ -332,6 +326,11 @@ fun TransactionsListPreview() {
         onSearchClick = { startTime, endTime ->
         }
     )
+}
+
+fun formatDate(localDateTime: LocalDateTime): String {
+    val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH)
+    return localDateTime.format(formatter)
 }
 
 
