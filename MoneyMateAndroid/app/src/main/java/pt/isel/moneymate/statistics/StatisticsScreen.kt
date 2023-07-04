@@ -1,5 +1,6 @@
 package pt.isel.moneymate.statistics
 
+import DatePicker
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -22,6 +23,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -36,12 +38,16 @@ import pt.isel.moneymate.theme.Purple200
 import pt.isel.moneymate.theme.Purple500
 import pt.isel.moneymate.theme.Purple700
 import pt.isel.moneymate.theme.Teal200
-
+import pt.isel.moneymate.utils.getCurrentYearRange
+import java.time.LocalDate
 
 @Composable
 fun StatisticsScreen(
 
 ){
+    var pickedStartDate by remember { mutableStateOf(getCurrentYearRange().first) }
+    var pickedEndDate by remember { mutableStateOf(LocalDate.now()) }
+
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -53,8 +59,32 @@ fun StatisticsScreen(
         )
         Column(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 30.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Statistics",
+                    color = Color.White,
+                    fontSize = 28.sp,
+                    fontFamily = poppins,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Start
+                )
+            }
+            DatePicker(
+                onStartDateSelected = { pickedStartDate = it},
+                onEndDateSelected = { pickedEndDate = it},
+                startDate = pickedStartDate,
+                endDate = pickedEndDate
+            )
+
             PieChart(data = mapOf(
                 Pair("Food", 150),
                 Pair("Shopping", 50),

@@ -13,6 +13,7 @@ import pt.isel.moneymate.services.MoneyMateService
 import pt.isel.moneymate.services.transactions.models.WalletBalanceDTO
 import pt.isel.moneymate.services.wallets.models.Wallet
 import pt.isel.moneymate.session.SessionManager
+import pt.isel.moneymate.utils.getCurrentMonthRange
 import java.time.LocalDate
 import java.time.YearMonth
 import java.util.*
@@ -120,17 +121,6 @@ class HomeViewModel(
         IDLE,
         GETTING_WALLETS,
         FINISHED
-    }
-
-    fun getCurrentMonthRange(): Pair<LocalDate, LocalDate> {
-        val calendar = Calendar.getInstance()
-        val currentYear = calendar.get(Calendar.YEAR)
-        val currentMonth = calendar.get(Calendar.MONTH) + 1 // Calendar.MONTH is zero-based
-
-        val firstDayOfMonth = LocalDate.of(currentYear, currentMonth, 1)
-        val lastDayOfMonth = YearMonth.of(currentYear, currentMonth).atEndOfMonth()
-
-        return Pair(firstDayOfMonth, lastDayOfMonth)
     }
 }
 

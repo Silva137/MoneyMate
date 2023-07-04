@@ -2,7 +2,6 @@ package pt.isel.moneymate.transactions
 
 import DatePicker
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,6 +31,8 @@ import pt.isel.moneymate.domain.TransactionType
 import pt.isel.moneymate.services.users.models.UserDTO
 import pt.isel.moneymate.theme.expenseRed
 import pt.isel.moneymate.theme.incomeGreen
+import pt.isel.moneymate.utils.LargeDropdownMenu
+import pt.isel.moneymate.utils.getCurrentYearRange
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -41,14 +42,18 @@ import java.util.*
 @Composable
 fun TransactionsScreen(
     transactions: List<Transaction>?,
-    onSearchClick: (startDate: LocalDate, endDate: LocalDate) -> Unit = { _, _ -> },
+    onSearchClick: (startDate: LocalDate, endDate: LocalDate, sortedBy: String, orderBy: String) -> Unit = { _, _, _, _ -> }
 ) {
 
-    var pickedStartDate by remember { mutableStateOf(LocalDate.now()) }
+    var selectedSortedBy by remember { mutableStateOf(0) }
+    var selectedOrderBy by remember { mutableStateOf(1) }
+    var pickedStartDate by remember { mutableStateOf(getCurrentYearRange().first) }
     var pickedEndDate by remember { mutableStateOf(LocalDate.now()) }
-    var isSearchClicked by remember { mutableStateOf(false) }
     val selectedTransaction = remember { mutableStateOf<Transaction?>(null) }
+    var isSearchClicked by remember { mutableStateOf(false) }
 
+    val sortByOptions = listOf("bydate", "byprice")
+    val orderByOptions = listOf("ASC", "DESC")
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -66,7 +71,7 @@ fun TransactionsScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 30.dp, end = 30.dp, top = 30.dp, bottom = 40.dp),
+                    .padding(start = 30.dp, end = 30.dp, top = 30.dp, bottom = 10.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -79,7 +84,7 @@ fun TransactionsScreen(
                     textAlign = TextAlign.Start
                 )
                 IconButton(onClick = {
-                    onSearchClick(pickedStartDate, pickedEndDate)
+                    onSearchClick(pickedStartDate, pickedEndDate, sortByOptions[selectedSortedBy], orderByOptions[selectedOrderBy])
                     isSearchClicked = true
                 }) {
                     Icon(
@@ -90,6 +95,16 @@ fun TransactionsScreen(
                     )
                 }
             }
+
+
+            SearchButtons(
+                selectedSortedBy = selectedSortedBy,
+                selectedOrderBy = selectedOrderBy,
+                sortByOptions = sortByOptions,
+                orderByOptions = orderByOptions,
+                onSortBySelect = { index -> selectedSortedBy = index },
+                onOrderBySelect = { index -> selectedOrderBy = index }
+            )
 
             DatePicker(
                 onStartDateSelected = { pickedStartDate = it},
@@ -102,21 +117,43 @@ fun TransactionsScreen(
                 transactions = transactions,
                 selectedTransaction = selectedTransaction
             )
-
-            /*
-            if(isSearchClicked){
-                Log.v("Clicked","Ola")
-                TransactionsList(
-                    transactions = transactions,
-                    selectedTransaction = selectedTransaction
-                )
-            }
-             */
         }
     }
 }
 
+@Composable
+fun SearchButtons(
+    selectedSortedBy: Int,
+    selectedOrderBy: Int,
+    onSortBySelect: (index: Int) -> Unit,
+    onOrderBySelect: (index: Int) -> Unit,
+    sortByOptions: List<String>,
+    orderByOptions: List<String>
+) {
 
+    val sortByOptions = listOf("bydate", "byprice")
+    val orderByOptions = listOf("ASC", "DESC")
+
+    Row {
+        LargeDropdownMenu(
+            modifier = Modifier.width(175.dp),
+            label = "Sort By",
+            items = sortByOptions,
+            selectedIndex = selectedSortedBy,
+            onItemSelected = { index, _ -> onSortBySelect(index) },
+        )
+
+        Spacer(modifier = Modifier.width(20.dp))
+
+        LargeDropdownMenu(
+            modifier = Modifier.width(175.dp),
+            label = "Order By",
+            items = orderByOptions,
+            selectedIndex = selectedOrderBy,
+            onItemSelected = { index, _ -> onOrderBySelect(index) },
+        )
+    }
+}
 
 @Composable
 fun TransactionsList(
@@ -124,7 +161,8 @@ fun TransactionsList(
     selectedTransaction: MutableState<Transaction?>
 ) {
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+        modifier = Modifier.padding(bottom = 85.dp),
+        verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
         if (transactions != null) {
             items(transactions) { item ->
@@ -274,7 +312,7 @@ fun TransactionItemPreview() {
     )
     TransactionsScreen(
         transactions = listOf(transaction),
-        onSearchClick = { startTime, endTime ->
+        onSearchClick = {startTime, endTime, sortedBy, orderBy ->
         }
     )
 }
@@ -323,7 +361,7 @@ fun TransactionsListPreview() {
     )
     TransactionsScreen(
         transactions = transactions,
-        onSearchClick = { startTime, endTime ->
+        onSearchClick = {startTime, endTime, sortedBy, orderBy ->
         }
     )
 }

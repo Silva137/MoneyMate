@@ -14,6 +14,7 @@ import pt.isel.moneymate.statistics.StatisticsScreen
 import pt.isel.moneymate.statistics.StatisticsViewModel
 import pt.isel.moneymate.transactions.TransactionsScreen
 import pt.isel.moneymate.transactions.TransactionsViewModel
+import pt.isel.moneymate.utils.getCurrentYearRange
 import java.time.LocalDate
 
 @Composable
@@ -53,15 +54,15 @@ fun BottomNavGraph(
             )
         }
         composable(route = BottomBarScreen.Transactions.route) {
-            val dateRange = homeViewModel.getCurrentMonthRange()
+            val dateRange = getCurrentYearRange()
             LaunchedEffect(true) {
                 transactionsViewModel.fetchTransactions(homeViewModel.selectedWalletId, dateRange.first, dateRange.second, "bydate", "DESC")
             }
 
             TransactionsScreen(
                 transactions = transactionsViewModel.transactions,
-                onSearchClick = {startTime, endTime ->
-                    transactionsViewModel.fetchTransactions(homeViewModel.selectedWalletId,startTime,endTime, "bydate", "DESC")
+                onSearchClick = {startTime, endTime, sortedBy, orderBy ->
+                    transactionsViewModel.fetchTransactions(homeViewModel.selectedWalletId,startTime,endTime, sortedBy, orderBy)
                 }
             )
         }

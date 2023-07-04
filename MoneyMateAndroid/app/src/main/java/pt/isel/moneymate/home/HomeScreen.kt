@@ -40,6 +40,7 @@ import pt.isel.moneymate.services.wallets.models.Wallet
 import pt.isel.moneymate.theme.dialogBackground
 import pt.isel.moneymate.theme.expenseRed
 import pt.isel.moneymate.theme.incomeGreen
+import pt.isel.moneymate.utils.LargeDropdownMenu
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -418,125 +419,6 @@ fun WalletListItem(
     }
 }
 
-@Composable
-fun <T> LargeDropdownMenu(
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    label: String,
-    notSetLabel: String? = null,
-    items: List<T>,
-    selectedIndex: Int = -1,
-    onItemSelected: (index: Int, item: T) -> Unit,
-    selectedItemToString: (T) -> String = { it.toString() },
-    drawItem: @Composable (T, Boolean, Boolean, () -> Unit) -> Unit = { item, selected, itemEnabled, onClick ->
-        LargeDropdownMenuItem(
-            text = item.toString(),
-            selected = selected,
-            enabled = itemEnabled,
-            onClick = onClick,
-        )
-    },
-    onCategoriesDropdownClicked: () -> Unit,
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Box(modifier = modifier.height(IntrinsicSize.Min)) {
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = items.getOrNull(selectedIndex)?.let { selectedItemToString(it) } ?: "",
-            onValueChange = { },
-            label = { Text(text = label, color = Color.White) },
-            shape = RoundedCornerShape(12.dp),
-            enabled = enabled,
-            trailingIcon = { Icon(Icons.Filled.ArrowDropUp, "trailingIcon", tint = Color.White) },
-            readOnly = true,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = Color.White,
-                unfocusedBorderColor = Color.White,
-                textColor = Color.White
-            )
-        )
-        // Transparent clickable surface on top of OutlinedTextField
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 8.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .clickable(enabled = enabled) {
-                    expanded = true
-                    onCategoriesDropdownClicked()
-                },
-            color = Color.Transparent,
-        ) { }
-    }
-
-    if (expanded) {
-        Dialog(
-            onDismissRequest = { expanded = false },
-        ) {
-            Surface(
-                modifier.height(450.dp),
-                color = dialogBackground,
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                val listState = rememberLazyListState()
-                if (selectedIndex > -1) {
-                    LaunchedEffect("ScrollToSelected") {
-                        listState.scrollToItem(index = selectedIndex)
-                    }
-                }
-
-                LazyColumn(modifier = Modifier.fillMaxWidth(), state = listState) {
-                    if (notSetLabel != null) {
-                        item {
-                            LargeDropdownMenuItem(
-                                text = notSetLabel,
-                                selected = false,
-                                enabled = false,
-                                onClick = { },
-                            )
-                        }
-                    }
-                    itemsIndexed(items) { index, item ->
-                        val selectedItem = index == selectedIndex
-                        drawItem(item, selectedItem, true) {
-                            onItemSelected(index, item)
-                            expanded = false
-                        }
-
-                        if (index < items.lastIndex) {
-                            Divider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.DarkGray, thickness = 3.dp)
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun LargeDropdownMenuItem(
-    text: String,
-    selected: Boolean,
-    enabled: Boolean,
-    onClick: () -> Unit,
-) {
-    val contentColor = when {
-        selected -> incomeGreen
-        else -> Color.White
-    }
-    CompositionLocalProvider(LocalContentColor provides contentColor) {
-        Box(modifier = Modifier
-            .clickable(enabled) { onClick() }
-            .fillMaxWidth()
-            .padding(16.dp)) {
-            Text(
-                text = text,
-            )
-        }
-    }
-
-}
 
 
 @Preview

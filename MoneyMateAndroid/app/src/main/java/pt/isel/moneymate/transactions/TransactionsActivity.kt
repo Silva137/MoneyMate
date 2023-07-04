@@ -36,7 +36,7 @@ class TransactionsActivity: ComponentActivity() {
         setContent {
             TransactionsScreen(
                 transactions = viewModel.transactions,
-                onSearchClick = {startTime, endTime ->
+                onSearchClick = {startTime, endTime, sortedBy, orderBy ->
                     viewModel.fetchTransactions(walletId,startTime,endTime,"bydate", "ASC")
                 }
             )

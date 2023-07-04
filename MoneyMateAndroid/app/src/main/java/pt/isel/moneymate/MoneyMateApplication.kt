@@ -31,7 +31,7 @@ class MoneyMateApplication : DependenciesContainer, Application() {
 
 
     companion object{
-        private const val API_ENDPOINT = "https://a916-2001-8a0-7284-8e00-917c-1c71-4d19-7469.ngrok-free.app"
+        private const val API_ENDPOINT = "https://aa36-2001-8a0-7284-8e00-9067-49ed-f3aa-ece0.ngrok-free.app"
         private const val TAG = "MoneyMateApp"
     }
 }
