@@ -67,8 +67,16 @@ fun BottomNavGraph(
             )
         }
         composable(route = BottomBarScreen.Statistics.route) {
+            val dateRange = getCurrentYearRange()
+            LaunchedEffect(true) {
+                statisticsViewModel.fetchCategoriesBalance(homeViewModel.selectedWalletId, dateRange.first, dateRange.second)
+            }
             StatisticsScreen(
-
+                categoriesBalancePos = statisticsViewModel.categoriesBalancePos,
+                categoriesBalanceNeg = statisticsViewModel.categoriesBalanceNeg,
+                onSearchClick = {startTime, endTime ->
+                    statisticsViewModel.fetchCategoriesBalance(homeViewModel.selectedWalletId, startTime, endTime)
+                }
             )
         }
         composable(route = BottomBarScreen.Profile.route) {

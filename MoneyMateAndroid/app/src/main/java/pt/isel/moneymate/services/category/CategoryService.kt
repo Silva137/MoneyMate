@@ -33,4 +33,5 @@ class CategoryService(
         val request = post(link = Uris.Category.CREATE, token = token, body = CreateCategory(categoryName))
         request.send(httpClient){}
     }
+
 }

@@ -10,8 +10,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,23 +31,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pt.isel.moneymate.R
 import pt.isel.moneymate.background.poppins
+import pt.isel.moneymate.domain.Transaction
 import pt.isel.moneymate.profile.AddWallet
 import pt.isel.moneymate.profile.BalanceTexts
 import pt.isel.moneymate.profile.ProfImg
 import pt.isel.moneymate.profile.ProfileButton
-import pt.isel.moneymate.theme.Purple200
-import pt.isel.moneymate.theme.Purple500
-import pt.isel.moneymate.theme.Purple700
-import pt.isel.moneymate.theme.Teal200
+import pt.isel.moneymate.services.category.models.CategoryBalanceDTO
+import pt.isel.moneymate.services.category.models.CategoryDTO
+import pt.isel.moneymate.services.users.models.UserDTO
+import pt.isel.moneymate.theme.*
 import pt.isel.moneymate.utils.getCurrentYearRange
 import java.time.LocalDate
 
 @Composable
 fun StatisticsScreen(
-
+    categoriesBalancePos: List<CategoryBalanceDTO>?,
+    categoriesBalanceNeg: List<CategoryBalanceDTO>?,
+    onSearchClick: (startDate: LocalDate, endDate: LocalDate) -> Unit = { _, _ -> }
 ){
+
     var pickedStartDate by remember { mutableStateOf(getCurrentYearRange().first) }
     var pickedEndDate by remember { mutableStateOf(LocalDate.now()) }
+    var isSearchClicked by remember { mutableStateOf(false) }
+    var selectedButton by remember { mutableStateOf(ToggleButtonState.Negative) }
+
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -59,13 +67,12 @@ fun StatisticsScreen(
         )
         Column(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 30.dp),
+                    .padding(start = 30.dp, top = 15.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -77,6 +84,24 @@ fun StatisticsScreen(
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Start
                 )
+
+                ToggleButton(
+                    onPositiveClick = { selectedButton = ToggleButtonState.Positive },
+                    onNegativeClick = { selectedButton = ToggleButtonState.Negative },
+                    selectedButton = selectedButton
+                )
+
+                IconButton(onClick = {
+                    onSearchClick(pickedStartDate, pickedEndDate)
+                    isSearchClicked = true
+                }) {
+                    Icon(
+                        modifier = Modifier.size(30.dp),
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search",
+                        tint = Color.White
+                    )
+                }
             }
             DatePicker(
                 onStartDateSelected = { pickedStartDate = it},
@@ -85,16 +110,61 @@ fun StatisticsScreen(
                 endDate = pickedEndDate
             )
 
-            PieChart(data = mapOf(
-                Pair("Food", 150),
-                Pair("Shopping", 50),
-                Pair("Cinema", 15),
-                Pair("Work", 250),
-                Pair("Health", 80),
-            ))
+            val piechartData =
+            if(selectedButton == ToggleButtonState.Positive)
+                categoriesBalancePos?.let { createPieChartData(it) }
+            else categoriesBalanceNeg?.let { createPieChartData(it) }
+
+            PieChart(data = piechartData ?: mapOf(), animDuration = 1000)
         }
     }
 }
+
+@Composable
+fun ToggleButton(
+    onPositiveClick: () -> Unit,
+    onNegativeClick: () -> Unit,
+    selectedButton: ToggleButtonState
+) {
+    Row(Modifier.padding(8.dp)) {
+        Button(
+            onClick = { onNegativeClick() },
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = if (selectedButton == ToggleButtonState.Negative) expenseRed else dialogBackground
+            ),
+            contentPadding = PaddingValues(0.dp)
+        ) {
+            Text(
+                text = "-",
+                color = Color.White,
+                fontSize = 30.sp,
+                fontWeight = FontWeight.ExtraBold
+            )
+        }
+        Button(
+            onClick = { onPositiveClick() },
+            modifier = Modifier,
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = if (selectedButton == ToggleButtonState.Positive) incomeGreen else dialogBackground
+            ),
+            contentPadding = PaddingValues(0.dp)
+        ) {
+            Text(
+                text = "+",
+                color = Color.White,
+                fontSize = 30.sp,
+                fontWeight = FontWeight.ExtraBold
+            )
+        }
+
+    }
+}
+
+enum class ToggleButtonState {
+    Positive,
+    Negative
+}
+
 
 @Composable
 fun PieChart(
@@ -267,8 +337,25 @@ fun DetailsPieChartItem(
     }
 }
 
+fun createPieChartData(categoryBalanceList: List<CategoryBalanceDTO>): Map<String, Int> {
+    return categoryBalanceList.associate { it.category.name to it.balance }
+}
+
 @Preview
 @Composable
 fun PreviewStatisticsScreen() {
-    StatisticsScreen()
+    StatisticsScreen(
+        categoriesBalancePos = listOf(
+            CategoryBalanceDTO(CategoryDTO(1, "Food", UserDTO(1,"silva","silva")), 100),
+            CategoryBalanceDTO(CategoryDTO(2, "Transport",UserDTO(1,"silva","silva")), 200),
+            CategoryBalanceDTO(CategoryDTO(3, "Entertainment", UserDTO(1,"silva","silva")), 300),
+            CategoryBalanceDTO(CategoryDTO(4, "Other", UserDTO(1,"silva","silva")), 400),
+        ),
+        categoriesBalanceNeg = listOf(
+            CategoryBalanceDTO(CategoryDTO(1, "Food", UserDTO(1,"silva","silva")), -100),
+            CategoryBalanceDTO(CategoryDTO(2, "Transport",UserDTO(1,"silva","silva")), -200),
+            CategoryBalanceDTO(CategoryDTO(3, "Entertainment", UserDTO(1,"silva","silva")), -300),
+            CategoryBalanceDTO(CategoryDTO(4, "Other", UserDTO(1,"silva","silva")), -400),
+        )
+    )
 }
