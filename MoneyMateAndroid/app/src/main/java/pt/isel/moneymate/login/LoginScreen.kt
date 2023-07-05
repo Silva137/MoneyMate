@@ -26,24 +26,35 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import pt.isel.moneymate.R
 import pt.isel.moneymate.background.poppins
 import pt.isel.moneymate.login.LoginViewModel.AuthenticationState
 
-
 @Composable
 fun LoginScreen(
+    errorMessage: String?,
     state: AuthenticationState,
-    onSignUpRequest : () -> Unit = {},
-    onLoginRequest : (String, String) -> Unit,
-    onForgotPasswordRequest : () -> Unit= {},
-    onLoginSuccessful : () -> Unit
+    onSignUpRequest: () -> Unit = {},
+    onLoginRequest: (String, String) -> Unit,
+    onForgotPasswordRequest: () -> Unit = {},
+    onLoginSuccessful: () -> Unit
 ) {
-    LaunchedEffect(state) {
-        if (state == AuthenticationState.SUCCESS)
-            onLoginSuccessful()
-    }
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
+    LaunchedEffect(state) {
+        when (state) {
+            AuthenticationState.SUCCESS -> onLoginSuccessful()
+            AuthenticationState.ERROR -> {
+                val message = errorMessage ?: "An error occurred during login"
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(message)
+                }
+            }
+            else -> Unit
+        }
+    }
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter,
@@ -52,17 +63,34 @@ fun LoginScreen(
             painter = painterResource(id = R.drawable.login_background),
             contentDescription = "Background",
             contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         )
         Box(
             modifier = Modifier.fillMaxSize().padding(bottom = 50.dp),
             contentAlignment = Alignment.BottomCenter
         ) {
-            BlurBox(onSignUpRequest,onLoginRequest,onForgotPasswordRequest)
+            BlurBox(onSignUpRequest, onLoginRequest, onForgotPasswordRequest)
+        }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.padding(16.dp)
+        ) { snackbarData ->
+            Snackbar(
+                modifier = Modifier.padding(16.dp),
+                action = {
+                    TextButton(onClick = { snackbarHostState.currentSnackbarData?.dismiss() }) {
+                        Text(text = "Dismiss", color = Color.White)
+                    }
+                }
+            ) {
+                Text(text = snackbarData.message, color = Color.White)
+            }
         }
     }
 }
+
+
 
 @Composable
 fun LoginFields(
@@ -176,7 +204,7 @@ fun BlurBox(onSignUpRequest : () -> Unit = {},
 @Preview
 @Composable
 fun LoginScreenPreview(){
-    LoginScreen(onLoginRequest = {_,_->}, state = AuthenticationState.IDLE, onLoginSuccessful = {})
+    LoginScreen("Ola",onLoginRequest = {_,_->}, state = AuthenticationState.IDLE, onLoginSuccessful = {})
 }
 
 

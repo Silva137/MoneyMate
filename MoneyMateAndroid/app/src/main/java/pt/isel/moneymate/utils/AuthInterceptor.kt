@@ -20,35 +20,38 @@ class AuthInterceptor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
         val response = chain.proceed(originalRequest)
-
+        val body = response.body?.string()
         if (response.code == 401) {
-            val refreshToken = sessionManager.refreshToken
-            if (refreshToken == null) {
-                sessionManager.clearSession()
-                navigateToLogin()
-                throw IOException("No refresh token")
-            }
-
-            try {
-                val tokens = refreshToken(refreshToken)
-                val accessToken = tokens?.access_token
-
-                if (accessToken != null) {
-                    sessionManager.setSession(accessToken, refreshToken)
-                    val newRequest = originalRequest.newBuilder()
-                        .header("Authorization", "Bearer $accessToken")
-                        .build()
-                    response.close()
-                    return chain.proceed(newRequest)
-                } else {
+            val error = Gson().fromJson(body,ApiException::class.java)
+            if( error.name == "Token Expired") {
+                val refreshToken = sessionManager.refreshToken
+                if (refreshToken == null) {
                     sessionManager.clearSession()
                     navigateToLogin()
+                    throw IOException("No refresh token")
                 }
 
-            } catch (e: Exception) {
-                Log.e("AuthInterceptor", "Error refreshing token: ${e.message}")
-                sessionManager.clearSession()
-                throw e
+                try {
+                    val tokens = refreshToken(refreshToken)
+                    val accessToken = tokens?.access_token
+
+                    if (accessToken != null) {
+                        sessionManager.setSession(accessToken, refreshToken)
+                        val newRequest = originalRequest.newBuilder()
+                            .header("Authorization", "Bearer $accessToken")
+                            .build()
+                        response.close()
+                        return chain.proceed(newRequest)
+                    } else {
+                        sessionManager.clearSession()
+                        navigateToLogin()
+                    }
+
+                } catch (e: Exception) {
+                    Log.e("AuthInterceptor", "Error refreshing token: ${e.message}")
+                    sessionManager.clearSession()
+                    throw e
+                }
             }
         } else if (response.code == 403) {
             sessionManager.clearSession()
@@ -87,5 +90,9 @@ class AuthInterceptor(
             context.startActivity(intent)
         }
          */
+    }
+
+    private fun convertResponse(response : Response) {
+
     }
 }

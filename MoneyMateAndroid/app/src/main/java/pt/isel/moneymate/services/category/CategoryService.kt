@@ -6,6 +6,7 @@ import okhttp3.OkHttpClient
 import pt.isel.moneymate.services.HTTPService
 import pt.isel.moneymate.services.category.models.BothCategoriesDTO
 import pt.isel.moneymate.services.category.models.CreateCategory
+import pt.isel.moneymate.utils.APIResult
 import pt.isel.moneymate.utils.send
 
 class CategoryService(
@@ -15,7 +16,7 @@ class CategoryService(
 ) : HTTPService(apiEndpoint, httpClient, jsonEncoder) {
 
 
-    suspend fun getCategories(token: String?): BothCategoriesDTO? {
+    suspend fun getCategories(token: String?): APIResult<BothCategoriesDTO>? {
         if (token == null) {
             return null
         }

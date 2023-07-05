@@ -9,6 +9,7 @@ import pt.isel.moneymate.services.transactions.models.WalletBalanceDTO
 import pt.isel.moneymate.services.wallets.models.CreateWallet
 import pt.isel.moneymate.services.wallets.models.WalletDTO
 import pt.isel.moneymate.services.wallets.models.getWalletResponse
+import pt.isel.moneymate.utils.APIResult
 import pt.isel.moneymate.utils.send
 import java.time.LocalDate
 
@@ -19,7 +20,7 @@ class WalletService(
 ) : HTTPService(apiEndpoint, httpClient, jsonEncoder) {
 
 
-    suspend fun getWallets(token: String?): getWalletResponse? {
+    suspend fun getWallets(token: String?): APIResult<getWalletResponse>? {
         if (token == null) {
             return null
         }
@@ -38,7 +39,7 @@ class WalletService(
         request.send(httpClient){}
     }
 
-    suspend fun getWalletBalance(token: String?, walletId: Int, startDate: LocalDate, endDate: LocalDate) : WalletBalanceDTO? {
+    suspend fun getWalletBalance(token: String?, walletId: Int, startDate: LocalDate, endDate: LocalDate) : APIResult<WalletBalanceDTO>? {
         if (token == null) {
             return null
         }

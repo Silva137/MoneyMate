@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import pt.isel.moneymate.services.MoneyMateService
 import pt.isel.moneymate.session.SessionManager
+import pt.isel.moneymate.utils.APIResult
 
 class ProfileViewModel(
     private val moneymateService: MoneyMateService,
@@ -24,16 +25,21 @@ class ProfileViewModel(
 
     fun getUsername() {
         viewModelScope.launch {
-            _state= ProfileState.GETTING_USERS
+            _state = ProfileState.GETTING_USERS
             try {
                 val token = sessionManager.accessToken
-                val result = Result.success(moneymateService.usersService.getUsername(token))
-                _username = result.getOrNull()?.username
-                _state = ProfileState.FINISHED
+                val result = moneymateService.usersService.getUsername(token)
+                if (result is APIResult.Success) {
+                    _username = result.data.username
+                    _state = ProfileState.FINISHED
+                } else if (result is APIResult.Error) {
+                    // Handle API error here
+                }
             } catch (e: Exception) {
                 _username = null
+                // Handle exception here
             }
-            Log.v("USERNAME","$username")
+            Log.v("USERNAME", "$username")
         }
     }
 

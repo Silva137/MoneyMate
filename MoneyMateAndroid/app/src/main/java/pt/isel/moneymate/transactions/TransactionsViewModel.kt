@@ -12,6 +12,7 @@ import pt.isel.moneymate.domain.Transaction
 import pt.isel.moneymate.domain.TransactionType
 import pt.isel.moneymate.services.MoneyMateService
 import pt.isel.moneymate.session.SessionManager
+import pt.isel.moneymate.utils.APIResult
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -28,28 +29,54 @@ class TransactionsViewModel(
     val transactions: List<Transaction>? get() = _transactions
 
 
-    fun fetchTransactions(walletId : Int, startDate : LocalDate, endDate: LocalDate,sortedBy: String, orderBy: String){
+    fun fetchTransactions(
+        walletId: Int,
+        startDate: LocalDate,
+        endDate: LocalDate,
+        sortedBy: String,
+        orderBy: String
+    ) {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
         viewModelScope.launch {
             _state = TransactionState.GETTING_TRANSACTIONS
-            try{
+            try {
                 val token = sessionManager.accessToken
-                val response = Result.success(moneymateService.transactionsService.getWalletTransactions(token,walletId,startDate.toString(),endDate.toString(), sortedBy, orderBy))
-                _transactions = response.getOrNull()?.transactions?.map { transactionDTO ->
-                    Transaction(
-                        convertType(transactionDTO.amount),
-                        transactionDTO.title,
-                        transactionDTO.amount.toDouble(),
-                        Category(transactionDTO.category.id,transactionDTO.category.name, transactionDTO.category.user),
-                        LocalDateTime.parse(transactionDTO.createdAt.substring(0, 23), formatter)
-                    )
-                } ?: emptyList()
-                _state = TransactionState.FINISHED
-            }catch (e: Exception){
+                val response = moneymateService.transactionsService.getWalletTransactions(
+                    token,
+                    walletId,
+                    startDate.toString(),
+                    endDate.toString(),
+                    sortedBy,
+                    orderBy
+                )
+
+                when (response) {
+                    is APIResult.Success -> {
+                        _transactions = response.data.transactions.map { transactionDTO ->
+                            Transaction(
+                                convertType(transactionDTO.amount),
+                                transactionDTO.title,
+                                transactionDTO.amount.toDouble(),
+                                Category(
+                                    transactionDTO.category.id,
+                                    transactionDTO.category.name,
+                                    transactionDTO.category.user
+                                ),
+                                LocalDateTime.parse(transactionDTO.createdAt.substring(0, 23), formatter)
+                            )
+                        } ?: emptyList()
+                        _state = TransactionState.FINISHED
+                    }
+                    is APIResult.Error -> {
+                        Log.e("ERROR", "Failed to fetch transactions: ")
+                    }
+                }
+            } catch (e: Exception) {
                 Log.e("ERROR", "Failed to fetch transactions", e)
             }
         }
     }
+
 
 
     private fun convertType(amount : Float) : TransactionType {

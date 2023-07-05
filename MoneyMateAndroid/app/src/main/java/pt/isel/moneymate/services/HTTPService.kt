@@ -9,10 +9,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okhttp3.internal.EMPTY_REQUEST
-import pt.isel.moneymate.utils.UnexpectedResponseException
-import pt.isel.moneymate.utils.fromJson
-import pt.isel.moneymate.utils.getBodyOrThrow
-import pt.isel.moneymate.utils.send
+import pt.isel.moneymate.utils.*
 import java.lang.reflect.Type
 
 open class HTTPService(
@@ -22,20 +19,30 @@ open class HTTPService(
 ) {
 
 
-     fun <T> handleResponse(response : Response, type: Type) : T {
-         return if (response.isSuccessful) {
-             try {
-                 val body = response.body?.string()
-                 jsonEncoder.fromJson<T>(body, type)
-             }
-             catch (e: JsonSyntaxException) {
-                 throw UnexpectedResponseException(response)
-             }
-         }
-         else {
-             throw UnexpectedResponseException(response = response)
-         }
-     }
+    fun <T> handleResponse(response: Response, type: Type): APIResult<T> {
+        return if (response.isSuccessful) {
+            try {
+                val body = response.body?.string()
+                val data = jsonEncoder.fromJson<T>(body, type)
+                APIResult.Success(data)
+            } catch (e: JsonSyntaxException) {
+                APIResult.Error("Unexpected response format")
+            }
+        } else {
+            val errorBody = response.body?.string()
+            val errorMessage = extractErrorMessage(errorBody)
+            APIResult.Error(errorMessage ?: "An error occurred")
+        }
+    }
+
+    private fun extractErrorMessage(errorBody: String?): String? {
+        return try {
+            val exception = jsonEncoder.fromJson(errorBody, ApiException::class.java)
+            exception.name
+        } catch (e: JsonSyntaxException) {
+            null
+        }
+    }
 
     fun get(
         link: String,

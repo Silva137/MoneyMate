@@ -40,6 +40,7 @@ class LoginActivity: ComponentActivity() {
             }
             else {
                 LoginScreen(
+                    errorMessage = viewModel.errorMessage,
                     state = viewModel.authenticationState,
                     onLoginRequest = { email, password ->
                         viewModel.login(email = email, password = password)

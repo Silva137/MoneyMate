@@ -8,12 +8,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import pt.isel.moneymate.domain.Category
-
 import pt.isel.moneymate.services.MoneyMateService
 import pt.isel.moneymate.services.transactions.models.WalletBalanceDTO
 import pt.isel.moneymate.services.wallets.models.Wallet
 import pt.isel.moneymate.session.SessionManager
 import pt.isel.moneymate.utils.getCurrentMonthRange
+import pt.isel.moneymate.utils.APIResult
 import java.time.LocalDate
 import java.time.YearMonth
 import java.util.*
@@ -45,42 +45,59 @@ class HomeViewModel(
             _state = WalletState.GETTING_WALLETS
             try {
                 val token = sessionManager.accessToken
-                val walletsResponse = Result.success(moneymateService.walletsService.getWallets(token))
-                _wallets = walletsResponse.getOrNull()?.wallets ?: emptyList()
+                val walletsResponse = moneymateService.walletsService.getWallets(token)
 
-                if (selectedWalletId == 0) {
-                    selectedWalletId = _wallets.firstOrNull()?.id ?: 0
+                when (walletsResponse) {
+                    is APIResult.Success -> {
+                        _wallets = walletsResponse.data.wallets
+
+                        if (selectedWalletId == 0) {
+                            selectedWalletId = _wallets.firstOrNull()?.id ?: 0
+                        }
+                        _state = WalletState.FINISHED
+                    }
+                    is APIResult.Error -> {
+                        Log.e("ERROR", "Failed to fetch wallets: ")
+                    }
                 }
-                _state = WalletState.FINISHED
             } catch (e: Exception) {
                 Log.e("ERROR", "Failed to fetch wallets", e)
             }
         }
     }
+
 
     fun fetchCategories() {
         viewModelScope.launch {
             try {
                 val token = sessionManager.accessToken
-                val categoriesResponse =
-                    Result.success(moneymateService.categoriesService.getCategories(token))
-                val bothCategoriesDTO = categoriesResponse.getOrNull()
+                val categoriesResponse = moneymateService.categoriesService.getCategories(token)
 
-                _categories = if (bothCategoriesDTO != null) {
-                    val userCategories = bothCategoriesDTO.userCategories.categories
-                    val systemCategories = bothCategoriesDTO.systemCategories.categories
+                when (categoriesResponse) {
+                    is APIResult.Success -> {
+                        val bothCategoriesDTO = categoriesResponse.data
 
-                    val combinedCategories = userCategories + systemCategories
-                    combinedCategories
-                } else {
-                    emptyList()
+                        _categories = if (bothCategoriesDTO != null) {
+                            val userCategories = bothCategoriesDTO.userCategories.categories
+                            val systemCategories = bothCategoriesDTO.systemCategories.categories
+
+                            val combinedCategories = userCategories + systemCategories
+                            combinedCategories
+                        } else {
+                            emptyList()
+                        }
+                        Log.v("CATEGORIES", _categories.toString())
+                    }
+                    is APIResult.Error -> {
+                        Log.e("ERROR", "Failed to fetch categories:)")
+                    }
                 }
-                Log.v("CATEGORIES", _categories.toString())
             } catch (e: Exception) {
-                Log.e("ERROR", "Failed to fetch wallets", e)
+                Log.e("ERROR", "Failed to fetch categories", e)
             }
         }
     }
+
     fun createTransaction(walletId: Int, categoryId: Int, amount: Float, title: String) {
         viewModelScope.launch {
             try {
@@ -101,19 +118,26 @@ class HomeViewModel(
             try {
                 val token = sessionManager.accessToken
                 val dateRange = getCurrentMonthRange()
-                val walletResponse = Result.success(
-                    moneymateService.walletsService.getWalletBalance(
-                        token,
-                        selectedWalletId,
-                        dateRange.first,
-                        dateRange.second
-                    )
+                val walletResponse = moneymateService.walletsService.getWalletBalance(
+                    token,
+                    selectedWalletId,
+                    dateRange.first,
+                    dateRange.second
                 )
-                _balance = WalletBalanceDTO(walletResponse.getOrNull()?.incomeSum ?: 0,walletResponse.getOrNull()?.expenseSum ?: 0)
-                Log.v("BALANCE","${_balance}")
 
+                when (walletResponse) {
+                    is APIResult.Success -> {
+                        val incomeSum = walletResponse.data.incomeSum ?: 0
+                        val expenseSum = walletResponse.data.expenseSum ?: 0
+                        _balance = WalletBalanceDTO(incomeSum, expenseSum)
+                        Log.v("BALANCE", "$_balance")
+                    }
+                    is APIResult.Error -> {
+                        Log.e("ERROR", "Failed to get wallet balance: ")
+                    }
+                }
             } catch (e: Exception) {
-                Log.e("ERROR", "Failed to getBalance ", e)
+                Log.e("ERROR", "Failed to get wallet balance", e)
             }
         }
     }

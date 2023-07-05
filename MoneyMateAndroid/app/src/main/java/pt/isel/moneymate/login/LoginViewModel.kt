@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import pt.isel.moneymate.services.MoneyMateService
 import pt.isel.moneymate.services.users.models.AuthenticationOutputModel
 import pt.isel.moneymate.session.SessionManager
+import pt.isel.moneymate.utils.APIResult
 
 class LoginViewModel(
     private val moneymateService: MoneyMateService,
@@ -20,26 +21,40 @@ class LoginViewModel(
     val authenticationState: AuthenticationState
         get() = _authenticationState
 
-    private var _authenticationData by mutableStateOf<Result<AuthenticationOutputModel>?>(null)
-    val authenticationData: Result<AuthenticationOutputModel>?
+    private var _authenticationData by mutableStateOf<APIResult<AuthenticationOutputModel>?>(null)
+    val authenticationData: APIResult<AuthenticationOutputModel>?
         get() = _authenticationData
+
+    private var _errorMessage by mutableStateOf<String?>(null)
+    val errorMessage: String?
+        get() = _errorMessage
 
     fun login(email: String, password: String) {
         viewModelScope.launch {
             try {
                 _authenticationState = AuthenticationState.LOADING
-                _authenticationData = Result.success(moneymateService.usersService.login(email, password))
-                val outputModel: AuthenticationOutputModel = _authenticationData!!.getOrThrow()
-                sessionManager.setSession(
-                    accessToken = outputModel.access_token,
-                    refreshToken = outputModel.refresh_token
-                )
-                _authenticationState = AuthenticationState.SUCCESS
+                _authenticationData = moneymateService.usersService.login(email, password)
+                when (_authenticationData) {
+                    is APIResult.Success -> {
+                        val outputModel = (_authenticationData as APIResult.Success<AuthenticationOutputModel>).data
+                        sessionManager.setSession(
+                            accessToken = outputModel.access_token,
+                            refreshToken = outputModel.refresh_token
+                        )
+                        _authenticationState = AuthenticationState.SUCCESS
+                    }
+                    is APIResult.Error -> {
+                        val errorMessage = (_authenticationData as APIResult.Error).message
+                        _errorMessage = errorMessage
+                        _authenticationState = AuthenticationState.ERROR
+                    }
+                }
             } catch (e: Exception) {
-                _authenticationData = Result.failure(e)
+                // Exception occurred during login
+                _authenticationData = APIResult.Error(e.message ?: "An error occurred during login")
+                _errorMessage = e.message ?: "An error occurred during login"
                 _authenticationState = AuthenticationState.ERROR
             }
-            Log.v("LOGIN", "DATA IS ${_authenticationData}")
         }
     }
 

@@ -9,6 +9,7 @@ import pt.isel.moneymate.services.category.models.CreateCategory
 import pt.isel.moneymate.services.category.models.PosAndNegCategoryBalanceDTO
 import pt.isel.moneymate.services.transactions.models.CreateTransaction
 import pt.isel.moneymate.services.transactions.models.TransactionsDTO
+import pt.isel.moneymate.utils.APIResult
 import pt.isel.moneymate.utils.send
 
 class TransactionService(
@@ -33,7 +34,7 @@ class TransactionService(
         endDate: String,
         sortedBy: String,
         orderBy: String
-    ): TransactionsDTO? {
+    ): APIResult<TransactionsDTO>? {
         if (token == null) {
             return null
         }
