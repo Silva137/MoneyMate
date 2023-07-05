@@ -23,11 +23,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import pt.isel.moneymate.R
 import pt.isel.moneymate.background.poppins
 import pt.isel.moneymate.domain.Category
 import pt.isel.moneymate.domain.Transaction
 import pt.isel.moneymate.domain.TransactionType
+import pt.isel.moneymate.home.HomeViewModel
 import pt.isel.moneymate.services.users.models.UserDTO
 import pt.isel.moneymate.theme.expenseRed
 import pt.isel.moneymate.theme.incomeGreen
@@ -41,6 +43,8 @@ import java.util.*
 
 @Composable
 fun TransactionsScreen(
+    errorMessage: String?,
+    state: TransactionsViewModel.TransactionState,
     transactions: List<Transaction>?,
     onSearchClick: (startDate: LocalDate, endDate: LocalDate, sortedBy: String, orderBy: String) -> Unit = { _, _, _, _ -> }
 ) {
@@ -54,6 +58,21 @@ fun TransactionsScreen(
 
     val sortByOptions = listOf("bydate", "byprice")
     val orderByOptions = listOf("ASC", "DESC")
+
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(state) {
+        when (state) {
+            TransactionsViewModel.TransactionState.ERROR -> {
+                val message = errorMessage ?: "An error occurred "
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(message)
+                }
+            }
+            else -> Unit
+        }
+    }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -93,6 +112,22 @@ fun TransactionsScreen(
                         contentDescription = "Search",
                         tint = Color.White
                     )
+                }
+
+                SnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier.padding(16.dp)
+                ) { snackbarData ->
+                    Snackbar(
+                        modifier = Modifier.padding(16.dp),
+                        action = {
+                            TextButton(onClick = { snackbarHostState.currentSnackbarData?.dismiss() }) {
+                                Text(text = "Dismiss", color = Color.White)
+                            }
+                        }
+                    ) {
+                        Text(text = snackbarData.message, color = Color.White)
+                    }
                 }
             }
 
@@ -311,6 +346,8 @@ fun TransactionItemPreview() {
         createdAt = LocalDateTime.now()
     )
     TransactionsScreen(
+        errorMessage= "OLA",
+        state = TransactionsViewModel.TransactionState.IDLE,
         transactions = listOf(transaction),
         onSearchClick = {startTime, endTime, sortedBy, orderBy ->
         }
@@ -360,6 +397,8 @@ fun TransactionsListPreview() {
         )
     )
     TransactionsScreen(
+        errorMessage= "OLA",
+        state = TransactionsViewModel.TransactionState.IDLE,
         transactions = transactions,
         onSearchClick = {startTime, endTime, sortedBy, orderBy ->
         }

@@ -38,6 +38,8 @@ fun BottomNavGraph(
                 LaunchedEffect(true) { homeViewModel.getWalletBalance() }
             }
             HomeScreen(
+                errorMessage = homeViewModel.errorMessage,
+                state = homeViewModel.state,
                 wallets = homeViewModel.wallets,
                 selectedWalletId = homeViewModel.selectedWalletId,
                 onWalletSelected = { walletId ->
@@ -60,6 +62,8 @@ fun BottomNavGraph(
             }
 
             TransactionsScreen(
+                errorMessage = transactionsViewModel.errorMessage,
+                state = transactionsViewModel.state,
                 transactions = transactionsViewModel.transactions,
                 onSearchClick = {startTime, endTime, sortedBy, orderBy ->
                     transactionsViewModel.fetchTransactions(homeViewModel.selectedWalletId,startTime,endTime, sortedBy, orderBy)

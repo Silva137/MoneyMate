@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import kotlinx.coroutines.launch
 import pt.isel.moneymate.R
 import pt.isel.moneymate.domain.User
 import pt.isel.moneymate.background.poppins
@@ -46,6 +47,8 @@ import pt.isel.moneymate.utils.LargeDropdownMenu
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
+    errorMessage: String?,
+    state : HomeViewModel.WalletState,
     wallets: List<Wallet>,
     categories: List<Category>,
     selectedWalletId: Int?,
@@ -58,6 +61,20 @@ fun HomeScreen(
 
     var showPopupSelectWallet by remember { mutableStateOf(false) }
     var showPopupAddTransaction by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(state) {
+        when (state) {
+            HomeViewModel.WalletState.ERROR -> {
+                val message = errorMessage ?: "An error occurred "
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(message)
+                }
+            }
+            else -> Unit
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -81,6 +98,21 @@ fun HomeScreen(
             MonthReport( walletBalance.expenseSum, walletBalance.incomeSum)
             AddTransactionButton(onClick = { showPopupAddTransaction = true })
         }
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.padding(16.dp)
+        ) { snackbarData ->
+            Snackbar(
+                modifier = Modifier.padding(16.dp),
+                action = {
+                    TextButton(onClick = { snackbarHostState.currentSnackbarData?.dismiss() }) {
+                        Text(text = "Dismiss", color = Color.White)
+                    }
+                }
+            ) {
+                Text(text = snackbarData.message, color = Color.White)
+            }
+        }   
     }
 
     if (showPopupSelectWallet) {
@@ -439,6 +471,8 @@ fun HomeScreenPreview() {
     var selectedWalletId by remember { mutableStateOf(1) }
 
     HomeScreen(
+        errorMessage = "ola",
+        state = HomeViewModel.WalletState.IDLE,
         wallets = listOf(
             Wallet(1, "Wallet 1", User(1,"shimi","shimi"), "2023-06-01", 1000),
             Wallet(2, "Wallet 2",  User(1,"shimi","shimi"), "2023-06-01", 2000),

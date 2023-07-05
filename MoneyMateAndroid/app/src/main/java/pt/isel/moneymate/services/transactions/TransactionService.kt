@@ -13,18 +13,26 @@ import pt.isel.moneymate.utils.APIResult
 import pt.isel.moneymate.utils.send
 
 class TransactionService(
-    apiEndpoint: String,
-    private val httpClient: OkHttpClient,
-    jsonEncoder: Gson
-) : HTTPService(apiEndpoint,httpClient,jsonEncoder) {
+    apiEndpoint: String, private val httpClient: OkHttpClient, jsonEncoder: Gson
+) : HTTPService(apiEndpoint, httpClient, jsonEncoder) {
 
-
-    suspend fun createTransaction(token: String?, categoryId: Int, walletId: Int, amount: Float, title: String) {
-        if (token == null) {
-            return
+    suspend fun createTransaction(
+        token: String?, categoryId: Int, walletId: Int, amount: Float, title: String
+    ): APIResult<Unit> {
+        return try {
+            if (token == null) {
+                return APIResult.Error("No token available")
+            }
+            val request = post(
+                link = "/transactions/wallets/$walletId/categories/$categoryId",
+                token = token,
+                body = CreateTransaction(amount, title)
+            )
+            val response = request.send(httpClient) {}
+            APIResult.Success(response)
+        } catch (e: Exception) {
+            APIResult.Error(e.message ?: "An error occurred during transaction creation")
         }
-        val request = post(link = "/transactions/wallets/$walletId/categories/$categoryId", token = token, body = CreateTransaction(amount, title))
-        request.send(httpClient){}
     }
 
     suspend fun getWalletTransactions(
@@ -35,28 +43,45 @@ class TransactionService(
         sortedBy: String,
         orderBy: String
     ): APIResult<TransactionsDTO>? {
-        if (token == null) {
-            return null
-        }
+        return try {
+            if (token == null) {
+                return APIResult.Error("No token available")
+            }
 
-        val request = get(
-            link = Uris.Transactions.GET_ALL + "$walletId?sortedBy=$sortedBy&orderBy=$orderBy&startDate=$startDate&endDate=$endDate&limit&offset",
-            token
-        )
-        val transactions = request.send(httpClient) { response ->
-            handleResponse<TransactionsDTO>(response, TransactionsDTO::class.java)
+            val request = get(
+                link = Uris.Transactions.GET_ALL + "$walletId?sortedBy=$sortedBy&orderBy=$orderBy&startDate=$startDate&endDate=$endDate&limit&offset",
+                token
+            )
+            val transactions = request.send(httpClient) { response ->
+                handleResponse<TransactionsDTO>(response, TransactionsDTO::class.java)
+            }
+            transactions
+        } catch (e: Exception) {
+            APIResult.Error(e.message ?: "An error occurred while fetching wallet transactions")
         }
-        return transactions
     }
-
-    suspend fun getCategoryBalance(token: String?, walletId: Int,startDate: String, endDate: String): PosAndNegCategoryBalanceDTO? {
-        if (token == null) {
-            return null
+    suspend fun getCategoryBalance(
+        token: String?,
+        walletId: Int,
+        startDate: String,
+        endDate: String
+    ): APIResult<PosAndNegCategoryBalanceDTO>? {
+        return try {
+            if (token == null) {
+                return APIResult.Error("No token available")
+            }
+            val request = get(
+                link = "/transactions/wallets/$walletId/categories/posneg/balance?startDate=$startDate&endDate=$endDate",
+                token = token
+            )
+            val categoriesBalance = request.send(httpClient) { response ->
+                handleResponse<PosAndNegCategoryBalanceDTO>(
+                    response, PosAndNegCategoryBalanceDTO::class.java
+                )
+            }
+            categoriesBalance
+        } catch (e: Exception) {
+            APIResult.Error(e.message ?: "An error occurred while fetching category balance")
         }
-        val request = get(link = "/transactions/wallets/$walletId/categories/posneg/balance?startDate=$startDate&endDate=$endDate", token = token)
-        val categoriesBalance = request.send(httpClient) { response ->
-            handleResponse<PosAndNegCategoryBalanceDTO>(response, PosAndNegCategoryBalanceDTO::class.java)
-        }
-        return categoriesBalance
     }
 }

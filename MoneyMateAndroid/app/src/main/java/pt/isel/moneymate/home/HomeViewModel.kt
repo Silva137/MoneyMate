@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import pt.isel.moneymate.domain.Category
+import pt.isel.moneymate.login.LoginViewModel
 import pt.isel.moneymate.services.MoneyMateService
 import pt.isel.moneymate.services.transactions.models.WalletBalanceDTO
 import pt.isel.moneymate.services.wallets.models.Wallet
@@ -35,6 +36,9 @@ class HomeViewModel(
     private var _balance: WalletBalanceDTO by mutableStateOf(WalletBalanceDTO(0, 0))
     val balance: WalletBalanceDTO get() = _balance
 
+    private var _errorMessage by mutableStateOf<String?>(null)
+    val errorMessage: String?
+        get() = _errorMessage
 
     var selectedWalletId: Int by mutableStateOf(0)
         set
@@ -57,7 +61,9 @@ class HomeViewModel(
                         _state = WalletState.FINISHED
                     }
                     is APIResult.Error -> {
-                        Log.e("ERROR", "Failed to fetch wallets: ")
+                        val errorMessage = walletsResponse.message
+                        _errorMessage = errorMessage
+                        _state = WalletState.ERROR
                     }
                 }
             } catch (e: Exception) {
@@ -89,7 +95,9 @@ class HomeViewModel(
                         Log.v("CATEGORIES", _categories.toString())
                     }
                     is APIResult.Error -> {
-                        Log.e("ERROR", "Failed to fetch categories:)")
+                        val errorMessage = categoriesResponse.message
+                        _errorMessage = errorMessage
+                        _state = WalletState.ERROR
                     }
                 }
             } catch (e: Exception) {
@@ -102,9 +110,15 @@ class HomeViewModel(
         viewModelScope.launch {
             try {
                 val token = sessionManager.accessToken
-                val response = Result.success(moneymateService.transactionsService.createTransaction(token, categoryId, walletId, amount, title))
-                if(response.isSuccess){
-                    fetchWallets()
+                val response = moneymateService.transactionsService.createTransaction(token, categoryId, walletId, amount, title)
+                when(response){
+                    is APIResult.Success ->  fetchWallets()
+
+                    is APIResult.Error -> {
+                        val errorMessage = response.message
+                        _errorMessage = errorMessage
+                        _state = WalletState.ERROR
+                    }
                 }
             } catch (e: Exception) {
                 Log.e("ERROR", "Failed to create transaction", e)
@@ -133,7 +147,9 @@ class HomeViewModel(
                         Log.v("BALANCE", "$_balance")
                     }
                     is APIResult.Error -> {
-                        Log.e("ERROR", "Failed to get wallet balance: ")
+                            val errorMessage = walletResponse.message
+                            _errorMessage = errorMessage
+                            _state = WalletState.ERROR
                     }
                 }
             } catch (e: Exception) {
@@ -144,7 +160,8 @@ class HomeViewModel(
     enum class WalletState {
         IDLE,
         GETTING_WALLETS,
-        FINISHED
+        FINISHED,
+        ERROR
     }
 }
 

@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import pt.isel.moneymate.domain.Category
 import pt.isel.moneymate.domain.Transaction
 import pt.isel.moneymate.domain.TransactionType
+import pt.isel.moneymate.home.HomeViewModel
 import pt.isel.moneymate.services.MoneyMateService
 import pt.isel.moneymate.session.SessionManager
 import pt.isel.moneymate.utils.APIResult
@@ -27,6 +28,10 @@ class TransactionsViewModel(
 
     private var _transactions: List<Transaction>? by mutableStateOf(emptyList())
     val transactions: List<Transaction>? get() = _transactions
+
+    private var _errorMessage by mutableStateOf<String?>(null)
+    val errorMessage: String?
+        get() = _errorMessage
 
 
     fun fetchTransactions(
@@ -64,11 +69,14 @@ class TransactionsViewModel(
                                 ),
                                 LocalDateTime.parse(transactionDTO.createdAt.substring(0, 23), formatter)
                             )
-                        } ?: emptyList()
+                        }
                         _state = TransactionState.FINISHED
                     }
                     is APIResult.Error -> {
-                        Log.e("ERROR", "Failed to fetch transactions: ")
+                        val errorMessage = response.message
+                        _errorMessage = errorMessage
+                        _transactions = emptyList()
+                        _state = TransactionState.ERROR
                     }
                 }
             } catch (e: Exception) {
@@ -90,6 +98,7 @@ class TransactionsViewModel(
     enum class TransactionState {
         IDLE,
         GETTING_TRANSACTIONS,
-        FINISHED
+        FINISHED,
+        ERROR
     }
 }

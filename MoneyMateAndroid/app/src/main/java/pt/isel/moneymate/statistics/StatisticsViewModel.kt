@@ -14,6 +14,7 @@ import pt.isel.moneymate.services.category.models.CategoryBalanceDTO
 import pt.isel.moneymate.services.category.models.PosAndNegCategoryBalanceDTO
 import pt.isel.moneymate.session.SessionManager
 import pt.isel.moneymate.transactions.TransactionsViewModel
+import pt.isel.moneymate.utils.APIResult
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -29,16 +30,22 @@ class StatisticsViewModel(
     private var _categoriesBalanceNeg: List<CategoryBalanceDTO>? by mutableStateOf(emptyList())
     val categoriesBalanceNeg: List<CategoryBalanceDTO>? get() = _categoriesBalanceNeg
 
-    fun fetchCategoriesBalance(walletId : Int, startDate : LocalDate, endDate: LocalDate){
+    fun fetchCategoriesBalance(walletId: Int, startDate: LocalDate, endDate: LocalDate) {
         viewModelScope.launch {
-            try{
+            try {
                 val token = sessionManager.accessToken
-                val response = Result.success(moneymateService.transactionsService.getCategoryBalance(token,walletId,startDate.toString(),endDate.toString()))
-                _categoriesBalancePos = response.getOrNull()?.pos?.balanceList ?: emptyList()
-                _categoriesBalanceNeg = response.getOrNull()?.neg?.balanceList ?: emptyList()
-            }catch (e: Exception){
-                Log.e("ERROR", "Failed to fetch transactions", e)
+                val response = moneymateService.transactionsService.getCategoryBalance(token, walletId, startDate.toString(), endDate.toString())
+                if (response is APIResult.Success) {
+                    val categoriesBalance = response.data
+                    _categoriesBalancePos = categoriesBalance.pos.balanceList
+                    _categoriesBalanceNeg = categoriesBalance.neg.balanceList
+                } else {
+                    Log.e("ERROR", "Failed to fetch category balance:")
+                }
+            } catch (e: Exception) {
+                Log.e("ERROR", "Failed to fetch category balance", e)
             }
         }
     }
+
 }

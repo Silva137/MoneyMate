@@ -35,6 +35,8 @@ class TransactionsActivity: ComponentActivity() {
         val walletId = intent.getIntExtra("selectedWalletId", 0)
         setContent {
             TransactionsScreen(
+                errorMessage = viewModel.errorMessage,
+                state = viewModel.state,
                 transactions = viewModel.transactions,
                 onSearchClick = {startTime, endTime, sortedBy, orderBy ->
                     viewModel.fetchTransactions(walletId,startTime,endTime,"bydate", "ASC")

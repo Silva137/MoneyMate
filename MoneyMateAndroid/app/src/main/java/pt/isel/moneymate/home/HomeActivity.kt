@@ -44,6 +44,8 @@ class HomeActivity : ComponentActivity() {
         setContent {
 
             HomeScreen(
+                errorMessage = viewModel.errorMessage,
+                state = viewModel.state,
                 wallets = viewModel.wallets,
                 selectedWalletId = viewModel.selectedWalletId,
                 onWalletSelected = { walletId ->
