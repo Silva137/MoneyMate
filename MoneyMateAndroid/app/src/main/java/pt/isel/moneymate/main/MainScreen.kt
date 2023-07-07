@@ -16,6 +16,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import pt.isel.moneymate.category.CategoryViewModel
 import pt.isel.moneymate.home.HomeViewModel
 import pt.isel.moneymate.profile.ProfileViewModel
 import pt.isel.moneymate.statistics.StatisticsViewModel
@@ -30,7 +31,8 @@ fun MainScreen(
     homeViewModel: HomeViewModel,
     transactionsViewModel: TransactionsViewModel,
     statisticsViewModel: StatisticsViewModel,
-    profileViewModel: ProfileViewModel
+    profileViewModel: ProfileViewModel,
+    categoriesViewModel : CategoryViewModel
 ) {
     val navController = rememberNavController()
     Scaffold(
@@ -41,7 +43,8 @@ fun MainScreen(
             homeViewModel = homeViewModel,
             transactionsViewModel = transactionsViewModel,
             statisticsViewModel = statisticsViewModel,
-            profileViewModel = profileViewModel
+            profileViewModel = profileViewModel,
+            categoriesViewModel = categoriesViewModel
         )
     }
 }

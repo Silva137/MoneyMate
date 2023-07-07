@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import pt.isel.moneymate.DependenciesContainer
+import pt.isel.moneymate.category.CategoryViewModel
 import pt.isel.moneymate.home.HomeViewModel
 import pt.isel.moneymate.profile.ProfileViewModel
 import pt.isel.moneymate.statistics.StatisticsViewModel
@@ -42,6 +43,10 @@ class MainActivity : ComponentActivity() {
         viewModelInit { ProfileViewModel(dependencies.moneymateService, dependencies.sessionManager) }
     }
 
+    private val categoriesViewModel : CategoryViewModel by viewModels {
+        viewModelInit { CategoryViewModel(dependencies.moneymateService,dependencies.sessionManager) }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -50,7 +55,8 @@ class MainActivity : ComponentActivity() {
                     homeViewModel = homeViewModel,
                     transactionsViewModel = transactionsViewModel,
                     statisticsViewModel = statisticsViewModel,
-                    profileViewModel = profileViewModel
+                    profileViewModel = profileViewModel,
+                    categoriesViewModel = categoriesViewModel
                 )
             }
         }

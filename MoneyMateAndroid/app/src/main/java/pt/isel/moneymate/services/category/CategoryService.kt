@@ -27,12 +27,55 @@ class CategoryService(
         return categories
     }
 
-    suspend fun createCategory(token: String?, categoryName: String) {
-        if (token == null) {
-            return
+    suspend fun createCategory(token: String?, categoryName: String) :APIResult<Unit> {
+        return try {
+            if (token == null) {
+                return APIResult.Error("No token available")
+            }
+            val request = post(
+                link = Uris.Category.CREATE,
+                token = token,
+                body = CreateCategory(categoryName)
+            )
+            val response = request.send(httpClient) {}
+            APIResult.Success(response)
+        }catch(e: Exception){
+            APIResult.Error(e.message ?: "An error occurred during create Transaction")
         }
-        val request = post(link = Uris.Category.CREATE, token = token, body = CreateCategory(categoryName))
-        request.send(httpClient){}
     }
+
+    suspend fun updateCategory(token: String?, categoryId: String, updatedCategoryName: String): APIResult<Unit> {
+        return try {
+            if (token == null) {
+                return APIResult.Error("No token available")
+            }
+            val request = patch(
+                link = "/categories/${categoryId}",
+                token = token,
+                body = CreateCategory(updatedCategoryName)
+            )
+            val response = request.send(httpClient) {}
+            APIResult.Success(response)
+        } catch (e: Exception) {
+            APIResult.Error(e.message ?: "An error occurred during update Category")
+        }
+    }
+
+    suspend fun deleteCategory(token: String?, categoryId: String): APIResult<Unit> {
+        return try {
+            if (token == null) {
+                return APIResult.Error("No token available")
+            }
+            val request = delete(
+                link = "/categories/$categoryId",
+                token = token
+            )
+            val response = request.send(httpClient) {}
+            APIResult.Success(response)
+        } catch (e: Exception) {
+            APIResult.Error(e.message ?: "An error occurred during delete Category")
+        }
+    }
+
 
 }

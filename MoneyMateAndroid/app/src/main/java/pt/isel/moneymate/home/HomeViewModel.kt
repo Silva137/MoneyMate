@@ -73,38 +73,7 @@ class HomeViewModel(
     }
 
 
-    fun fetchCategories() {
-        viewModelScope.launch {
-            try {
-                val token = sessionManager.accessToken
-                val categoriesResponse = moneymateService.categoriesService.getCategories(token)
 
-                when (categoriesResponse) {
-                    is APIResult.Success -> {
-                        val bothCategoriesDTO = categoriesResponse.data
-
-                        _categories = if (bothCategoriesDTO != null) {
-                            val userCategories = bothCategoriesDTO.userCategories.categories
-                            val systemCategories = bothCategoriesDTO.systemCategories.categories
-
-                            val combinedCategories = userCategories + systemCategories
-                            combinedCategories
-                        } else {
-                            emptyList()
-                        }
-                        Log.v("CATEGORIES", _categories.toString())
-                    }
-                    is APIResult.Error -> {
-                        val errorMessage = categoriesResponse.message
-                        _errorMessage = errorMessage
-                        _state = WalletState.ERROR
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e("ERROR", "Failed to fetch categories", e)
-            }
-        }
-    }
 
     fun createTransaction(walletId: Int, categoryId: Int, amount: Float, title: String) {
         viewModelScope.launch {
