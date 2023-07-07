@@ -5,19 +5,14 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -30,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import pt.isel.moneymate.R
 import pt.isel.moneymate.domain.User
@@ -41,7 +37,7 @@ import pt.isel.moneymate.services.wallets.models.Wallet
 import pt.isel.moneymate.theme.dialogBackground
 import pt.isel.moneymate.theme.expenseRed
 import pt.isel.moneymate.theme.incomeGreen
-import pt.isel.moneymate.utils.LargeDropdownMenu
+import pt.isel.moneymate.utils.DropdownButton
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -129,7 +125,8 @@ fun HomeScreen(
             categories = categories,
             onDismiss = { showPopupAddTransaction = false },
             onCategoriesDropdownClick = onCategoriesDropdownClick,
-            onCreateTransactionButtonClick = onCreateTransactionButtonClick
+            onCreateTransactionButtonClick = onCreateTransactionButtonClick,
+            snackbarHostState = snackbarHostState
         )
     }
 }
@@ -177,6 +174,14 @@ fun BankCard(
                 .align(Alignment.BottomStart),
             horizontalAlignment = Alignment.Start
         ) {
+            Text(
+                text = selectedWallet?.name ?: "No wallets created",
+                fontWeight = FontWeight.Normal,
+                fontSize = 24.sp,
+                color = Color.White,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
             Text(
                 text = "Balance",
                 fontWeight = FontWeight.Bold,
@@ -278,13 +283,13 @@ fun AddTransactionPopup(
     categories: List<Category>,
     onDismiss: () -> Unit,
     onCategoriesDropdownClick: () -> Unit,
-    onCreateTransactionButtonClick: (Int, Float, String) -> Unit
+    onCreateTransactionButtonClick: (Int, Float, String) -> Unit,
+    snackbarHostState: SnackbarHostState,
+    coroutineScope: CoroutineScope = rememberCoroutineScope()
 ){
     var transactionTitle by remember { mutableStateOf("") }
     var transactionAmount by remember { mutableStateOf("") }
     var selectedIndex by remember { mutableStateOf(-1) }
-    var showError by remember { mutableStateOf(false) }
-
 
     Dialog(
         onDismissRequest = { onDismiss() },
@@ -314,7 +319,7 @@ fun AddTransactionPopup(
                     modifier = Modifier.fillMaxWidth(),
                     value = transactionTitle,
                     onValueChange = { transactionTitle = it },
-                    label = { Text(text = "Title", color = Color.White) },
+                    label = { Text(text = "Title", color = Color.White, fontSize = 18.sp) },
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -328,7 +333,7 @@ fun AddTransactionPopup(
                     modifier = Modifier.fillMaxWidth(),
                     value = transactionAmount,
                     onValueChange = { transactionAmount = it },
-                    label = { Text(text = "Amount", color = Color.White) },
+                    label = { Text(text = "Amount", color = Color.White, fontSize = 18.sp) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
@@ -339,12 +344,13 @@ fun AddTransactionPopup(
                     )
                 )
                 Spacer(modifier = Modifier.height(12.dp))
-                LargeDropdownMenu(
+                DropdownButton(
+                    modifier = Modifier.fillMaxWidth().height(65.dp),
                     label = "Select a category",
                     items = categories.map { it.name },
                     selectedIndex = selectedIndex,
                     onItemSelected = { index, _ -> selectedIndex = index },
-                    onCategoriesDropdownClicked = onCategoriesDropdownClick
+                    onFetchItems = onCategoriesDropdownClick
                 )
 
                 Row(
@@ -353,13 +359,21 @@ fun AddTransactionPopup(
                 ) {
                     Button(
                         onClick = {
-                            onCreateTransactionButtonClick(
-                                categories[selectedIndex].id,
-                                transactionAmount.toFloat(),
-                                transactionTitle
-                            )
-                            onDismiss()
-                        }
+                            try {
+                                onCreateTransactionButtonClick(
+                                    categories[selectedIndex].id,
+                                    transactionAmount.toFloat(),
+                                    transactionTitle
+                                )
+                                onDismiss()
+                            } catch (e: NumberFormatException) {
+                                Log.e("AddTransactionPopup", "Invalid amount")
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar("Invalid Amount ")
+                                }
+                            }
+                        },
+                        enabled = transactionTitle.isNotBlank() && transactionAmount.isNotBlank() && selectedIndex != -1
                     ) {
                         Text("Create")
                     }

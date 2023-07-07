@@ -20,10 +20,10 @@ class AuthInterceptor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
         val response = chain.proceed(originalRequest)
-        val body = response.body?.string()
+        val body = response.peekBody(2048).string()
         if (response.code == 401) {
-            val error = Gson().fromJson(body,ApiException::class.java)
-            if( error.name == "Token Expired") {
+            val error = Gson().fromJson(body, ApiException::class.java)
+            if (error.name == "TokenExpiredException") {
                 val refreshToken = sessionManager.refreshToken
                 if (refreshToken == null) {
                     sessionManager.clearSession()

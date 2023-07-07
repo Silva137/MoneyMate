@@ -40,7 +40,9 @@ class StatisticsActivity: ComponentActivity() {
                         ), -200),
                     CategoryBalanceDTO(CategoryDTO(3, "Entertainment", UserDTO(1,"silva","silva")), -300),
                     CategoryBalanceDTO(CategoryDTO(4, "Other", UserDTO(1,"silva","silva")), -400),
-                )
+                ),
+                errorMessage = null,
+                state = StatisticsViewModel.StatisticsState.IDLE
             )
         }
     }

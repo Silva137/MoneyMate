@@ -24,6 +24,7 @@ class HomeActivity : ComponentActivity() {
             }
         }
     }
+
     private val dependencies by lazy { application as DependenciesContainer }
 
     private val viewModel: HomeViewModel by viewModels {
@@ -39,7 +40,6 @@ class HomeActivity : ComponentActivity() {
         if (viewModel.state == HomeViewModel.WalletState.IDLE) {
             viewModel.fetchWallets()
         }
-
 
         setContent {
 

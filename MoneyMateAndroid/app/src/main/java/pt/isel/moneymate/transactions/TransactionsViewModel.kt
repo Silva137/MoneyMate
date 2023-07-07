@@ -26,8 +26,8 @@ class TransactionsViewModel(
     private var _state: TransactionState by mutableStateOf(TransactionState.IDLE)
     val state: TransactionState get() = _state
 
-    private var _transactions: List<Transaction>? by mutableStateOf(emptyList())
-    val transactions: List<Transaction>? get() = _transactions
+    private var _transactions: List<Transaction> by mutableStateOf(emptyList())
+    val transactions: List<Transaction> get() = _transactions
 
     private var _errorMessage by mutableStateOf<String?>(null)
     val errorMessage: String?
@@ -54,7 +54,6 @@ class TransactionsViewModel(
                     sortedBy,
                     orderBy
                 )
-
                 when (response) {
                     is APIResult.Success -> {
                         _transactions = response.data.transactions.map { transactionDTO ->

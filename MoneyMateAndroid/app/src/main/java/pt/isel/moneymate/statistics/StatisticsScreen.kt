@@ -9,6 +9,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -21,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -29,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import pt.isel.moneymate.R
 import pt.isel.moneymate.background.poppins
 import pt.isel.moneymate.domain.Transaction
@@ -40,14 +44,19 @@ import pt.isel.moneymate.services.category.models.CategoryBalanceDTO
 import pt.isel.moneymate.services.category.models.CategoryDTO
 import pt.isel.moneymate.services.users.models.UserDTO
 import pt.isel.moneymate.theme.*
+import pt.isel.moneymate.transactions.TransactionItem
+import pt.isel.moneymate.transactions.TransactionsViewModel
 import pt.isel.moneymate.utils.getCurrentYearRange
 import java.time.LocalDate
+import java.util.*
 
 @Composable
 fun StatisticsScreen(
-    categoriesBalancePos: List<CategoryBalanceDTO>?,
-    categoriesBalanceNeg: List<CategoryBalanceDTO>?,
-    onSearchClick: (startDate: LocalDate, endDate: LocalDate) -> Unit = { _, _ -> }
+    state: StatisticsViewModel.StatisticsState,
+    categoriesBalancePos: List<CategoryBalanceDTO>,
+    categoriesBalanceNeg: List<CategoryBalanceDTO>,
+    onSearchClick: (startDate: LocalDate, endDate: LocalDate) -> Unit = { _, _ -> },
+    errorMessage: String?
 ){
 
     var pickedStartDate by remember { mutableStateOf(getCurrentYearRange().first) }
@@ -55,9 +64,24 @@ fun StatisticsScreen(
     var isSearchClicked by remember { mutableStateOf(false) }
     var selectedButton by remember { mutableStateOf(ToggleButtonState.Negative) }
 
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(state) {
+        when (state) {
+            StatisticsViewModel.StatisticsState.ERROR -> {
+                val message = errorMessage ?: "An error occurred "
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(message)
+                }
+            }
+            else -> Unit
+        }
+    }
 
     Box(
         modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomCenter
     ) {
         Image(
             painter = painterResource(id = R.drawable.home_background),
@@ -111,11 +135,35 @@ fun StatisticsScreen(
             )
 
             val piechartData =
-            if(selectedButton == ToggleButtonState.Positive)
-                categoriesBalancePos?.let { createPieChartData(it) }
-            else categoriesBalanceNeg?.let { createPieChartData(it) }
+            if(selectedButton == ToggleButtonState.Positive) createPieChartData(categoriesBalancePos)
+            else createPieChartData(categoriesBalanceNeg)
 
-            PieChart(data = piechartData ?: mapOf(), animDuration = 1000)
+            if(piechartData.isEmpty()){
+                Text(
+                    text = "No statistics found",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 24.sp,
+                    color = Color.White,
+                    textAlign = TextAlign.Start,
+                )
+            }
+            else PieChart(data = piechartData, animDuration = 1000)
+        }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.padding(bottom = 85.dp)
+        ) { snackbarData ->
+            Snackbar(
+                modifier = Modifier.padding(16.dp),
+                action = {
+                    TextButton(onClick = { snackbarHostState.currentSnackbarData?.dismiss() }) {
+                        Text(text = "Dismiss", color = Color.White)
+                    }
+                }
+            ) {
+                Text(text = snackbarData.message, color = Color.White)
+            }
         }
     }
 }
@@ -156,7 +204,6 @@ fun ToggleButton(
                 fontWeight = FontWeight.ExtraBold
             )
         }
-
     }
 }
 
@@ -173,33 +220,18 @@ fun PieChart(
     chartBarWidth: Dp = 20.dp,
     animDuration: Int = 1000,
 ) {
-
     val totalSum = data.values.sum()
     val floatValue = mutableListOf<Float>()
 
-    // To set the value of each Arc according to
-    // the value given in the data, we have used a simple formula.
-    // For a detailed explanation check out the Medium Article.
-    // The link is in the about section and readme file of this GitHub Repository
     data.values.forEachIndexed { index, values ->
         floatValue.add(index, 360 * values.toFloat() / totalSum.toFloat())
     }
 
-    // add the colors as per the number of data(no. of pie chart entries)
-    // so that each data will get a color
-    val colors = listOf(
-        Purple200,
-        Purple500,
-        Teal200,
-        Purple700,
-        Blue
-    )
+    val colors = generateColors(data.size) // Generate colors based on the number of items
 
     var animationPlayed by remember { mutableStateOf(false) }
-
     var lastValue = 0f
 
-    // it is the diameter value of the Pie
     val animateSize by animateFloatAsState(
         targetValue = if (animationPlayed) radiusOuter.value * 2f else 0f,
         animationSpec = tween(
@@ -209,8 +241,6 @@ fun PieChart(
         )
     )
 
-    // if you want to stabilize the Pie Chart you can use value -90f
-    // 90f is used to complete 1/4 of the rotation
     val animateRotation by animateFloatAsState(
         targetValue = if (animationPlayed) 90f * 11f else 0f,
         animationSpec = tween(
@@ -220,7 +250,6 @@ fun PieChart(
         )
     )
 
-    // to play the animation only once when the function is Created or Recomposed
     LaunchedEffect(key1 = true) {
         animationPlayed = true
     }
@@ -229,8 +258,6 @@ fun PieChart(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        // Pie Chart using Canvas Arc
         Box(
             modifier = Modifier.size(animateSize.dp),
             contentAlignment = Alignment.Center
@@ -240,10 +267,9 @@ fun PieChart(
                     .size(radiusOuter * 2f)
                     .rotate(animateRotation)
             ) {
-                // draw each Arc for each data entry in Pie Chart
                 floatValue.forEachIndexed { index, value ->
                     drawArc(
-                        color = colors[index],
+                        color = colors[index], // Use dynamically generated colors
                         lastValue,
                         value,
                         useCenter = false,
@@ -254,15 +280,33 @@ fun PieChart(
             }
         }
 
-        // To see the data in more structured way
-        // Compose Function in which Items are showing data
         DetailsPieChart(
             data = data,
             colors = colors
         )
-
     }
+}
 
+@Composable
+fun generateColors(count: Int): List<Color> {
+    val colors = mutableListOf<Color>()
+    val pastelColors = listOf(
+        Color(0xFF9176C4), // Lavender
+        Color(0xFF80C3FA), // Light Blue
+        Color(0xFF8DDB90), // Light Green
+        Color(0xFFFAA767), // Light Orange
+        Color(0xFFFF6D68), // Light Salmon
+        Color(0xFFB0BEC5), // Blue Grey
+        Color(0xFFFFF179), // Light Yellow
+        Color(0xFF5FB1A9), // Light Teal
+        Color(0xFFD36ED1)  // Light Purple
+    )
+
+    repeat(count) { index ->
+        val color = pastelColors[index % pastelColors.size]
+        colors.add(color)
+    }
+    return colors
 }
 
 @Composable
@@ -270,19 +314,18 @@ fun DetailsPieChart(
     data: Map<String, Int>,
     colors: List<Color>
 ) {
-    Column(
-        modifier = Modifier
-            .padding(top = 80.dp)
-            .fillMaxWidth()
+    LazyColumn(
+        modifier = Modifier.padding(bottom = 85.dp, top = 25.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        // create the data items
-        data.values.forEachIndexed { index, value ->
-            DetailsPieChartItem(
-                data = Pair(data.keys.elementAt(index), value),
-                color = colors[index]
-            )
+        data.forEach { (key, value) ->
+            item {
+                DetailsPieChartItem(
+                    data = Pair(key, value),
+                    color = colors[data.keys.indexOf(key)]
+                )
+            }
         }
-
     }
 }
 
@@ -292,10 +335,9 @@ fun DetailsPieChartItem(
     height: Dp = 45.dp,
     color: Color
 ) {
-
     Surface(
         modifier = Modifier
-            .padding(vertical = 10.dp, horizontal = 40.dp),
+            .padding(start = 30.dp),
         color = Color.Transparent
     ) {
 
@@ -356,6 +398,8 @@ fun PreviewStatisticsScreen() {
             CategoryBalanceDTO(CategoryDTO(2, "Transport",UserDTO(1,"silva","silva")), -200),
             CategoryBalanceDTO(CategoryDTO(3, "Entertainment", UserDTO(1,"silva","silva")), -300),
             CategoryBalanceDTO(CategoryDTO(4, "Other", UserDTO(1,"silva","silva")), -400),
-        )
+        ),
+        errorMessage = null,
+        state = StatisticsViewModel.StatisticsState.IDLE,
     )
 }

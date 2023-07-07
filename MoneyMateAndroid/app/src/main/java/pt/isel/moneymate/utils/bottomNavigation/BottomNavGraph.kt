@@ -76,6 +76,8 @@ fun BottomNavGraph(
                 statisticsViewModel.fetchCategoriesBalance(homeViewModel.selectedWalletId, dateRange.first, dateRange.second)
             }
             StatisticsScreen(
+                errorMessage = statisticsViewModel.errorMessage,
+                state = statisticsViewModel.state,
                 categoriesBalancePos = statisticsViewModel.categoriesBalancePos,
                 categoriesBalanceNeg = statisticsViewModel.categoriesBalanceNeg,
                 onSearchClick = {startTime, endTime ->

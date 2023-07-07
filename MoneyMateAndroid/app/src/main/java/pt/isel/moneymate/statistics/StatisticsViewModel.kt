@@ -24,28 +24,46 @@ class StatisticsViewModel(
     private val sessionManager: SessionManager
 ) : ViewModel() {
 
-    private var _categoriesBalancePos: List<CategoryBalanceDTO>? by mutableStateOf(emptyList())
-    val categoriesBalancePos: List<CategoryBalanceDTO>? get() = _categoriesBalancePos
+    private var _state: StatisticsState by mutableStateOf(StatisticsState.IDLE)
+    val state: StatisticsState get() = _state
 
-    private var _categoriesBalanceNeg: List<CategoryBalanceDTO>? by mutableStateOf(emptyList())
-    val categoriesBalanceNeg: List<CategoryBalanceDTO>? get() = _categoriesBalanceNeg
+    private var _categoriesBalancePos: List<CategoryBalanceDTO> by mutableStateOf(emptyList())
+    val categoriesBalancePos: List<CategoryBalanceDTO> get() = _categoriesBalancePos
+
+    private var _categoriesBalanceNeg: List<CategoryBalanceDTO> by mutableStateOf(emptyList())
+    val categoriesBalanceNeg: List<CategoryBalanceDTO> get() = _categoriesBalanceNeg
+
+    private var _errorMessage by mutableStateOf<String?>(null)
+    val errorMessage: String?
+        get() = _errorMessage
 
     fun fetchCategoriesBalance(walletId: Int, startDate: LocalDate, endDate: LocalDate) {
         viewModelScope.launch {
+            _state = StatisticsState.GETTING_STATISTICS
             try {
                 val token = sessionManager.accessToken
-                val response = moneymateService.transactionsService.getCategoryBalance(token, walletId, startDate.toString(), endDate.toString())
-                if (response is APIResult.Success) {
-                    val categoriesBalance = response.data
-                    _categoriesBalancePos = categoriesBalance.pos.balanceList
-                    _categoriesBalanceNeg = categoriesBalance.neg.balanceList
-                } else {
-                    Log.e("ERROR", "Failed to fetch category balance:")
+                val response = moneymateService.transactionsService.getCategoryBalance(token,walletId,startDate.toString(),endDate.toString())
+                when (response) {
+                    is APIResult.Success -> {
+                        _categoriesBalancePos = response.data.pos.balanceList
+                        _categoriesBalanceNeg = response.data.neg.balanceList
+                        _state = StatisticsState.FINISHED
+                    }
+                    is APIResult.Error -> {
+                        Log.e("ERROR", "Failed to fetch Categories Balance: ")
+                        _state = StatisticsState.ERROR
+                    }
                 }
-            } catch (e: Exception) {
-                Log.e("ERROR", "Failed to fetch category balance", e)
+            }catch (e: Exception){
+                Log.e("ERROR", "Failed to fetch transactions", e)
             }
         }
     }
 
+    enum class StatisticsState {
+        IDLE,
+        GETTING_STATISTICS,
+        FINISHED,
+        ERROR
+    }
 }

@@ -1,56 +1,48 @@
 package pt.isel.moneymate.utils
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import pt.isel.moneymate.background.poppins
-import pt.isel.moneymate.theme.dialogBackground
 import pt.isel.moneymate.theme.incomeGreen
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun <T> LargeDropdownMenu(
+fun <T> DropdownButton(
     modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    label: String,
-    notSetLabel: String? = null,
     items: List<T>,
+    label: String,
     selectedIndex: Int = -1,
     onItemSelected: (index: Int, item: T) -> Unit,
-    selectedItemToString: (T) -> String = { it.toString() },
-    drawItem: @Composable (T, Boolean, Boolean, () -> Unit) -> Unit = { item, selected, itemEnabled, onClick ->
-        LargeDropdownMenuItem(
-            text = item.toString(),
-            selected = selected,
-            enabled = itemEnabled,
-            onClick = onClick,
-        )
-    },
-    onCategoriesDropdownClicked: () -> Unit = {},
+    onFetchItems: () -> Unit = {},
+    selectedItemToString: (T) -> String = { it.toString() }
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var isExpanded by remember { mutableStateOf(false) }
 
-    Box(modifier = modifier.height(IntrinsicSize.Max), contentAlignment = Alignment.Center) {
+    ExposedDropdownMenuBox(
+        modifier = modifier,
+        expanded = isExpanded,
+        onExpandedChange = { isExpanded = it }
+    ) {
         OutlinedTextField(
             modifier = Modifier.fillMaxSize(),
             value = items.getOrNull(selectedIndex)?.let { selectedItemToString(it) } ?: "",
             onValueChange = { },
-            label = { Text(text = label, color = Color.White, fontFamily = poppins, fontSize = 20.sp) },
+            label = { Text(text = label, color = Color.White, fontSize = 18.sp) },
             shape = RoundedCornerShape(12.dp),
-            enabled = enabled,
+            enabled = true,
             trailingIcon = { Icon(Icons.Filled.ArrowDropUp, "trailingIcon", tint = Color.White) },
             readOnly = true,
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -59,84 +51,89 @@ fun <T> LargeDropdownMenu(
                 textColor = Color.White
             )
         )
+
         // Transparent clickable surface on top of OutlinedTextField
         Surface(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 8.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .clickable(enabled = enabled) {
-                    expanded = true
-                    onCategoriesDropdownClicked()
+                .clickable(enabled = true) {
+                    isExpanded = true
+                    onFetchItems()
                 },
             color = Color.Transparent,
         ) { }
-    }
 
-    if (expanded) {
-        Dialog(
-            onDismissRequest = { expanded = false },
-        ) {
-            Surface(
-                modifier.fillMaxWidth(),
-                color = dialogBackground,
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                val listState = rememberLazyListState()
-                if (selectedIndex > -1) {
-                    LaunchedEffect("ScrollToSelected") {
-                        listState.scrollToItem(index = selectedIndex)
+        ExposedDropdownMenu(
+            modifier = Modifier.background(Color.DarkGray),
+            expanded = isExpanded,
+            onDismissRequest = { isExpanded = false },
+            content = {
+                if(items.size > 4){
+                    Box(Modifier.height(200.dp)) {
+                        Column(
+                            Modifier.verticalScroll(rememberScrollState()),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            items.forEachIndexed { index, item ->
+                                DropdownMenuItem(
+                                    onClick = {
+                                        onItemSelected(index, item)
+                                        isExpanded = false
+                                    }
+                                ) {
+                                    Text(
+                                        text = selectedItemToString(item),
+                                        color = if (index == selectedIndex) incomeGreen else Color.White
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
-
-                LazyColumn(modifier = Modifier.fillMaxWidth(), state = listState) {
-                    if (notSetLabel != null) {
-                        item {
-                            LargeDropdownMenuItem(
-                                text = notSetLabel,
-                                selected = false,
-                                enabled = false,
-                                onClick = { },
-                            )
-                        }
-                    }
-                    itemsIndexed(items) { index, item ->
-                        val selectedItem = index == selectedIndex
-                        drawItem(item, selectedItem, true) {
-                            onItemSelected(index, item)
-                            expanded = false
-                        }
-
-                        if (index < items.lastIndex) {
-                            Divider(modifier = Modifier.padding(horizontal = 16.dp), color = Color.DarkGray, thickness = 3.dp)
+                else{
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        items.forEachIndexed { index, item ->
+                            DropdownMenuItem(
+                                onClick = {
+                                    onItemSelected(index, item)
+                                    isExpanded = false
+                                }
+                            ) {
+                                Text(
+                                    text = selectedItemToString(item),
+                                    color = if (index == selectedIndex) incomeGreen else Color.White
+                                )
+                            }
                         }
                     }
                 }
             }
-        }
+        )
     }
 }
 
-@Composable
-fun LargeDropdownMenuItem(
-    text: String,
-    selected: Boolean,
-    enabled: Boolean,
-    onClick: () -> Unit,
-) {
-    val contentColor = when {
-        selected -> incomeGreen
-        else -> Color.White
-    }
-    CompositionLocalProvider(LocalContentColor provides contentColor) {
-        Box(modifier = Modifier
-            .clickable(enabled) { onClick() }
-            .fillMaxWidth()
-            .padding(16.dp)) {
-            Text(
-                text = text,
-            )
-        }
-    }
 
+@Preview
+@Composable
+fun CustomDropdownMenuPreview() {
+    val items = listOf("Item 1", "Item 2", "Item 3", "Item 4")
+    var selectedIndex by remember { mutableStateOf(-1) }
+
+    Surface(
+        color = Color.DarkGray
+    ) {
+        DropdownButton(
+            items = items,
+            label = "Select an item",
+            selectedIndex = selectedIndex,
+            onItemSelected = { index, _ ->
+                selectedIndex = index
+            },
+            selectedItemToString = { it }
+        )
+    }
 }

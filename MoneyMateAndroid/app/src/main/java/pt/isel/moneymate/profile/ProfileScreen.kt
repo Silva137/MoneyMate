@@ -12,6 +12,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,7 +25,9 @@ import androidx.compose.ui.graphics.Color.Companion.Green
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,8 +36,10 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import kotlinx.coroutines.launch
 import pt.isel.moneymate.R
 import pt.isel.moneymate.background.poppins
+import pt.isel.moneymate.theme.dialogBackground
 
 
 @Composable
@@ -148,7 +153,6 @@ fun BalanceTexts(
 @Composable
 fun AddWallet(onAddButtonClick: (String) -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
-    var walletName by remember { mutableStateOf("") }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -177,7 +181,6 @@ fun AddWallet(onAddButtonClick: (String) -> Unit) {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CustomDialog(
     onDismiss: () -> Unit,
@@ -187,15 +190,14 @@ fun CustomDialog(
 
     Dialog(
         onDismissRequest = { onDismiss() },
-        properties = DialogProperties(usePlatformDefaultWidth = false)
+        properties = DialogProperties(
+            dismissOnClickOutside = true,
+            dismissOnBackPress = true
+        )
     ) {
-        Card(
-            elevation = 5.dp,
-            shape = RoundedCornerShape(15.dp),
-            modifier = Modifier
-                .width(300.dp)
-                .height(IntrinsicSize.Min)
-                .border(2.dp, color = Green, shape = RoundedCornerShape(15.dp))
+        Surface(
+            color = dialogBackground,
+            shape = RoundedCornerShape(8.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -203,88 +205,48 @@ fun CustomDialog(
                     .padding(15.dp),
                 verticalArrangement = Arrangement.spacedBy(25.dp)
             ) {
-                TextField(
+                Text(
+                    text = "Create Wallet",
+                    style = TextStyle(
+                        fontSize = 24.sp,
+                        fontFamily = poppins,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
+
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
                     value = walletName,
                     onValueChange = { walletName = it },
+                    label = { Text(text = "Wallet Name", color = Color.White) },
                     singleLine = true,
-                    label = {
-                        Text(
-                            text = "Wallet Name",
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    },
                     shape = RoundedCornerShape(12.dp),
-                    colors = TextFieldDefaults.textFieldColors(
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.White,
+                        unfocusedBorderColor = Color.White,
+                        textColor = Color.White
                     ),
-                    modifier = Modifier.fillMaxWidth()
                 )
 
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(30.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(60.dp)
-                            .weight(1f)
-                            .clickable { onDismiss() }
+                    Button(
+                        onClick = {
+                            onSaveWallet(walletName)
+                            onDismiss()
+                        },
+                        enabled = walletName.isNotBlank()
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.profile_button),
-                            contentDescription = "Cancel",
-                            contentScale = ContentScale.FillBounds
-                        )
-                        Text(
-                            text = "Cancel",
-                            color = Color.White,
-                            fontSize = 20.sp,
-                            fontFamily = poppins,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .padding(top = 4.dp)
-                        )
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .size(60.dp)
-                            .weight(1f)
-                            .clickable {
-                                onSaveWallet(walletName)
-                                onDismiss()
-                            }
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.profile_button),
-                            contentDescription = "Create",
-                            contentScale = ContentScale.FillBounds
-                        )
-                        Text(
-                            text = "Create",
-                            color = Color.White,
-                            fontSize = 20.sp,
-                            fontFamily = poppins,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .padding(top = 4.dp)
-                        )
+                        Text("Create")
                     }
                 }
             }
         }
     }
 }
-
-
-
-
-
 
 
 @Composable

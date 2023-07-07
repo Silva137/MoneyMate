@@ -60,6 +60,7 @@ class TransactionService(
             APIResult.Error(e.message ?: "An error occurred while fetching wallet transactions")
         }
     }
+
     suspend fun getCategoryBalance(
         token: String?,
         walletId: Int,

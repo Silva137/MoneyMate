@@ -29,11 +29,10 @@ import pt.isel.moneymate.background.poppins
 import pt.isel.moneymate.domain.Category
 import pt.isel.moneymate.domain.Transaction
 import pt.isel.moneymate.domain.TransactionType
-import pt.isel.moneymate.home.HomeViewModel
 import pt.isel.moneymate.services.users.models.UserDTO
 import pt.isel.moneymate.theme.expenseRed
 import pt.isel.moneymate.theme.incomeGreen
-import pt.isel.moneymate.utils.LargeDropdownMenu
+import pt.isel.moneymate.utils.DropdownButton
 import pt.isel.moneymate.utils.getCurrentYearRange
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -45,7 +44,7 @@ import java.util.*
 fun TransactionsScreen(
     errorMessage: String?,
     state: TransactionsViewModel.TransactionState,
-    transactions: List<Transaction>?,
+    transactions: List<Transaction>,
     onSearchClick: (startDate: LocalDate, endDate: LocalDate, sortedBy: String, orderBy: String) -> Unit = { _, _, _, _ -> }
 ) {
 
@@ -76,7 +75,8 @@ fun TransactionsScreen(
 
     Box(
         modifier = Modifier.fillMaxSize(),
-    ) {
+        contentAlignment = Alignment.BottomCenter,
+        ) {
         Image(
             painter = painterResource(id = R.drawable.home_background),
             contentDescription = "Background",
@@ -113,30 +113,12 @@ fun TransactionsScreen(
                         tint = Color.White
                     )
                 }
-
-                SnackbarHost(
-                    hostState = snackbarHostState,
-                    modifier = Modifier.padding(16.dp)
-                ) { snackbarData ->
-                    Snackbar(
-                        modifier = Modifier.padding(16.dp),
-                        action = {
-                            TextButton(onClick = { snackbarHostState.currentSnackbarData?.dismiss() }) {
-                                Text(text = "Dismiss", color = Color.White)
-                            }
-                        }
-                    ) {
-                        Text(text = snackbarData.message, color = Color.White)
-                    }
-                }
             }
 
 
             SearchButtons(
                 selectedSortedBy = selectedSortedBy,
                 selectedOrderBy = selectedOrderBy,
-                sortByOptions = sortByOptions,
-                orderByOptions = orderByOptions,
                 onSortBySelect = { index -> selectedSortedBy = index },
                 onOrderBySelect = { index -> selectedOrderBy = index }
             )
@@ -153,6 +135,21 @@ fun TransactionsScreen(
                 selectedTransaction = selectedTransaction
             )
         }
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.padding(bottom = 85.dp)
+        ) { snackbarData ->
+            Snackbar(
+                modifier = Modifier.padding(16.dp),
+                action = {
+                    TextButton(onClick = { snackbarHostState.currentSnackbarData?.dismiss() }) {
+                        Text(text = "Dismiss", color = Color.White)
+                    }
+                }
+            ) {
+                Text(text = snackbarData.message, color = Color.White)
+            }
+        }
     }
 }
 
@@ -161,17 +158,15 @@ fun SearchButtons(
     selectedSortedBy: Int,
     selectedOrderBy: Int,
     onSortBySelect: (index: Int) -> Unit,
-    onOrderBySelect: (index: Int) -> Unit,
-    sortByOptions: List<String>,
-    orderByOptions: List<String>
+    onOrderBySelect: (index: Int) -> Unit
 ) {
 
-    val sortByOptions = listOf("bydate", "byprice")
-    val orderByOptions = listOf("ASC", "DESC")
+    val sortByOptions = listOf("Date", "Price")
+    val orderByOptions = listOf("Ascendant", "Descendant")
 
-    Row {
-        LargeDropdownMenu(
-            modifier = Modifier.width(175.dp),
+    Row(Modifier.fillMaxWidth()) {
+        DropdownButton(
+            modifier = Modifier.weight(1f).height(60.dp).padding(start = 16.dp),
             label = "Sort By",
             items = sortByOptions,
             selectedIndex = selectedSortedBy,
@@ -180,9 +175,9 @@ fun SearchButtons(
 
         Spacer(modifier = Modifier.width(20.dp))
 
-        LargeDropdownMenu(
-            modifier = Modifier.width(175.dp),
-            label = "Order By",
+        DropdownButton(
+            modifier = Modifier.weight(1f).height(60.dp).padding(end = 16.dp),
+            label = "Order",
             items = orderByOptions,
             selectedIndex = selectedOrderBy,
             onItemSelected = { index, _ -> onOrderBySelect(index) },
@@ -192,21 +187,24 @@ fun SearchButtons(
 
 @Composable
 fun TransactionsList(
-    transactions: List<Transaction>?,
+    transactions: List<Transaction>,
     selectedTransaction: MutableState<Transaction?>
 ) {
+    if (transactions.isEmpty()) {
+        Text(
+            text = "No transactions found",
+            fontWeight = FontWeight.Bold,
+            fontSize = 24.sp,
+            color = Color.White,
+            textAlign = TextAlign.Start,
+        )
+    }
     LazyColumn(
         modifier = Modifier.padding(bottom = 85.dp),
         verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
-        if (transactions != null) {
-            items(transactions) { item ->
-                TransactionItem(item, selectedTransaction)
-            }
-        } else {
-            item {
-                Text(text = "Loading transactions...")
-            }
+        items(transactions) { item ->
+            TransactionItem(item, selectedTransaction)
         }
     }
 }
