@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="jvm" target="17" />
+      <module name="jvm.main" target="17" />
+      <module name="jvm.test" target="17" />
+      <module name="MoneyMate" target="17" />
+      <module name="MoneyMate.main" target="17" />
+      <module name="MoneyMate.test" target="17" />
+      <module name="MoneyMateWeb" target="17" />
+      <module name="MoneyMateWeb.main" target="17" />
+      <module name="MoneyMateWeb.test" target="17" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
