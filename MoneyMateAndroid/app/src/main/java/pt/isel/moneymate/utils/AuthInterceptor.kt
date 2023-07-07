@@ -1,15 +1,19 @@
 package pt.isel.moneymate.utils
+import android.content.Context
+import android.content.Intent
 import android.util.Log
 import com.google.gson.Gson
 import isel.pt.moneymate.http.utils.Uris
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
+import pt.isel.moneymate.login.LoginActivity
 import pt.isel.moneymate.services.users.models.AuthenticationOutputModel
 import pt.isel.moneymate.session.SessionManager
 import java.io.IOException
 
 class AuthInterceptor(
+    private val context: Context,
     private val sessionManager: SessionManager,
     private val apiEndpoint: String
 ) : Interceptor {
@@ -50,12 +54,10 @@ class AuthInterceptor(
                 } catch (e: Exception) {
                     Log.e("AuthInterceptor", "Error refreshing token: ${e.message}")
                     sessionManager.clearSession()
+                    navigateToLogin()
                     throw e
                 }
             }
-        } else if (response.code == 403) {
-            sessionManager.clearSession()
-            navigateToLogin()
         }
 
         return response
@@ -82,17 +84,9 @@ class AuthInterceptor(
     }
 
     private fun navigateToLogin() {
-        /*
-        val context = LocalContext.current
-        GlobalScope.launch(Dispatchers.Main) {
-            val intent = Intent(context, loginActivityClass)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            context.startActivity(intent)
-        }
-         */
+        val intent = Intent(context, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        context.startActivity(intent)
     }
-
-    private fun convertResponse(response : Response) {
-
-    }
+    
 }

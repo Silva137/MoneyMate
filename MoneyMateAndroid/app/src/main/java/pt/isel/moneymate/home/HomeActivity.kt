@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import pt.isel.moneymate.DependenciesContainer
+import pt.isel.moneymate.category.CategoryViewModel
 import pt.isel.moneymate.domain.Category
 import pt.isel.moneymate.domain.User
 import pt.isel.moneymate.services.transactions.models.WalletBalanceDTO
@@ -30,6 +31,13 @@ class HomeActivity : ComponentActivity() {
     private val viewModel: HomeViewModel by viewModels {
         viewModelInit {
             HomeViewModel(dependencies.moneymateService,dependencies.sessionManager)
+        }
+    }
+
+
+    private val categoryViewModel: CategoryViewModel by viewModels {
+        viewModelInit {
+            CategoryViewModel(dependencies.moneymateService,dependencies.sessionManager)
         }
     }
 
@@ -59,7 +67,7 @@ class HomeActivity : ComponentActivity() {
                     Category(2, "Desporto", UserDTO(1,"silva","silva")),
                     Category(3, "Carro", UserDTO(1,"silva","silva"))
                 ),
-                onCategoriesDropdownClick = {viewModel.fetchCategories()},
+                onCategoriesDropdownClick = {categoryViewModel.fetchCategories()},
                 onCreateTransactionButtonClick = {_,_,_->}
             )
         }

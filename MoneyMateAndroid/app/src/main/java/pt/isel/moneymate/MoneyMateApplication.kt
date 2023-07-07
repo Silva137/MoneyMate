@@ -22,7 +22,7 @@ class MoneyMateApplication : DependenciesContainer, Application() {
     override val sessionManager: SessionManager by lazy {SessionManagerSharedPrefs(context = this)}
 
     override val moneymateService: MoneyMateService by lazy {
-        val interceptor = AuthInterceptor(sessionManager, API_ENDPOINT)
+        val interceptor = AuthInterceptor(this,sessionManager, API_ENDPOINT)
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(interceptor)
             .build()
@@ -31,7 +31,7 @@ class MoneyMateApplication : DependenciesContainer, Application() {
 
 
     companion object{
-        private const val API_ENDPOINT = "https://2776-2001-8a0-7284-8e00-dcdc-660-405d-3df6.ngrok-free.app"
+        private const val API_ENDPOINT = "https://5fae-95-136-89-178.ngrok-free.app"
         private const val TAG = "MoneyMateApp"
     }
 }
