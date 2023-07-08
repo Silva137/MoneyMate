@@ -9,6 +9,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +28,7 @@ import androidx.compose.ui.window.DialogProperties
 import pt.isel.moneymate.background.poppins
 import pt.isel.moneymate.domain.Category
 import pt.isel.moneymate.statistics.ToggleButtonState
+import pt.isel.moneymate.theme.Purple200
 import pt.isel.moneymate.theme.dialogBackground
 import pt.isel.moneymate.theme.incomeGreen
 import java.time.LocalDate
@@ -151,7 +154,7 @@ fun CreateCategoryPopup(
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = categoryName,
-                    onValueChange =  { if (it.length <= 12) categoryName = it.take(12) },
+                    onValueChange =  { if (it.length <= 12) categoryName = it.take(18) },
                     label = { Text(text = "Category name", color = Color.White, fontSize = 18.sp) },
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
@@ -280,7 +283,7 @@ fun CategoryList(
             item {
                 Text(
                     text = "User Categories",
-                    color = Color.White,
+                    color = Purple200,
                     fontSize = 20.sp,
                     fontFamily = poppins,
                     fontWeight = FontWeight.SemiBold,
@@ -297,7 +300,7 @@ fun CategoryList(
                 )
                 if (index < userCategories.size - 1) {
                     Divider(
-                        color = Color.Gray,
+                        color = Purple200,
                         thickness = 1.dp,
                         modifier = Modifier.padding(start = 16.dp, end = 16.dp)
                     )
@@ -307,7 +310,7 @@ fun CategoryList(
             item {
                 Text(
                     text = "System Categories",
-                    color = Color.White,
+                    color = Purple200,
                     fontSize = 20.sp,
                     fontFamily = poppins,
                     fontWeight = FontWeight.SemiBold,
@@ -324,7 +327,7 @@ fun CategoryList(
                 )
                 if (index < systemCategories.size - 1) {
                     Divider(
-                        color = Color.Gray,
+                        color = Purple200,
                         thickness = 1.dp,
                         modifier = Modifier.padding(start = 16.dp, end = 16.dp)
                     )
@@ -349,15 +352,27 @@ fun CategoryItem(category: Category, onEditClick: (Int) -> Unit, index: Int) {
             .then(clickableModifier),
         color = Color.Transparent,
     ) {
-        Text(
-            text = category.name,
-            color = Color.White,
-            fontSize = 16.sp,
-            fontFamily = poppins,
-            fontWeight = FontWeight.SemiBold,
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-        )
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = category.name,
+                color = Color.White,
+                fontSize = 16.sp,
+                fontFamily = poppins,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.weight(1f)
+            )
+            if (index >= 0) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = null,
+                    tint = Color.White,
+                )
+            }
+        }
     }
 }

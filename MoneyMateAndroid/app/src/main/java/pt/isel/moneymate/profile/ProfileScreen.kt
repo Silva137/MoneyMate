@@ -218,7 +218,7 @@ fun CustomDialog(
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = walletName,
-                    onValueChange = { walletName = it },
+                    onValueChange = { if (it.length <= 12) walletName = it.take(12) },
                     label = { Text(text = "Wallet Name", color = Color.White) },
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),

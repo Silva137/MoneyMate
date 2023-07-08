@@ -49,7 +49,7 @@ fun BottomNavGraph(
                     homeViewModel.getWalletBalance()
                 },
                 walletBalance = homeViewModel.balance,
-                categories = homeViewModel.categories,
+                categories = categoriesViewModel.categories,
                 onCategoriesDropdownClick = {categoriesViewModel.fetchCategories()}, //TODO add boolean to see if is already fetched
                 onCreateTransactionButtonClick = {categoryId, amount, title ->
                     homeViewModel.createTransaction(homeViewModel.selectedWalletId, categoryId, amount, title)
