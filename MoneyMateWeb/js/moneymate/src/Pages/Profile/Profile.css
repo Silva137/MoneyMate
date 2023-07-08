@@ -10,8 +10,6 @@
 }
 
 .edit-profile {
-    margin-left: auto;
-    margin-right: auto;
     font-size: 20px;
     font-weight: bolder;
     color: #ffffff;
@@ -26,6 +24,42 @@
     margin-right: 5px;
 }
 
+.content-profile-container {
+    padding-top: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 30px;}
+
+
+.profile-info-container {
+    //position: relative;
+
+    display: flex;
+}
+
+.invite-info-left{
+    padding-right: 25px;
+    margin-left: 100px;
+
+}
+
+.vertical-line {
+    position: absolute;
+    top: 0;
+    left: 50%; /* Define a posição central horizontal da linha */
+    width: 2px;
+    height: 100%;
+    background-color: white;
+}
+
+
+
 .fields-container{
     margin-top: 50px;
+}
+
+.edit-profile-container {
+    display: flex;
+    justify-content: flex-start;
 }

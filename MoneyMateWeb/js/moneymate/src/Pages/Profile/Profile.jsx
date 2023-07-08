@@ -8,6 +8,9 @@ import {RiPencilFill} from "react-icons/ri";
 import {CgClose} from "react-icons/cg";
 import {MdDoneOutline} from "react-icons/md";
 import UserService from "../../Services/UserService.jsx";
+import WalletSelector from "../../Components/SelectorBox/WalletSelector.jsx";
+import ProfileInfo from "./ProfileInfo.jsx";
+import Invites from "./Invites.jsx";
 
 function Profile() {
     const [modal, setModal] = useState(false);
@@ -67,24 +70,23 @@ function Profile() {
 
     return (
         <div className="bg-container">
-            <div className="content-container">
-                <h1 className="page-title">Profile</h1>
-                <div className="row">
-                    <Avatar src={image} sx={{width: 150, height: 150, border: '4px solid #fff'}}/>
-                    <p className="welcome-text">Hi,<br /> {username}!</p>
-                    <button className="edit-profile"  onClick={handleEditButtonClick}> <RiPencilFill/> Edit Profile</button>
-                </div>
-                <div className="fields-container">
-                    <div className="form-group field">
-                        <div className="form-field" >{loggedUser.username}</div>
-                        <label htmlFor="Username" className="form-label">Username</label>
+            <div className="content-profile-container">
+                <div className="profile-info-container">
+                    <div className="invite-info-left">
+                        <ProfileInfo loggedUser={loggedUser} username={username} handleEditButtonClick={handleEditButtonClick} image={image} />
                     </div>
-                    <div className="form-group field">
-                        <div className="form-field" >{loggedUser.email}</div>
-                        <label htmlFor="Email" className="form-label">Email</label>
+
+                    <div className="vertical-line"></div>
+
+                    <div className="invite-info-left">
+                        <Invites />
                     </div>
+
+                    <div className="vertical-line-2"></div>
+
                 </div>
             </div>
+
             {modal && (
                 <div className="modal-overlay" onClick={handleOverlayClick}>
                     <div className="modal">

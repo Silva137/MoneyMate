@@ -17,6 +17,13 @@ class UserService {
                 return response.data
             })
     }
+
+    getUsers(){
+        return instance.get("/api/users", {headers: authHeader()})
+            .then(response => {
+                return response.data
+            })
+    }
 }
 
 export default new UserService();

@@ -15,7 +15,7 @@ function WalletsDropdownButton({ onChange }) {
             const response = await WalletService.getWalletsOfUser()
             setWallets(response.wallets);
         } catch (error) {
-            console.error('Error fetching categories:', error);
+            console.error('Error fetching wallets:', error);
         }
     };
 

@@ -1,0 +1,130 @@
+.invite-container {
+    min-width:500px ;
+    height:170px ;
+    border-radius: 35px;
+    background-color: #393838;
+    box-shadow: 1px 2px 5px black;
+    padding-left: 1.5rem;
+    padding-right: 1rem;
+    padding-top: 1rem;
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+}
+
+.invite-header{
+    display: flex;
+}
+
+.spacer {
+    height: 0.5rem;
+    width: 0.5rem;
+}
+
+.horizontal-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    width: 100%;
+    background-color: #f2f2f2;
+    border: 1px solid #ccc;
+}
+.invite-name {
+    font-size: 22px;
+    font-weight: normal;
+    color: white;
+}
+
+.accept-button-invite {
+    width: 35px;
+    height: 35px;
+    background-color: #3abe71;
+    border-radius: 10px;
+    color: #020000;
+    cursor: pointer;
+    padding: 4px;
+    border: none;
+    margin-left: auto;
+}
+
+.decline-button-invite {
+    width: 35px;
+    height: 35px;
+    background-color: #d73b2f;
+    border-radius: 10px;
+    color: #020000;
+    cursor: pointer;
+    padding: 4px;
+    border: none;
+    margin-left: auto;
+}
+
+.invite-text {
+    margin-top: 0.5rem;
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    color: white;
+    margin-bottom: 0.5rem;
+
+
+}
+
+.accepted-status-message{
+    width: 100px;
+    height: 35px;
+    background-color: #3abe71;
+    border-radius: 10px;
+    color: #020000;
+    cursor: pointer;
+    padding: 4px;
+    border: none;
+    margin-left: auto;
+}
+
+.declined-status-message{
+    width: 100px;
+    height: 35px;
+    background-color: #d73b2f;
+    border-radius: 10px;
+    color: #020000;
+    cursor: pointer;
+    padding: 4px;
+    border: none;
+    margin-left: auto;
+}
+
+
+.pending-status-message{
+    width: 100px;
+    height: 35px;
+    background-color: #c5f0f5;
+    border-radius: 10px;
+    color: #020000;
+    cursor: pointer;
+    padding: 4px;
+    border: none;
+    margin-left: auto;
+}
+
+
+.pending-button-invite {
+    width: 35px;
+    height: 35px;
+    background-color: #c5f0f5;
+    border-radius: 10px;
+    color: #020000;
+    cursor: pointer;
+    padding: 4px;
+    border: none;
+    margin-left: auto;
+}
+
+.invite-date {
+    margin-top: 0.5rem;
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    color: white;
+
+}
+

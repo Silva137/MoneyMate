@@ -59,7 +59,7 @@ class InviteService(
     fun getAllInvites(user: User): AllInvitesDTO{
         val received = getAllReceivedInvites(user)
         val send = getAllSendInvites(user)
-        return AllInvitesDTO(received, send)
+        return AllInvitesDTO(send, received)
     }
 
 
