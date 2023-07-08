@@ -14,6 +14,7 @@ import pt.isel.moneymate.home.HomeViewModel
 import pt.isel.moneymate.services.MoneyMateService
 import pt.isel.moneymate.session.SessionManager
 import pt.isel.moneymate.utils.APIResult
+import pt.isel.moneymate.utils.getCurrentYearRange
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -32,7 +33,6 @@ class TransactionsViewModel(
     private var _errorMessage by mutableStateOf<String?>(null)
     val errorMessage: String?
         get() = _errorMessage
-
 
     fun fetchTransactions(
         walletId: Int,
@@ -58,6 +58,7 @@ class TransactionsViewModel(
                     is APIResult.Success -> {
                         _transactions = response.data.transactions.map { transactionDTO ->
                             Transaction(
+                                transactionDTO.id,
                                 convertType(transactionDTO.amount),
                                 transactionDTO.title,
                                 transactionDTO.amount.toDouble(),
@@ -66,7 +67,10 @@ class TransactionsViewModel(
                                     transactionDTO.category.name,
                                     transactionDTO.category.user
                                 ),
-                                LocalDateTime.parse(transactionDTO.createdAt.substring(0, 23), formatter)
+                                LocalDateTime.parse(
+                                    transactionDTO.createdAt.substring(0, 23),
+                                    formatter
+                                )
                             )
                         }
                         _state = TransactionState.FINISHED
@@ -84,9 +88,80 @@ class TransactionsViewModel(
         }
     }
 
+    fun updateTransaction(
+        transactionId: Int,
+        updatedName: String,
+        amount: String,
+        categoryId: Int,
+        selectedWallet: Int
+    ) {
+        viewModelScope.launch {
+            val dataRange = getCurrentYearRange()
+            try {
+                val token = sessionManager.accessToken
+                val response = moneymateService.transactionsService.updateTransaction(
+                    token,
+                    updatedName,
+                    transactionId,
+                    amount.toFloat(),
+                    categoryId
+                )
+                when (response) {
+                    is APIResult.Success -> {
+                        fetchTransactions(
+                            selectedWallet,
+                            dataRange.first,
+                            dataRange.second,
+                            "bydate",
+                            "DESC"
+                        )
+                    }
+                    is APIResult.Error -> {
+                        val errorMessage = response.message
+                        _errorMessage = errorMessage
+                        _transactions = emptyList()
+                        _state = TransactionState.ERROR
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("ERROR", "Failed to update transaction", e)
+            }
+        }
+    }
 
 
-    private fun convertType(amount : Float) : TransactionType {
+    fun deleteTransaction(transactionId: Int, selectedWallet: Int) {
+        viewModelScope.launch {
+            val dataRange = getCurrentYearRange()
+            try {
+                val token = sessionManager.accessToken
+                val response = moneymateService.transactionsService.deleteTransaction(token,transactionId)
+                when (response) {
+                    is APIResult.Success -> {
+                        fetchTransactions(
+                            selectedWallet,
+                            dataRange.first,
+                            dataRange.second,
+                            "bydate",
+                            "DESC"
+                        )
+                    }
+                    is APIResult.Error -> {
+                        val errorMessage = response.message
+                        _errorMessage = errorMessage
+                        _transactions = emptyList()
+                        _state = TransactionState.ERROR
+                    }
+                }
+            }catch(e: Exception){
+                Log.e("ERROR", "Failed to delete transaction", e)
+            }
+
+        }
+    }
+
+
+    private fun convertType(amount: Float): TransactionType {
         return if (amount >= 0) {
             TransactionType.INCOME
         } else {

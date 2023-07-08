@@ -68,6 +68,12 @@ fun BottomNavGraph(
                 transactions = transactionsViewModel.transactions,
                 onSearchClick = {startTime, endTime, sortedBy, orderBy ->
                     transactionsViewModel.fetchTransactions(homeViewModel.selectedWalletId,startTime,endTime, sortedBy, orderBy)
+                },
+                onEditTransactionClick = { transactionId, name, amount , categoryId ->
+                    transactionsViewModel.updateTransaction(transactionId,name,amount,categoryId,homeViewModel.selectedWalletId)
+                },
+                onDeleteTransactionClick = { id ->
+                    transactionsViewModel.deleteTransaction(id,homeViewModel.selectedWalletId)
                 }
             )
         }

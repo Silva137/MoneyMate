@@ -3,12 +3,13 @@ package pt.isel.moneymate.transactions
 import DatePicker
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -18,11 +19,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.launch
 import pt.isel.moneymate.R
 import pt.isel.moneymate.background.poppins
@@ -30,6 +35,7 @@ import pt.isel.moneymate.domain.Category
 import pt.isel.moneymate.domain.Transaction
 import pt.isel.moneymate.domain.TransactionType
 import pt.isel.moneymate.services.users.models.UserDTO
+import pt.isel.moneymate.theme.dialogBackground
 import pt.isel.moneymate.theme.expenseRed
 import pt.isel.moneymate.theme.incomeGreen
 import pt.isel.moneymate.utils.DropdownButton
@@ -45,6 +51,8 @@ fun TransactionsScreen(
     errorMessage: String?,
     state: TransactionsViewModel.TransactionState,
     transactions: List<Transaction>,
+    onEditTransactionClick: (transactionId : Int , updatedTransactionName: String, amount : String, categoryId : Int) -> Unit = {_, _, _,_ -> },
+    onDeleteTransactionClick:  (categoryId: Int) -> Unit = { _ -> },
     onSearchClick: (startDate: LocalDate, endDate: LocalDate, sortedBy: String, orderBy: String) -> Unit = { _, _, _, _ -> }
 ) {
 
@@ -52,15 +60,15 @@ fun TransactionsScreen(
     var selectedOrderBy by remember { mutableStateOf(1) }
     var pickedStartDate by remember { mutableStateOf(getCurrentYearRange().first) }
     var pickedEndDate by remember { mutableStateOf(LocalDate.now()) }
-    val selectedTransaction = remember { mutableStateOf<Transaction?>(null) }
     var isSearchClicked by remember { mutableStateOf(false) }
+    var selectedTransactionIndex by remember { mutableStateOf(0) }
 
+    var showPopupEditTransaction by remember { mutableStateOf(false) }
     val sortByOptions = listOf("bydate", "byprice")
     val orderByOptions = listOf("ASC", "DESC")
 
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-
     LaunchedEffect(state) {
         when (state) {
             TransactionsViewModel.TransactionState.ERROR -> {
@@ -131,7 +139,10 @@ fun TransactionsScreen(
 
             TransactionsList(
                 transactions = transactions,
-                selectedTransaction = selectedTransaction
+                onEditClick = {
+                    selectedTransactionIndex = it
+                    showPopupEditTransaction = true
+                }
             )
         }
         SnackbarHost(
@@ -149,6 +160,16 @@ fun TransactionsScreen(
                 Text(text = snackbarData.message, color = Color.White)
             }
         }
+
+        if (showPopupEditTransaction) {
+            EditTransactionPopup(
+                transaction = transactions[selectedTransactionIndex],
+                onEditTransactionClick = onEditTransactionClick,
+                onDeleteTransactionClick = onDeleteTransactionClick,
+                onDismiss = { showPopupEditTransaction = false }
+            )
+        }
+
     }
 }
 
@@ -187,7 +208,7 @@ fun SearchButtons(
 @Composable
 fun TransactionsList(
     transactions: List<Transaction>,
-    selectedTransaction: MutableState<Transaction?>
+    onEditClick: (Int) -> Unit
 ) {
     if (transactions.isEmpty()) {
         Text(
@@ -202,8 +223,12 @@ fun TransactionsList(
         modifier = Modifier.padding(bottom = 85.dp),
         verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
-        items(transactions) { item ->
-            TransactionItem(item, selectedTransaction)
+        itemsIndexed(transactions) { index, item ->
+            TransactionItem(
+                item,
+                onEditClick = onEditClick,
+                index = index
+            )
         }
     }
 }
@@ -211,8 +236,10 @@ fun TransactionsList(
 @Composable
 fun TransactionItem(
     transaction: Transaction,
-    selectedTransaction: MutableState<Transaction?>
+    onEditClick: (Int) -> Unit,
+    index: Int
 ) {
+
     val imageResource = if (transaction.type == TransactionType.EXPENSE) R.drawable.expense_item else R.drawable.income_item
     val isExpense = transaction.type == TransactionType.EXPENSE
 
@@ -221,10 +248,7 @@ fun TransactionItem(
         modifier = Modifier
             .fillMaxWidth(0.9f)
             .height(80.dp)
-            .clickable {
-                selectedTransaction.value = transaction
-                //more logic here
-            }
+            .clickable { onEditClick(index) }
     ) {
         Image(
             painter = painterResource(id = imageResource),
@@ -239,19 +263,6 @@ fun TransactionItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            /*
-            Box(
-                modifier = Modifier
-                    .size(45.dp)
-                    .background(Color.White, CircleShape),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.icon_profile),
-                    contentDescription = "Category Icon",
-                    modifier = Modifier.size(32.dp)
-                )
-            }*/
             Column(
                 modifier = Modifier.weight(1f),
             ) {
@@ -281,6 +292,102 @@ fun TransactionItem(
     }
 }
 
+@Composable
+fun EditTransactionPopup(
+    transaction: Transaction,
+    onEditTransactionClick: (transactionId : Int, updatedTransactionName: String, amount : String, categoryId : Int) -> Unit = { _,_,_, _ -> },
+    onDeleteTransactionClick:  (transactionId: Int) -> Unit = { _ -> },
+    onDismiss: () -> Unit
+) {
+    var transactionTitle by remember { mutableStateOf(transaction.description) }
+    var transationAmount by remember { mutableStateOf(transaction.amount.toString()) }
+
+    Dialog(
+        onDismissRequest = { onDismiss()},
+        properties = DialogProperties(
+            dismissOnClickOutside = true,
+            dismissOnBackPress = true
+        )
+    ) {
+        Surface(
+            color = dialogBackground,
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Edit Transaction",
+                    style = TextStyle(
+                        fontSize = 24.sp,
+                        fontFamily = poppins,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = transactionTitle,
+                    onValueChange = { transactionTitle = it },
+                    label = { Text(text = "Transaction Title", color = Color.White, fontSize = 18.sp) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.White,
+                        unfocusedBorderColor = Color.White,
+                        textColor = Color.White
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = transationAmount,
+                    onValueChange = { transationAmount = it },
+                    label = { Text(text = "Amount", color = Color.White, fontSize = 18.sp) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.White,
+                        unfocusedBorderColor = Color.White,
+                        textColor = Color.White
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Button(
+                        onClick = {
+                            onEditTransactionClick(transaction.id,transactionTitle,transationAmount,transaction.category.id)
+                            onDismiss()
+                        },
+                        enabled = true,
+                    ) {
+                        Text("Save")
+                    }
+                    Button(
+                        onClick = {
+                            onDeleteTransactionClick(transaction.id)
+                            onDismiss()
+                        },
+                        enabled = true,
+                    ) {
+                        Text("Delete")
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 @SuppressLint("UnrememberedMutableState")
 @Preview
@@ -288,6 +395,7 @@ fun TransactionItem(
 fun TransactionItemPreview() {
     val selectedTransaction = remember { mutableStateOf<Transaction?>(null) }
     val transaction = Transaction(
+        1,
         type = TransactionType.EXPENSE,
         description = "none",
         category = Category(1, "Saude", UserDTO(1,"silva","silva")),
@@ -310,6 +418,7 @@ fun TransactionsListPreview() {
     val selectedTransaction = remember { mutableStateOf<Transaction?>(null) }
     val transactions = listOf(
         Transaction(
+            1,
             type = TransactionType.EXPENSE,
             description = "Lunch",
             category = Category(1, "Saude", UserDTO(1,"silva","silva")),
@@ -317,6 +426,7 @@ fun TransactionsListPreview() {
             createdAt = LocalDateTime.now()
         ),
         Transaction(
+            2,
             type = TransactionType.INCOME,
             description = "Salary",
             category = Category(1, "Work", UserDTO(1,"silva","silva")),
@@ -324,6 +434,7 @@ fun TransactionsListPreview() {
             createdAt = LocalDateTime.now()
         ),
         Transaction(
+            3,
             type = TransactionType.EXPENSE,
             description = "Movie ticket",
             category = Category(1, "Entertainment", UserDTO(1,"silva","silva")),
@@ -331,6 +442,7 @@ fun TransactionsListPreview() {
             createdAt = LocalDateTime.now()
         ),
         Transaction(
+            4,
             type = TransactionType.EXPENSE,
             description = "Lunch",
             category = Category(1, "Food", UserDTO(1,"silva","silva")),
@@ -338,6 +450,7 @@ fun TransactionsListPreview() {
             createdAt = LocalDateTime.now()
         ),
         Transaction(
+            5,
             type = TransactionType.INCOME,
             description = "Salary",
             category = Category(1, "Sport", UserDTO(1,"silva","silva")),

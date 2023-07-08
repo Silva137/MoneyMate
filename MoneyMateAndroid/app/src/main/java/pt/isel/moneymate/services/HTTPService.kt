@@ -118,6 +118,23 @@ open class HTTPService(
             )
             .build()
 
+    fun put(
+        link: String,
+        token: String,
+        body: Any? = null
+    ) =
+        Request.Builder()
+            .url(url = apiEndpoint + link)
+            .header(name = AUTHORIZATION_HEADER, value = "$TOKEN_TYPE $token")
+            .put(
+                body = body.let {
+                    jsonEncoder
+                        .toJson(body)
+                        .toRequestBody(contentType = applicationJsonMediaType)
+                } ?: EMPTY_REQUEST
+            )
+            .build()
+
 
     companion object {
         private const val APPLICATION_JSON = "application/json"

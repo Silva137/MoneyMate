@@ -9,6 +9,7 @@ import pt.isel.moneymate.services.category.models.CreateCategory
 import pt.isel.moneymate.services.category.models.PosAndNegCategoryBalanceDTO
 import pt.isel.moneymate.services.transactions.models.CreateTransaction
 import pt.isel.moneymate.services.transactions.models.TransactionsDTO
+import pt.isel.moneymate.services.transactions.models.UpdateTransaction
 import pt.isel.moneymate.utils.APIResult
 import pt.isel.moneymate.utils.send
 
@@ -135,6 +136,47 @@ class TransactionService(
             categoryTransactions
         } catch (e: Exception) {
             APIResult.Error(e.message ?: "An error occurred while fetching category transactions")
+        }
+    }
+
+    suspend fun updateTransaction(
+        token: String?,
+        updatedName : String,
+        transactionId : Int,
+        amount : Float,
+        categoryId: Int
+    ) : APIResult<Unit>{
+        return try{
+            if (token == null) {
+                return APIResult.Error("No token available")
+            }
+            val request = put(
+                link = "/transactions/$transactionId",
+                token = token,
+                body = UpdateTransaction(categoryId,amount,updatedName)
+            )
+            val response = request.send(httpClient) {}
+            APIResult.Success(response)
+        }catch(e: Exception){
+            APIResult.Error(e.message ?: "An error occurred while fetching updating transaction")
+        }
+
+    }
+
+    suspend fun deleteTransaction(token: String?,transactionId: Int) : APIResult<Unit>{
+        return try{
+            if (token == null) {
+                return APIResult.Error("No token available")
+            }
+            val request = delete(
+                link = "/transactions/$transactionId",
+                token = token,
+            )
+            val response = request.send(httpClient) {}
+            APIResult.Success(response)
+        }catch(e: Exception){
+            APIResult.Error(e.message ?: "An error occurred while fetching updating transaction")
+
         }
     }
 }
