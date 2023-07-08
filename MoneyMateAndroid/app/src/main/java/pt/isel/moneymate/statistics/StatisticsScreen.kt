@@ -96,7 +96,7 @@ fun StatisticsScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 30.dp, top = 15.dp),
+                    .padding(start = 25.dp, top = 15.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {

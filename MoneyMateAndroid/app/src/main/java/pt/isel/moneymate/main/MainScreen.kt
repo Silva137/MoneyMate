@@ -10,6 +10,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -52,8 +53,9 @@ fun MainScreen(
 @Composable
 fun BottomBar(navController: NavHostController) {
     val screens = listOf(
-        BottomBarScreen.Home,
+        BottomBarScreen.Categories,
         BottomBarScreen.Transactions,
+        BottomBarScreen.Home,
         BottomBarScreen.Statistics,
         BottomBarScreen.Profile
         )
@@ -85,9 +87,6 @@ fun RowScope.AddItem(
     navController: NavHostController
 ) {
     BottomNavigationItem(
-        label = {
-            Text(text = screen.title)
-        },
         icon = {
             Icon(
                 painter = painterResource(id = screen.icon),

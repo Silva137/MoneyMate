@@ -24,6 +24,12 @@ class CategoryViewModel(
     private var _categories: List<Category> by mutableStateOf(emptyList())
     val categories: List<Category> get() = _categories
 
+    private var _systemCategories: List<Category> by mutableStateOf(emptyList())
+    val systemCategories: List<Category> get() = _systemCategories
+
+    private var _userCategories: List<Category> by mutableStateOf(emptyList())
+    val userCategories: List<Category> get() = _userCategories
+
     private var _errorMessage by mutableStateOf<String?>(null)
     val errorMessage: String?
         get() = _errorMessage
@@ -39,8 +45,8 @@ class CategoryViewModel(
                         val bothCategoriesDTO = categoriesResponse.data
 
                         _categories = if (bothCategoriesDTO != null) {
-                            val userCategories = bothCategoriesDTO.userCategories.categories
-                            val systemCategories = bothCategoriesDTO.systemCategories.categories
+                            _userCategories = bothCategoriesDTO.userCategories.categories
+                            _systemCategories = bothCategoriesDTO.systemCategories.categories
 
                             val combinedCategories = userCategories + systemCategories
                             combinedCategories
@@ -82,7 +88,7 @@ class CategoryViewModel(
         }
     }
 
-    fun updateCategory(categoryId: String, updatedCategoryName: String) {
+    fun updateCategory(categoryId: Int, updatedCategoryName: String) {
         viewModelScope.launch {
             try {
                 val token = sessionManager.accessToken
@@ -103,7 +109,7 @@ class CategoryViewModel(
         }
     }
 
-    suspend fun deleteCategory(categoryId: String) {
+     fun deleteCategory(categoryId: Int) {
         viewModelScope.launch {
             try {
                 val token = sessionManager.accessToken

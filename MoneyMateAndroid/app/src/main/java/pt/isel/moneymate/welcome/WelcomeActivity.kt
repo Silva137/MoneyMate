@@ -5,8 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import pt.isel.moneymate.transactions.TransactionsActivity
-import pt.isel.moneymate.transactions.TransactionsScreen
 
 class WelcomeActivity : ComponentActivity() {
     companion object {

@@ -7,7 +7,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import pt.isel.moneymate.DependenciesContainer
-import pt.isel.moneymate.home.HomeActivity
 import pt.isel.moneymate.main.MainActivity
 import pt.isel.moneymate.register.RegisterActivity
 import pt.isel.moneymate.utils.viewModelInit

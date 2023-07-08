@@ -44,7 +44,7 @@ class CategoryService(
         }
     }
 
-    suspend fun updateCategory(token: String?, categoryId: String, updatedCategoryName: String): APIResult<Unit> {
+    suspend fun updateCategory(token: String?, categoryId: Int, updatedCategoryName: String): APIResult<Unit> {
         return try {
             if (token == null) {
                 return APIResult.Error("No token available")
@@ -61,7 +61,7 @@ class CategoryService(
         }
     }
 
-    suspend fun deleteCategory(token: String?, categoryId: String): APIResult<Unit> {
+    suspend fun deleteCategory(token: String?, categoryId: Int): APIResult<Unit> {
         return try {
             if (token == null) {
                 return APIResult.Error("No token available")

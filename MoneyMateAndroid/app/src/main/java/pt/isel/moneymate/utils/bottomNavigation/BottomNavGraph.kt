@@ -6,17 +6,16 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import pt.isel.moneymate.category.CategoryViewModel
+import pt.isel.moneymate.CategoriesScreen
 import pt.isel.moneymate.home.HomeScreen
 import pt.isel.moneymate.home.HomeViewModel
 import pt.isel.moneymate.profile.ProfileScreen
 import pt.isel.moneymate.profile.ProfileViewModel
-import pt.isel.moneymate.services.transactions.models.WalletBalanceDTO
 import pt.isel.moneymate.statistics.StatisticsScreen
 import pt.isel.moneymate.statistics.StatisticsViewModel
 import pt.isel.moneymate.transactions.TransactionsScreen
 import pt.isel.moneymate.transactions.TransactionsViewModel
 import pt.isel.moneymate.utils.getCurrentYearRange
-import java.time.LocalDate
 
 @Composable
 fun BottomNavGraph(
@@ -92,6 +91,26 @@ fun BottomNavGraph(
                 username = "teste",
                 onAddButtonClick = { walletName ->
                     profileViewModel.createWallet(walletName)
+                }
+            )
+        }
+
+        composable(route = BottomBarScreen.Categories.route) {
+            LaunchedEffect(true) {
+                categoriesViewModel.fetchCategories()
+            }
+
+            CategoriesScreen(
+                userCategories = categoriesViewModel.userCategories,
+                systemCategories = categoriesViewModel.systemCategories,
+                onEditCategoryClick = { categoryId, updatedCategoryName ->
+                    categoriesViewModel.updateCategory(categoryId, updatedCategoryName)
+                },
+                onDeleteCategoryClick = { categoryId ->
+                    categoriesViewModel.deleteCategory(categoryId)
+                },
+                onCreateCategoryClick = { categoryName ->
+                    categoriesViewModel.createCategory(categoryName)
                 }
             )
         }

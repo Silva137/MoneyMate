@@ -90,7 +90,7 @@ fun TransactionsScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 30.dp, end = 30.dp, top = 15.dp, bottom = 10.dp),
+                    .padding(start = 25.dp, end = 30.dp, top = 15.dp, bottom = 10.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -114,7 +114,6 @@ fun TransactionsScreen(
                     )
                 }
             }
-
 
             SearchButtons(
                 selectedSortedBy = selectedSortedBy,
