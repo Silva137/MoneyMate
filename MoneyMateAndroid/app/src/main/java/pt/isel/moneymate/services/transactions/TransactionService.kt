@@ -85,4 +85,56 @@ class TransactionService(
             APIResult.Error(e.message ?: "An error occurred while fetching category balance")
         }
     }
+
+    suspend fun getCategoryTransactionsPos(
+        token: String?,
+        walletId: Int,
+        categoryId: Int,
+        startDate: String,
+        endDate: String
+    ): APIResult<TransactionsDTO>? {
+        return try {
+            if (token == null) {
+                return APIResult.Error("No token available")
+            }
+            val request = get(
+                link = "/transactions/wallets/$walletId/categories/$categoryId/pos?startDate=$startDate&endDate=$endDate",
+                token = token
+            )
+            val categoryTransactions = request.send(httpClient) { response ->
+                handleResponse<TransactionsDTO>(
+                    response, TransactionsDTO::class.java
+                )
+            }
+            categoryTransactions
+        } catch (e: Exception) {
+            APIResult.Error(e.message ?: "An error occurred while fetching category transactions")
+        }
+    }
+
+    suspend fun getCategoryTransactionsNeg(
+        token: String?,
+        walletId: Int,
+        categoryId: Int,
+        startDate: String,
+        endDate: String
+    ): APIResult<TransactionsDTO>? {
+        return try {
+            if (token == null) {
+                return APIResult.Error("No token available")
+            }
+            val request = get(
+                link = "/transactions/wallets/$walletId/categories/$categoryId/neg?startDate=$startDate&endDate=$endDate",
+                token = token
+            )
+            val categoryTransactions = request.send(httpClient) { response ->
+                handleResponse<TransactionsDTO>(
+                    response, TransactionsDTO::class.java
+                )
+            }
+            categoryTransactions
+        } catch (e: Exception) {
+            APIResult.Error(e.message ?: "An error occurred while fetching category transactions")
+        }
+    }
 }

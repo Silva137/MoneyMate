@@ -7,7 +7,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -20,32 +19,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.launch
 import pt.isel.moneymate.R
 import pt.isel.moneymate.background.poppins
 import pt.isel.moneymate.domain.Transaction
-import pt.isel.moneymate.profile.AddWallet
-import pt.isel.moneymate.profile.BalanceTexts
-import pt.isel.moneymate.profile.ProfImg
-import pt.isel.moneymate.profile.ProfileButton
 import pt.isel.moneymate.services.category.models.CategoryBalanceDTO
-import pt.isel.moneymate.services.category.models.CategoryDTO
-import pt.isel.moneymate.services.users.models.UserDTO
 import pt.isel.moneymate.theme.*
 import pt.isel.moneymate.transactions.TransactionItem
-import pt.isel.moneymate.transactions.TransactionsViewModel
+import pt.isel.moneymate.transactions.TransactionsList
 import pt.isel.moneymate.utils.getCurrentYearRange
 import java.time.LocalDate
 import java.util.*
@@ -55,14 +48,21 @@ fun StatisticsScreen(
     state: StatisticsViewModel.StatisticsState,
     categoriesBalancePos: List<CategoryBalanceDTO>,
     categoriesBalanceNeg: List<CategoryBalanceDTO>,
+    categoryTransactionsNeg: List<Transaction>,
+    categoryTransactionsPos: List<Transaction>,
     onSearchClick: (startDate: LocalDate, endDate: LocalDate) -> Unit = { _, _ -> },
-    errorMessage: String?
+    errorMessage: String?,
+    onCategoryClick: ( categoryId: Int, startDate: LocalDate, endDate: LocalDate) -> Unit = { _, _, _ -> },
 ){
+
 
     var pickedStartDate by remember { mutableStateOf(getCurrentYearRange().first) }
     var pickedEndDate by remember { mutableStateOf(LocalDate.now()) }
     var isSearchClicked by remember { mutableStateOf(false) }
     var selectedButton by remember { mutableStateOf(ToggleButtonState.Negative) }
+    var showPopupCategoryTransactions by remember { mutableStateOf(false) }
+
+
 
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -147,7 +147,16 @@ fun StatisticsScreen(
                     textAlign = TextAlign.Start,
                 )
             }
-            else PieChart(data = piechartData, animDuration = 1000)
+            else PieChart(
+                showCategoryTransactionsClick = { categoryName ->
+                    val category = if (selectedButton == ToggleButtonState.Negative)categoriesBalanceNeg.map { it.category }.first { it.name == categoryName }
+                    else categoriesBalancePos.map { it.category }.first { it.name == categoryName }
+                    showPopupCategoryTransactions = true
+                    onCategoryClick(category.id, pickedStartDate, pickedEndDate)
+                },
+                data = piechartData,
+                animDuration = 1000
+            )
         }
 
         SnackbarHost(
@@ -166,7 +175,75 @@ fun StatisticsScreen(
             }
         }
     }
+
+    if(showPopupCategoryTransactions){
+        val list = if (selectedButton == ToggleButtonState.Positive) categoryTransactionsPos
+        else categoryTransactionsNeg
+        CategoryTransactionsPopup(
+            categoryTransactions = list,
+            onDismiss = {
+                showPopupCategoryTransactions = false
+
+            }
+        )
+    }
 }
+
+@Composable
+fun CategoryTransactionsPopup(
+    categoryTransactions: List<Transaction>,
+    onDismiss: () -> Unit
+) {
+
+    Dialog(
+        onDismissRequest = { onDismiss()},
+        properties = DialogProperties(
+            dismissOnClickOutside = true,
+            dismissOnBackPress = true
+        )
+    ) {
+        Surface(
+            modifier = Modifier
+                .height(500.dp),
+            color = dialogBackground,
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Category Transactions", //TODO: change to category name
+                    style = TextStyle(
+                        fontSize = 24.sp,
+                        fontFamily = poppins,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                val selectedTransaction = remember { mutableStateOf<Transaction?>(null) }
+                CategoryTransactionsList(transactions = categoryTransactions, selectedTransaction = selectedTransaction)
+
+            }
+        }
+    }
+}
+
+@Composable
+fun CategoryTransactionsList(
+    transactions: List<Transaction>,
+    selectedTransaction: MutableState<Transaction?>
+) {
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(15.dp)
+    ) {
+        items(transactions) { item ->
+            TransactionItem(item, selectedTransaction)
+        }
+    }
+}
+
 
 @Composable
 fun ToggleButton(
@@ -215,6 +292,7 @@ enum class ToggleButtonState {
 
 @Composable
 fun PieChart(
+    showCategoryTransactionsClick: (String) -> Unit = {},
     data: Map<String, Int>,
     radiusOuter: Dp = 90.dp,
     chartBarWidth: Dp = 20.dp,
@@ -280,7 +358,8 @@ fun PieChart(
             }
         }
 
-        DetailsPieChart(
+        PieChartList(
+            showCategoryTransactionsClick = showCategoryTransactionsClick,
             data = data,
             colors = colors
         )
@@ -310,7 +389,8 @@ fun generateColors(count: Int): List<Color> {
 }
 
 @Composable
-fun DetailsPieChart(
+fun PieChartList(
+    showCategoryTransactionsClick: (String) -> Unit = {},
     data: Map<String, Int>,
     colors: List<Color>
 ) {
@@ -320,7 +400,8 @@ fun DetailsPieChart(
     ) {
         data.forEach { (key, value) ->
             item {
-                DetailsPieChartItem(
+                PieChartItem(
+                    showCategoryTransactionsClick = showCategoryTransactionsClick,
                     data = Pair(key, value),
                     color = colors[data.keys.indexOf(key)]
                 )
@@ -329,16 +410,18 @@ fun DetailsPieChart(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun DetailsPieChartItem(
+fun PieChartItem(
+    showCategoryTransactionsClick: (String) -> Unit = {},
     data: Pair<String, Int>,
     height: Dp = 45.dp,
     color: Color
 ) {
     Surface(
-        modifier = Modifier
-            .padding(start = 30.dp),
-        color = Color.Transparent
+        modifier = Modifier.padding(start = 30.dp),
+        color = Color.Transparent,
+        onClick = { showCategoryTransactionsClick(data.first)}
     ) {
 
         Row(
@@ -381,25 +464,4 @@ fun DetailsPieChartItem(
 
 fun createPieChartData(categoryBalanceList: List<CategoryBalanceDTO>): Map<String, Int> {
     return categoryBalanceList.associate { it.category.name to it.balance }
-}
-
-@Preview
-@Composable
-fun PreviewStatisticsScreen() {
-    StatisticsScreen(
-        categoriesBalancePos = listOf(
-            CategoryBalanceDTO(CategoryDTO(1, "Food", UserDTO(1,"silva","silva")), 100),
-            CategoryBalanceDTO(CategoryDTO(2, "Transport",UserDTO(1,"silva","silva")), 200),
-            CategoryBalanceDTO(CategoryDTO(3, "Entertainment", UserDTO(1,"silva","silva")), 300),
-            CategoryBalanceDTO(CategoryDTO(4, "Other", UserDTO(1,"silva","silva")), 400),
-        ),
-        categoriesBalanceNeg = listOf(
-            CategoryBalanceDTO(CategoryDTO(1, "Food", UserDTO(1,"silva","silva")), -100),
-            CategoryBalanceDTO(CategoryDTO(2, "Transport",UserDTO(1,"silva","silva")), -200),
-            CategoryBalanceDTO(CategoryDTO(3, "Entertainment", UserDTO(1,"silva","silva")), -300),
-            CategoryBalanceDTO(CategoryDTO(4, "Other", UserDTO(1,"silva","silva")), -400),
-        ),
-        errorMessage = null,
-        state = StatisticsViewModel.StatisticsState.IDLE,
-    )
 }

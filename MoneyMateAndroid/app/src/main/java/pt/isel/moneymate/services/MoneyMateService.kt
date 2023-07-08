@@ -13,22 +13,8 @@ class MoneyMateService(
     httpClient: OkHttpClient,
     jsonEncoder: Gson
 ) {
-
     val usersService = UsersService(apiEndpoint, httpClient, jsonEncoder)
     val walletsService = WalletService(apiEndpoint,httpClient,jsonEncoder)
     val transactionsService = TransactionService(apiEndpoint,httpClient,jsonEncoder)
     val categoriesService = CategoryService(apiEndpoint,httpClient,jsonEncoder)
-    /*
-
-    val gamesService = GamesService(apiSEndpoint, httpClient, jsonEncoder)
-    val playersService = PlayersService(apiEndpoint, httpClient, jsonEncoder)
-
-
-    suspend fun getHome(): APIResult<GetHomeOutput> = get(link = HOME_LINK)
-
-    companion object {
-        private const val HOME_LINK = "/"
-    }
-
-     */
 }

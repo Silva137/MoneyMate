@@ -1,6 +1,5 @@
 package pt.isel.moneymate
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,11 +26,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import pt.isel.moneymate.background.poppins
 import pt.isel.moneymate.domain.Category
-import pt.isel.moneymate.statistics.ToggleButtonState
 import pt.isel.moneymate.theme.Purple200
 import pt.isel.moneymate.theme.dialogBackground
 import pt.isel.moneymate.theme.incomeGreen
-import java.time.LocalDate
 
 @Composable
 fun CategoriesScreen(
@@ -154,7 +151,7 @@ fun CreateCategoryPopup(
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = categoryName,
-                    onValueChange =  { if (it.length <= 12) categoryName = it.take(18) },
+                    onValueChange =  { if (it.length <= 18) categoryName = it.take(18) },
                     label = { Text(text = "Category name", color = Color.White, fontSize = 18.sp) },
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
@@ -223,7 +220,7 @@ fun EditCategoryPopup(
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = categoryName,
-                    onValueChange = {categoryName = it },
+                    onValueChange = { if (it.length <= 18) categoryName = it.take(18) },
                     label = { Text(text = "Category name", color = Color.White, fontSize = 18.sp) },
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),

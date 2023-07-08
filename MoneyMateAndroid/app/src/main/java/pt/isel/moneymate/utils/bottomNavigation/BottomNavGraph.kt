@@ -83,7 +83,12 @@ fun BottomNavGraph(
                 categoriesBalanceNeg = statisticsViewModel.categoriesBalanceNeg,
                 onSearchClick = {startTime, endTime ->
                     statisticsViewModel.fetchCategoriesBalance(homeViewModel.selectedWalletId, startTime, endTime)
-                }
+                },
+                onCategoryClick = {categoryId, startTime, endTime ->
+                    statisticsViewModel.fetchCategoryTransactions(homeViewModel.selectedWalletId,categoryId, startTime, endTime)
+                },
+                categoryTransactionsNeg = statisticsViewModel.categoryTransactionNeg,
+                categoryTransactionsPos = statisticsViewModel.categoryTransactionPos,
             )
         }
         composable(route = BottomBarScreen.Profile.route) {
