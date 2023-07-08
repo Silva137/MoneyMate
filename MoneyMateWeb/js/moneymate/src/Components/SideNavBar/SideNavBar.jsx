@@ -5,9 +5,9 @@ import {NavLink, useLocation} from 'react-router-dom';
 import {CgClose} from "react-icons/cg";
 import {MdDoneOutline} from "react-icons/md";
 import TransactionService from "../../services/TransactionService";
-import {SessionContext} from "../../Utils/Session.jsx";
 import CategoriesDropdownButton from "../CategoriesDropdownButton/CategoriesDropdownButton.jsx";
 import WalletsDropdownButton from "../WalletsDropdownButton/WalletsDropdownButton.jsx";
+import { SessionContext } from "../../Utils/Session.jsx";
 
 const SideNavBar = ({ children }) => {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -15,7 +15,11 @@ const SideNavBar = ({ children }) => {
     const [amount, setAmount] = useState(0)
     const [title, setTitle] = useState("")
     const [selectedCategory, setSelectedCategory] = useState(null);
-    const [selectedWallet, setSelectedWallet] = useState(null);
+    const [selectedTransactionWallet, setSelectedTransactionWallet] = useState(null);
+    const { selectedStatistic, selectedWallet } = useContext(SessionContext);
+
+    const [selectedStatisticInfo, setSelectedStatisticInfo] = useState([]);
+
     //const {selectedWallet} = useContext(SessionContext)
 
 
@@ -33,7 +37,6 @@ const SideNavBar = ({ children }) => {
         setIsExpanded(false); // Reset the isExpanded state when the navigation occurs
     }, [location.pathname]);
 
-
     function handleCreateTransactionNavItemClick() {
         setModal(true)
     }
@@ -48,7 +51,7 @@ const SideNavBar = ({ children }) => {
     }
 
     const handleSelectedWalletChange = (wallet) => {
-        setSelectedWallet(wallet)
+        setSelectedTransactionWallet(wallet)
     }
 
     async function handleCreateTransactionClick(event) {
@@ -56,7 +59,7 @@ const SideNavBar = ({ children }) => {
         event.preventDefault()
         try {
             console.log(selectedCategory)
-            const response = await TransactionService.createTransaction(selectedWallet, selectedCategory, amount, title)
+            const response = await TransactionService.createTransaction(selectedTransactionWallet, selectedCategory, amount, title)
             console.log(response)
         } catch (error) {
             console.error('Error creating a new transaction:', error)
@@ -69,16 +72,16 @@ const SideNavBar = ({ children }) => {
             {hideNavBar ? null : (
                 <div className={`sidebar ${isExpanded ? "expanded" : ""}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
                     <div className="top_section">
-                        <img src="../../logo.png" className="logo" alt="logo" />
+                        <img src="../../assets/logo.png" className="logo" alt="logo" />
                         {isExpanded && (<h1 className="logo-text">MoneyMate</h1>)}
                     </div>
                     {navItems.map((item, index) => (
                         <NavLink
-                            to={item.link}
+                            to={index === 1 || index === 2? `${item.link}/${selectedStatistic}/${selectedWallet}` : item.link}
                             key={index}
-                            className={index === 3 ? "link-add" : "link"}
-                            activeclassname={index === 3 ? "active" : "active-add"}
-                            onClick={index === 3 ? handleCreateTransactionNavItemClick : null}
+                            className={item.link === null ? "link-add" : "link"}
+                            activeclassname={item.link === null ? "active" : "active-add"}
+                            onClick={item.link === null ? handleCreateTransactionNavItemClick : null}
                         >
                             <div className="icon">{item.icon}</div>
                             {isExpanded && (<div className="icon_text">{item.text}</div>)}

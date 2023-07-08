@@ -1,10 +1,11 @@
 import { TbArrowsExchange, TbCategory2 } from "react-icons/tb";
 import { IoMdCube } from "react-icons/io";
-import { RiUserFill, RiShutDownLine } from "react-icons/ri";
+import {RiUserFill, RiShutDownLine, RiCheckboxMultipleBlankLine} from "react-icons/ri";
 import { FaChartPie } from "react-icons/fa";
 import { BsCreditCardFill } from "react-icons/bs";
 import createTransactionIcon from "../../assets/CreateButton.png";
 import {HiOutlinePlusSm} from "react-icons/all.js";
+
 
 export const navItems = [
     {
@@ -14,8 +15,13 @@ export const navItems = [
     },
     {
         icon: <FaChartPie />,
-        text: "Statistics",
-        link: "/statistics"
+        text: "Private Statistics",
+        link: `/statistics/wallets`
+    },
+    {
+        icon: <RiCheckboxMultipleBlankLine />,
+        text: "Shared Statistics",
+        link: `/statistics/sharedWallets`
     },
     {
         icon: <RiUserFill />,
@@ -31,11 +37,6 @@ export const navItems = [
         icon: <TbArrowsExchange />,
         text: "Transactions",
         link: "/transactions"
-    },
-    {
-        icon: <IoMdCube />,
-        text: "Overview",
-        link: "/overview"
     },
     {
         icon: <TbCategory2 />,

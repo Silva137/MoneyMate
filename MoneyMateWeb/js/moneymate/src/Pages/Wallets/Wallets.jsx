@@ -8,8 +8,6 @@ import {HiPlus} from "react-icons/hi";
 import {CgClose} from "react-icons/cg";
 import {MdDoneOutline} from "react-icons/md";
 import WalletService from "../../Services/WalletService.jsx";
-import WalletSelector from "../../Components/WalletSelector/WalletSelector.jsx";
-import {SessionContext} from "../../Utils/Session.jsx";
 
 function Wallets() {
     const [modal, setModal] = useState(false)
@@ -17,15 +15,16 @@ function Wallets() {
     const [sharedWallets, setSharedWallets] = useState([])
     const [walletName, setWalletName] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const { selectedWallet } = useContext(SessionContext);
-
+    const [request, setRequest] = useState('');
 
     useEffect( () => {
-        fetchPrivateWallets();
-        //fetchSharedWallets();
+        getWallets()
     }, []);
 
-    console.log(selectedWallet)
+    async function getWallets(){
+        await fetchPrivateWallets();
+        await fetchSharedWallets();
+    }
 
     async function fetchPrivateWallets() {
         try {
@@ -42,15 +41,30 @@ function Wallets() {
 
     async function fetchSharedWallets() {
         try {
-            const response = await WalletService.getWalletsOfUser() //TODO change to getSharedWalletsOfUser
-            setWallets(response.wallets)
+            const response = await WalletService.getSharedWalletsOfUser() //TODO change to getSharedWalletsOfUser
+            setSharedWallets(response.wallets)
         } catch (error) {
             console.error('Error fetching shared wallets of user:', error)
         }
     }
 
-    function handleAddButtonClick() {
+    async function handleSubmit(event) {
+        event.preventDefault();
+        if (request === "private") {
+            return onCreateWallet(event);
+        } else if (request === "shared") {
+            return onCreateSharedWallet(event);
+        }
+    }
+
+    function handleCreatePWButtonClick() {
         setModal(true)
+        setRequest("private")
+    }
+
+    function handleCreateSWButtonClick() {
+        setModal(true)
+        setRequest("shared")
     }
 
     function handleOverlayClick(e) {
@@ -58,7 +72,7 @@ function Wallets() {
             setModal(false)
     }
 
-    async function handleSaveChangesClick(event) {
+    async function onCreateWallet(event) {
         // Api call to create a new wallet
         event.preventDefault()
         try {
@@ -71,12 +85,24 @@ function Wallets() {
         setModal(false)
     }
 
+    async function onCreateSharedWallet(event) {
+        // Api call to create a new wallet
+        event.preventDefault()
+        try {
+            const response = await WalletService.createSharedWallet(walletName)
+            console.log(response)
+            await fetchSharedWallets()
+        } catch (error) {
+            console.error('Error creating a new wallet:', error)
+        }
+        setModal(false)
+    }
+
 
     return (
         <div className="bg-container">
             <div className="content-container">
                 <h1 className="page-title">Wallets</h1>
-                <WalletSelector className="wallet-selector" wallets={wallets} />
                 <p className="list-title">Private wallets</p>
                 <div className="list-container">
                     {isLoading ? (
@@ -86,11 +112,11 @@ function Wallets() {
                     ) : (
                         <div className={`wallet-list ${wallets.length > 4 ? 'scrollable' : ''}`}>
                             {wallets.map((wallet, index) => (
-                                <WalletCard key={index} wallet={wallet} setWallets={setWallets} setIsLoading={setIsLoading} />
+                                <WalletCard key={index} wallet={wallet} getWallets={getWallets} />
                             ))}
                         </div>
                     )}
-                    <button className="add-button" onClick={handleAddButtonClick}><HiPlus/></button>
+                    <button className="add-button" onClick={handleCreatePWButtonClick}><HiPlus/></button>
                 </div>
                 <p className="list-title">Shared wallets</p>
                 <div className="list-container">
@@ -101,11 +127,11 @@ function Wallets() {
                     ) : (
                         <div className={`wallet-list ${sharedWallets.length > 4 ? 'scrollable' : ''}`}>
                             {sharedWallets.map((wallet, index) => (
-                                <WalletCard key={index} wallet={wallet}  />  //TODO add setSharedWallets
+                                <WalletCard key={index} wallet={wallet} getWallets={getWallets}  />  //TODO add setSharedWallets
                             ))}
                         </div>
                     )}
-                    <button className="add-button" onClick={handleAddButtonClick}><HiPlus/></button>
+                    <button className="add-button" onClick={handleCreateSWButtonClick}><HiPlus/></button>
                 </div>
             </div>
             {modal && (
@@ -113,7 +139,7 @@ function Wallets() {
                     <div className="modal">
                         <button className="close-button" onClick={() => setModal(false)}><CgClose/></button>
                         <h2 className="modal-title">Create Wallet</h2>
-                        <form onSubmit={handleSaveChangesClick}>
+                        <form onSubmit={handleSubmit}>
                             <div className="form-group field">
                                 <input type="input" className="form-field" placeholder="Wallet name" value={walletName} onChange={e => setWalletName(e.target.value)} required/>
                                 <label htmlFor="Wallet Name" className="form-label">Wallet Name</label>

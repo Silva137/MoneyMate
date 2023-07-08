@@ -3,6 +3,7 @@ import instance from "./AxiosInterceptor.jsx";
 
 class WalletService {
 
+    /** PW */
     createWallet(name) {
         const form = { name }
         return instance.post("/api/wallets", form,{headers: authHeader()})
@@ -32,6 +33,31 @@ class WalletService {
                 return response.data
             })
     }
+
+    /** SW */
+
+    createSharedWallet(name) {
+        const form = { name }
+        return instance.post("/api/wallets/shared", form,{headers: authHeader()})
+            .then(response => {
+                return response.data
+            })
+    }
+
+    getSharedWalletsOfUser() {
+        return instance.get("/api/wallets/shared", {headers: authHeader()})
+            .then(response => {
+                return response.data
+            })
+    }
+
+    removeUserFromSW(walletId) {
+        return instance.delete(`/api/wallets/${walletId}/removeUser`, {headers: authHeader()})
+            .then(response => {
+                return response.data
+            })
+    }
+
 }
 
 export default new WalletService();

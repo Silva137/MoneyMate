@@ -3,9 +3,11 @@
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS tokens CASCADE;
 DROP TABLE IF EXISTS wallet CASCADE;
+DROP TABLE IF EXISTS invite CASCADE;
 DROP TABLE IF EXISTS category CASCADE;
 DROP TABLE IF EXISTS user_shared_wallet CASCADE;
 DROP TABLE IF EXISTS transactions CASCADE;
+DROP TABLE IF EXISTS regular_transactions CASCADE;
 DROP SCHEMA IF EXISTS MoneyMate CASCADE;
 
 create schema MoneyMate;
@@ -36,6 +38,20 @@ CREATE TABLE MoneyMate.wallet
     date_of_creation DATE        NOT NULL DEFAULT CURRENT_DATE
 );
 
+CREATE TABLE MoneyMate.invite
+(
+    invite_id   SERIAL PRIMARY KEY,
+    sender_id   INT NOT NULL REFERENCES MoneyMate.users(user_id),
+    receiver_id INT NOT NULL REFERENCES MoneyMate.users(user_id),
+    sw_id       INT NOT NULL REFERENCES MoneyMate.wallet (wallet_id),
+    state       VARCHAR(50) NOT NULL DEFAULT 'PENDING',
+    on_finished BOOLEAN NOT NULL DEFAULT FALSE,
+    date_of_creation DATE        NOT NULL DEFAULT CURRENT_DATE
+    CONSTRAINT state_values CHECK (state IN ('ACCEPTED', 'PENDING', 'REJECTED'))
+
+);
+
+
 CREATE TABLE MoneyMate.category
 (
     category_id      SERIAL PRIMARY KEY,
@@ -63,7 +79,12 @@ CREATE TABLE MoneyMate.transactions
     category_id      INT            NOT NULL REFERENCES MoneyMate.category (category_id),
     date_of_creation TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     periodical       SMALLINT
+);
 
-    --CONSTRAINT period_is_valid CHECK (periodical IN (1, 3, 6, 9, 12))
-
+CREATE TABLE MoneyMate.regular_transactions
+(
+    regular_transaction_id SERIAL PRIMARY KEY,
+    frequency           VARCHAR(50) NOT NULL,
+    transaction_info_id INT NOT NULL REFERENCES MoneyMate.transactions (transaction_id)
+    CONSTRAINT frequency_values CHECK (frequency IN ('daily', 'weekly', 'monthly', 'yearly'))
 );

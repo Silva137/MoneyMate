@@ -10,8 +10,6 @@ import isel.pt.moneymate.repository.UsersRepository
 import isel.pt.moneymate.repository.WalletRepository
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.springframework.http.HttpHeaders
-import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -124,7 +122,7 @@ class UsersService(
     }
 
     fun verifyUserOnWallet(userId: Int, walletId: Int) {
-        val userOfWallet = walletRepository.getUserOfWallet(walletId)
+        val userOfWallet = walletRepository.getUserOfPW(walletId)
             ?: throw NotFoundException("Wallet with id $walletId not found")
 
         if(userOfWallet != userId)

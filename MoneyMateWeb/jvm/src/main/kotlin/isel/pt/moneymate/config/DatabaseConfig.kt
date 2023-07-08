@@ -1,10 +1,6 @@
 package isel.pt.moneymate.config
 
-import isel.pt.moneymate.repository.CategoryRepository
-import isel.pt.moneymate.repository.TransactionRepository
-import isel.pt.moneymate.repository.TokensRepository
-import isel.pt.moneymate.repository.UsersRepository
-import isel.pt.moneymate.repository.WalletRepository
+import isel.pt.moneymate.repository.*
 import isel.pt.moneymate.repository.mappers.*
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.postgres.PostgresPlugin
@@ -79,5 +75,29 @@ class DatabaseConfiguration {
         jdbi.registerRowMapper(userBalanceMapper)
 
         return jdbi.onDemand(TransactionRepository::class.java)
+    }
+
+    @Bean
+    fun inviteRepository(jdbi: Jdbi): InviteRepository {
+        val userMapper = UserMapper()
+        val userMapper1 = UserMapperWithParams("user_id_1", "username1", "email1", "password1")
+        val userMapper2 = UserMapperWithParams("user_id_2", "username2", "email2", "password2")
+        val walletMapper = WalletMapper(userMapper)
+
+
+        jdbi.registerRowMapper(InviteMapper(userMapper1, userMapper2, walletMapper))
+        return jdbi.onDemand(InviteRepository::class.java)
+    }
+
+
+    @Bean
+    fun regularTransactionRepository(jdbi: Jdbi): RegularTransactionRepository {
+        val userMapper = UserMapper()
+        val categoryMapper = CategoryMapper(userMapper)
+        val walletMapper = WalletMapper(userMapper)
+        val transactionMapper = TransactionMapper(userMapper, categoryMapper, walletMapper)
+        val regularTransactionMapper = RegularTransactionMapper (transactionMapper)
+        jdbi.registerRowMapper(regularTransactionMapper)
+        return jdbi.onDemand(RegularTransactionRepository::class.java)
     }
 }

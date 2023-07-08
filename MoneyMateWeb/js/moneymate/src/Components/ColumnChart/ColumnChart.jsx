@@ -3,6 +3,8 @@ import ReactApexChart from 'react-apexcharts';
 
 const ColumnChart = ({ balanceList, onClick, title }) => {
 
+    console.log("balanceList")
+    console.log(balanceList)
     function onClickColumn(columnIndex, event, chartContext, config){
         console.log(columnIndex)
         console.log(balanceList[columnIndex])

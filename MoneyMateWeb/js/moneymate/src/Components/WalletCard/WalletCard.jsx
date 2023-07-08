@@ -1,30 +1,33 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import './WalletCard.css';
 import { RiPencilFill } from "react-icons/ri";
 import { GoTrashcan } from "react-icons/go";
 import { MdDoneOutline } from "react-icons/md";
 import { CgClose } from "react-icons/cg";
 import WalletService from "../../Services/WalletService.jsx";
+import {FaChartPie} from "react-icons/fa";
+import {useNavigate} from "react-router-dom";
+import {SessionContext} from "../../Utils/Session.jsx";
 
-function WalletCard({wallet, setWallets, setIsLoading}) {
+function WalletCard({wallet, getWallets}) {
     const [modal, setModal] = useState(false);
     const [walletName, setWalletName] = useState(wallet.name);
-
-
-    async function fetchPrivateWallets() {
-        try {
-            setIsLoading(true);
-            const response = await WalletService.getWalletsOfUser();
-            setWallets(response.wallets);
-        } catch (error) {
-            console.error('Error fetching private wallets of user:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    }
-
+    const navigate = useNavigate();
+    const { selectedWallet, selectedStatistic } = useContext(SessionContext);
+    const systemUser = 0
     function handleEditButtonClick() {
         setModal(true)
+    }
+
+    function handleStatisticsButtonClick(walletId) {
+        // NAVIGATE
+        console.log("(wallet.user.id)")
+        console.log(wallet.user.id)
+        if(wallet.user.id === systemUser)
+            navigate(`/statistics/sharedWallets/${selectedStatistic}/${selectedWallet}`)
+        else
+            navigate(`/statistics/wallets/${selectedStatistic}/${selectedWallet}`)
+
     }
 
     async function handleSaveChangesClick(event) {
@@ -32,7 +35,7 @@ function WalletCard({wallet, setWallets, setIsLoading}) {
         try {
             const response = await WalletService.updateWalletName(wallet.id, walletName);
             console.log(response);
-            await fetchPrivateWallets()
+            await getWallets()
         } catch (error) {
             console.error('Error updating wallet name:', error);
         }
@@ -40,10 +43,28 @@ function WalletCard({wallet, setWallets, setIsLoading}) {
     }
 
     async function handleDeleteWalletClick() {
+        if(wallet.user.id === systemUser)
+            await onDeleteUserAssociation()
+        else
+            await onDeleteWallet()
+    }
+
+    async function onDeleteWallet(){
         try {
             const response = await WalletService.deleteWallet(wallet.id);
             console.log(response);
-            await fetchPrivateWallets()
+            await getWallets()
+        } catch (error) {
+            console.error('Error deleting wallet:', error);
+        }
+        setModal(false);
+    }
+
+    async function onDeleteUserAssociation(){
+        try {
+            const response = await WalletService.removeUserFromSW(wallet.id);
+            console.log(response);
+            await getWallets()
         } catch (error) {
             console.error('Error deleting wallet:', error);
         }
@@ -59,9 +80,15 @@ function WalletCard({wallet, setWallets, setIsLoading}) {
         <div className="wallet-container">
             <div className="wallet-header">
                 <div className="wallet-name">{wallet.name}</div>
+
+                <button className="edit-button-wallet" onClick={() => handleStatisticsButtonClick(wallet.id)}>
+                    <FaChartPie/>
+                </button>
+
                 <button className="edit-button-wallet" onClick={handleEditButtonClick}>
                     <RiPencilFill/>
                 </button>
+
             </div>
             <p className="balance-txt">Balance</p>
             <div className="wallet-balance">${wallet.balance.toFixed(2)}</div>

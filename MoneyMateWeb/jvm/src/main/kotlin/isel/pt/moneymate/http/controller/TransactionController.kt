@@ -114,7 +114,6 @@ class TransactionController(private val transactionService: TransactionService) 
             .body("Transaction $transactionId was deleted successfully")
     }
 
-    // TODO Put date on Requests
     /**
      * Handles the request to get all transactions of a wallet of a user
      * ordered by price or date
@@ -134,7 +133,7 @@ class TransactionController(private val transactionService: TransactionService) 
         @RequestParam startDate: Date,
         @RequestParam endDate: Date,
         @RequestParam(defaultValue = "0") offset: Int,
-        @RequestParam(defaultValue = "10") limit: Int
+        @RequestParam(defaultValue = "500") limit: Int
     ): ResponseEntity<*> {
         val transactions = transactionService.getAllTransactions(
             user,

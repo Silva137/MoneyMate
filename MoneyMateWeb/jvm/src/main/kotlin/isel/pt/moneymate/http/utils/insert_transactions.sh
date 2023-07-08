@@ -6,7 +6,7 @@ USER_OBJ=".create_user_1"
 USER_REQUEST="$LOGIN_USER"
 USER_REQUEST1="$CREATE_USER"
 # Criar Utilizador
-source ./register_user.sh "POST" "$USER_REQUEST" "Register User" "$USER_OBJ"
+source ./register_user.sh "POST" "$USER_REQUEST1" "Register User" "$USER_OBJ"
 
 # Criar Categorias
 source ./send_request.sh "POST" "$CREATE_CATEGORY" "$TOKEN" "[REQUEST][2] - Create Category" ".create_category_1"

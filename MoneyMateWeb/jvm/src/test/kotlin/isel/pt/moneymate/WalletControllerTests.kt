@@ -52,7 +52,7 @@ class WalletControllerTests {
         val userDTO = UserDTO(99, "testUser", "testeemail@gmail.com")
         val newWallet = WalletDTO(99, "Test Wallet", userDTO, Date())
 
-        val performPost = mockMvc.post(Uris.Wallets.CREATE) {
+        val performPost = mockMvc.post(Uris.Wallets.CREATE_PW) {
             contentType = MediaType.APPLICATION_JSON
             content = objectMapper.writeValueAsString(walletData)
             header(HttpHeaders.AUTHORIZATION, "Bearer $VALID_TOKEN")
@@ -77,7 +77,7 @@ class WalletControllerTests {
     @Test
     fun `get wallets of user`() {
         val walletData = CreateWalletDTO("Test Wallet")
-        val performPost = mockMvc.post(Uris.Wallets.CREATE) {
+        val performPost = mockMvc.post(Uris.Wallets.CREATE_PW) {
             contentType = MediaType.APPLICATION_JSON
             content = objectMapper.writeValueAsString(walletData)
             header(HttpHeaders.AUTHORIZATION, "Bearer $VALID_TOKEN")
@@ -86,7 +86,7 @@ class WalletControllerTests {
         val wallet = gson.fromJson(performPost.andReturn().response.contentAsString, WalletDTO::class.java)
 
 
-        val performGet = mockMvc.get(Uris.Wallets.GET_WALLETS_OF_USER) {
+        val performGet = mockMvc.get(Uris.Wallets.GET_PW_OF_USER) {
             contentType = MediaType.APPLICATION_JSON
             header(HttpHeaders.AUTHORIZATION, "Bearer $VALID_TOKEN")
         }
@@ -105,7 +105,7 @@ class WalletControllerTests {
     fun `update a wallet`() {
         val walletData = CreateWalletDTO("Test Wallet")
         val updateWallet = CreateWalletDTO("Updated Wallet")
-        val performPost = mockMvc.post(Uris.Wallets.CREATE) {
+        val performPost = mockMvc.post(Uris.Wallets.CREATE_PW) {
             contentType = MediaType.APPLICATION_JSON
             content = objectMapper.writeValueAsString(walletData)
             header(HttpHeaders.AUTHORIZATION, "Bearer $VALID_TOKEN")
@@ -131,7 +131,7 @@ class WalletControllerTests {
     @Test
     fun missingAuthorizationHeader(){
         val walletData = CreateWalletDTO("Test Wallet")
-        val performPost = mockMvc.post(Uris.Wallets.CREATE) {
+        val performPost = mockMvc.post(Uris.Wallets.CREATE_PW) {
             contentType = MediaType.APPLICATION_JSON
             content = objectMapper.writeValueAsString(walletData)
 
@@ -145,7 +145,7 @@ class WalletControllerTests {
     @Test
     fun createWalletWithoutName(){
         val walletsData = CreateWalletDTO("")
-        val performPost = mockMvc.post(Uris.Wallets.CREATE) {
+        val performPost = mockMvc.post(Uris.Wallets.CREATE_PW) {
             contentType = MediaType.APPLICATION_JSON
             content = objectMapper.writeValueAsString(walletsData)
             header(HttpHeaders.AUTHORIZATION, "Bearer $VALID_TOKEN")
@@ -161,7 +161,7 @@ class WalletControllerTests {
 
         val walletData = CreateWalletDTO("Test Wallet")
         val updateWallet = CreateWalletDTO("Updated Wallet")
-        val performPost = mockMvc.post(Uris.Wallets.CREATE) {
+        val performPost = mockMvc.post(Uris.Wallets.CREATE_PW) {
             contentType = MediaType.APPLICATION_JSON
             content = objectMapper.writeValueAsString(walletData)
             header(HttpHeaders.AUTHORIZATION, "Bearer $VALID_TOKEN")

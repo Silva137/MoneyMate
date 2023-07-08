@@ -10,92 +10,57 @@ import DatePicker from "../../Components/DatePicker/DatePicker.jsx";
 import dayjs from "dayjs";
 import { SyncLoader } from 'react-spinners';
 import DisplayPage from "../../Components/DisplayPage/DisplayPage.jsx";
+import WalletSelector from "../../Components/SelectorBox/WalletSelector.jsx";
+import {useNavigate, useParams} from 'react-router-dom';
+import StatisticsSelector from "../../Components/SelectorBox/StatisticsSelector.jsx";
+import GraphicStatistics from "./GraphicStatistics.jsx";
+import ListStatistics from "./ListStatistics.jsx";
 
-function Statistics() {
+function Statistics({type}) {
     const [wallets, setWallets] = useState([])
     const [selectedDates, setSelectedDates] = useState([dayjs().startOf('month').format('YYYY-MM-DD'), dayjs().endOf('month').format('YYYY-MM-DD')])
-    const { selectedWallet } = useContext(SessionContext)
-    const [balance, setBalance] = useState(null)
-    const [category, setCategory] = useState(null)
-    const [loading, setLoading] = useState(false)
-    const [balanceList, setBalanceList] = useState(null)
-    const [modal, setModal] = useState(false);
-    const [selectedChartInfo, setSelectedChartInfo] = useState([]);
+    const { selectedStatistic, setSelectedStatistic} = useContext(SessionContext)
+    const { selectedWallet, setSelectedWallet } = useContext(SessionContext);
+    const navigate = useNavigate();
+    const { walletId } = useParams();
 
+    useEffect( () => {
+        fetchPrivateWallets();
+    }, []);
 
-
-    /* useEffect(() => {
-         fetchPrivateWallets();
-     }, [])
-     */
-
-    useEffect(() => {
-        console.log('Selected WalletId: ' + selectedWallet)
-        console.log(selectedDates)
-        if (selectedDates.length !== 0) {
-            fetchChartsData()
+    useEffect( () => {
+        async function fetch(){
+            await setSelectedWallet(walletId); // Graphics Change when this value change
+            await setSelectedStatistic(type); // Graphics Change when this value change
         }
-    }, [selectedDates])
-
+        fetch()
+    }, [navigate]);
 
     async function fetchPrivateWallets() {
         try {
-            const response = await WalletService.getWalletsOfUser()
-            setWallets(response.wallets)
+            //setIsLoading(true);
+            const response = await WalletService.getWalletsOfUser();
+            console.log(response)
+            setWallets(response.wallets);
         } catch (error) {
-            console.error('Error fetching private wallets of user:', error)
-        }
-    }
-
-    async function onClick(index){
-        // index represents the column clicked
-        const categoryId = balanceList[index].category.id
-        const selectedBalance = balanceList[index].balance
-        const selectedCategory = balanceList[index].category.name
-        const response = await fetchTransactionsByCategory(categoryId)
-        setSelectedChartInfo([response.transactions, selectedBalance, selectedCategory]);
-        setModal(true)
-    }
-    async function fetchTransactionsByCategory(categoryId){
-        return TransactionService.getTransactionsByCategory(selectedWallet, categoryId, selectedDates)
-    }
-
-    async function fetchSumBalanceByCategory(selectedWallet, selectedDates){
-        const balanceResponse = await TransactionService.getSumBalanceByCategory(selectedWallet, selectedDates)
-        const balanceList = balanceResponse.balanceList
-        setBalanceList(balanceList)
-        console.log(balanceResponse)
-    }
-
-    async function fetchPosNegBalanceByCategory(selectedWallet, selectedDates){
-        const posAndNegResponse = await TransactionService.getPosNegBalanceByCategory(selectedWallet, selectedDates)
-
-        const negBalances = posAndNegResponse.neg.balanceList.map(item => Math.abs(item.balance))
-        const negCategories = posAndNegResponse.neg.balanceList.map(item => item.category.name)
-        const posBalances = posAndNegResponse.pos.balanceList.map(item => item.balance)
-        const posCategories = posAndNegResponse.pos.balanceList.map(item => item.category.name)
-
-        setBalance([posBalances, negBalances])
-        setCategory([posCategories, negCategories])
-        console.log(posAndNegResponse)
-
-    }
-
-
-    async function fetchChartsData() {
-        try {
-            setLoading(true)
-            await fetchSumBalanceByCategory(selectedWallet, selectedDates)
-            await fetchPosNegBalanceByCategory(selectedWallet, selectedDates)
-        } catch (error) {
-            console.error('Error fetching charts data:', error)
+            console.error('Error fetching private wallets of user:', error);
         } finally {
-            setLoading(false)
+            //setIsLoading(false);
         }
     }
     const handleDatePickerChange = (dates) => {
         setSelectedDates(dates)
     }
+
+    const handleWalletChange = async (walletId) => {
+        await setSelectedWallet(walletId); // Graphics Change when this value change
+        navigate(`/statistics/wallets/${selectedStatistic}/${walletId}`);
+    };
+
+    const handleStatisticChange = async (statistic) => {
+        await setSelectedStatistic(statistic); // Graphics Change when this value change
+        navigate(`/statistics/wallets/${statistic}/${selectedWallet}`);
+    };
 
     return (
         <div>
@@ -105,11 +70,41 @@ function Statistics() {
                         <h1 className="page-title">Statistics</h1>
                         <DatePicker onChange={handleDatePickerChange} />
                     </div>
+                    <WalletSelector className="wallet-selector" wallets={wallets} selectedWallet={selectedWallet} handleWalletChange={handleWalletChange}/>
+                    <StatisticsSelector className="wallet-selector" selectedStatistic={selectedStatistic} handleStaticChange={handleStatisticChange} />
                 </div>
-                <div className="content-container-statistics">
-                    <div className="chart-column">
-                        <div className="card-income">
-                            {loading ? (
+
+                {selectedStatistic === 'graphics' ? (
+                    <GraphicStatistics selectedDates={selectedDates} />
+                ) : (
+                    <ListStatistics selectedDates={selectedDates} />
+                )}
+
+            </div>
+        </div>
+    );
+}
+//                 <GraphicStatistics selectedDates={selectedDates} />
+/**
+ return (
+ <div>
+ <GraphicStatistics selectedDates={selectedDates}
+
+ <div className="bg-container">
+ <div className="content-container">
+ <div className="row">
+ <h1 className="page-title">Statistics</h1>
+ <DatePicker onChange={handleDatePickerChange} />
+ </div>
+ <WalletSelector className="wallet-selector" wallets={wallets} />
+ <StatisticsSelector className="wallet-selector" />
+
+
+ </div>
+ <div className="content-container-statistics">
+ <div className="chart-column">
+ <div className="card-income">
+ {loading ? (
                                 <div className="loader-container">
                                     <SyncLoader size={50} color={'#ffffff'} loading={loading} />
                                 </div>
@@ -120,9 +115,9 @@ function Statistics() {
                                     <p>No Results Found</p>
                                 )
                             )}
-                        </div>
-                        <div className="card-expense">
-                            {loading ? (
+ </div>
+ <div className="card-expense">
+ {loading ? (
                                 <div className="loader-container">
                                     <SyncLoader size={50} color={'#ffffff'} loading={loading} />
                                 </div>
@@ -133,11 +128,11 @@ function Statistics() {
                                     <p>No Results Found</p>
                                 )
                             )}
-                        </div>
-                    </div>
-                    <div className="chart-column">
-                        <div className="card-sum">
-                            {loading ? (
+ </div>
+ </div>
+ <div className="chart-column">
+ <div className="card-sum">
+ {loading ? (
                                 <div className="loader-container">
                                     <SyncLoader size={50} color={'#ffffff'} loading={loading} />
                                 </div>
@@ -148,10 +143,10 @@ function Statistics() {
                                     <p>No Results Found</p>
                                 )
                             )}
-                        </div>
-                    </div>
-                </div>
-                {modal && (
+ </div>
+ </div>
+ </div>
+ {modal && (
                     <DisplayPage
                         transactions={selectedChartInfo[0]}
                         balance={selectedChartInfo[1]}
@@ -160,10 +155,10 @@ function Statistics() {
                         onClickElement={() => {}}
                     />
                 )}
-            </div>
-        </div>
-    );
-}
+ </div>
+ </div>
+ );
+ */
 
 function sumArray(array){
     return array.reduce((sum, value) => sum + value, 0)

@@ -5,7 +5,6 @@ import './Categories.css';
 import CategoryIcon from "../../Components/CategoryIcon/CategoryIcon.jsx";
 import WalletService from "../../Services/WalletService.jsx";
 import CategoryService from "../../Services/CategoryService.jsx";
-import WalletCard from "../../Components/WalletCard/WalletCard.jsx";
 import CreateButton from "../../Components/IconButtons/CreateButton.jsx";
 import categoryService from "../../Services/CategoryService.jsx";
 

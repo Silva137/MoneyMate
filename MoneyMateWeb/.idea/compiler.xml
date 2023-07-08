@@ -8,9 +8,6 @@
       <module name="MoneyMate" target="17" />
       <module name="MoneyMate.main" target="17" />
       <module name="MoneyMate.test" target="17" />
-      <module name="MoneyMateWeb" target="17" />
-      <module name="MoneyMateWeb.main" target="17" />
-      <module name="MoneyMateWeb.test" target="17" />
     </bytecodeTargetLevel>
   </component>
 </project>

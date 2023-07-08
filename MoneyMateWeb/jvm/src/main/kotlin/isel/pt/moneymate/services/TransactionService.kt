@@ -22,7 +22,7 @@ class TransactionService(
     private val validSortByValues = setOf("bydate", "byprice"/*, "bycategory"*/)
     private val validOrderByValues = setOf("ASC", "DESC")
 
-
+    private final val OVER_ALL = -1
     /** ----------------------------------- Transactions --------------------------------   */
 
 
@@ -75,10 +75,28 @@ class TransactionService(
         offset: Int,
         limit: Int
     ): TransactionsDTO {
-        return getTransactionsSortedBy(user.id, walletId, sortedBy, orderBy, startDate, endDate, offset, limit) { id, sortBy, orderBy, startDate, endDate, off, lim ->
-            transactionRepository.getAllTransactions(id, sortBy, orderBy, startDate, endDate, off, lim)
+        return if (walletId == OVER_ALL)
+                    getTransactionsSortedByOfAllWallets(user.id, sortedBy, orderBy, startDate, endDate, offset, limit)
+            else getTransactionsSortedBy(user.id, walletId, sortedBy, orderBy, startDate, endDate, offset, limit) { id, sortBy, orderBy, startDate, endDate, off, lim ->
+                transactionRepository.getAllTransactions(id, sortBy, orderBy, startDate, endDate, off, lim)
         }
     }
+
+
+    private fun getTransactionsSortedByOfAllWallets(
+        userId: Int, sortedBy: String, orderBy: String, startDate: Date, endDate: Date, offset: Int, limit: Int
+    ): TransactionsDTO {
+        if (sortedBy !in validSortByValues || orderBy !in validOrderByValues)
+            throw InvalidParameterException("Invalid parameters for sorting or ordering")
+
+        val sortedTransactions = transactionRepository.getAllTransactionsOfAllWallets(userId, sortedBy, orderBy, startDate, endDate, offset, limit)
+
+        if(sortedTransactions.isNullOrEmpty())
+            throw NotFoundException("Transactions not found")
+
+        return sortedTransactions.toDTO()
+    }
+
 
     fun getIncomeTransactions(
         user: User,
@@ -126,6 +144,24 @@ class TransactionService(
     /** ----------------------------------- PW --------------------------------   */
 
     fun getByCategory(user: User, walletId: Int, categoryId: Int, startDate: Date, endDate: Date, offset: Int, limit: Int): TransactionsDTO {
+        return if(walletId == OVER_ALL)
+            getByCategoryOfAllWallets(user, categoryId, startDate, endDate, offset, limit)
+        else getByCategoryOfWallet(user, walletId, categoryId, startDate, endDate, offset, limit)
+    }
+
+    fun getBalanceByCategory(user:User, walletId: Int, startDate: Date, endDate: Date,): CategoriesBalanceDTO {
+        return if (walletId == OVER_ALL)
+            getBalanceByCategoryOfAllWallets(user, startDate, endDate)
+        else getBalanceByCategoryOfWallet(user, walletId, startDate, endDate)
+    }
+
+    fun getPosAndNegBalanceByCategory(user: User, walletId: Int, startDate: Date, endDate: Date,): PosAndNegCategoryBalanceDTO {
+        return if (walletId == OVER_ALL)
+            getPosAndNegBalanceByCategoryOfAllWallets(user, startDate, endDate)
+        else getPosAndNegBalanceByCategoryOfWallet(user, walletId, startDate, endDate)
+    }
+
+    fun getByCategoryOfWallet(user: User, walletId: Int, categoryId: Int, startDate: Date, endDate: Date, offset: Int, limit: Int): TransactionsDTO {
         verifyUserOnWallet(user.id, walletId)
         val transactionsOfCategory = transactionRepository.getByCategory(walletId, categoryId, startDate, endDate, offset, limit)
             ?: throw NotFoundException("Transactions Of Category not Found")
@@ -133,7 +169,7 @@ class TransactionService(
         return transactionsOfCategory.toDTO()
     }
 
-    fun getBalanceByCategory(user:User, walletId: Int, startDate: Date, endDate: Date,): CategoriesBalanceDTO {
+    fun getBalanceByCategoryOfWallet(user:User, walletId: Int, startDate: Date, endDate: Date,): CategoriesBalanceDTO {
         verifyUserOnWallet(user.id, walletId)
         val balanceOfCategories = transactionRepository.getBalanceByCategory(walletId, startDate, endDate)
             ?: throw NotFoundException("Balance of Categories not Found")
@@ -141,7 +177,7 @@ class TransactionService(
         return balanceOfCategories.toDTO()
     }
 
-    fun getPosAndNegBalanceByCategory(user: User, walletId: Int, startDate: Date, endDate: Date,): PosAndNegCategoryBalanceDTO {
+    fun getPosAndNegBalanceByCategoryOfWallet(user: User, walletId: Int, startDate: Date, endDate: Date,): PosAndNegCategoryBalanceDTO {
         verifyUserOnWallet(user.id, walletId)
         val negativeBalanceOfCategories = transactionRepository.getNegativeBalanceByCategory(walletId, startDate, endDate)
             ?: throw NotFoundException("Balance of Categories not Found")
@@ -153,6 +189,30 @@ class TransactionService(
         return PosAndNegCategoryBalanceDTO(negDTO,posDTO)
     }
 
+    fun getByCategoryOfAllWallets(user: User, categoryId: Int, startDate: Date, endDate: Date, offset: Int, limit: Int): TransactionsDTO {
+        val transactionsOfCategory = transactionRepository.getByCategoryOfAllWallets(categoryId, user.id, startDate, endDate, offset, limit)
+            ?: throw NotFoundException("Transactions Of Category not Found")
+
+        return transactionsOfCategory.toDTO()
+    }
+
+    fun getBalanceByCategoryOfAllWallets(user:User, startDate: Date, endDate: Date,): CategoriesBalanceDTO {
+        val balanceOfCategories = transactionRepository.getBalanceByCategoryOfAllWallets(user.id, startDate, endDate)
+            ?: throw NotFoundException("Balance of Categories not Found")
+
+        return balanceOfCategories.toDTO()
+    }
+
+    fun getPosAndNegBalanceByCategoryOfAllWallets(user: User, startDate: Date, endDate: Date,): PosAndNegCategoryBalanceDTO {
+        val negativeBalanceOfCategories = transactionRepository.getNegativeBalanceByCategoryOfAllWallets(user.id, startDate, endDate)
+            ?: throw NotFoundException("Balance of Categories not Found")
+        val positiveBalanceOfCategories = transactionRepository.getPositiveBalanceByCategoryOfAllWallets(user.id, startDate, endDate)
+            ?: throw NotFoundException("Balance of Categories not Found")
+
+        val negDTO = negativeBalanceOfCategories.toDTO()
+        val posDTO = positiveBalanceOfCategories.toDTO()
+        return PosAndNegCategoryBalanceDTO(negDTO,posDTO)
+    }
     /** ----------------------------------- OverView --------------------------------   */
 
     fun getAllByCategory(categoryId: Int, offset: Int, limit: Int): TransactionsDTO {
@@ -233,7 +293,7 @@ class TransactionService(
     }
 
     fun verifyUserOnWallet(userId: Int, walletId: Int) {
-        val userOfWallet = walletRepository.getUserOfWallet(walletId)
+        val userOfWallet = walletRepository.getUserOfPW(walletId)
             ?: throw NotFoundException("Wallet with id $walletId not found")
 
         if(userOfWallet != userId)

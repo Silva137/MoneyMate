@@ -1,6 +1,6 @@
 -- Atualizar 30% das transações para 1 mês atrás
 UPDATE MoneyMate.transactions
-SET date_of_creation = CURRENT_DATE - INTERVAL '1 month'
+SET date_of_creation = CURRENT_DATE - INTERVAL '15 days'
 WHERE transaction_id IN (
     SELECT transaction_id
     FROM (

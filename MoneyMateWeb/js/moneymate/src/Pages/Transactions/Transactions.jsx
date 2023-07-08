@@ -59,7 +59,7 @@ function Transactions() {
                 <div className="row">
                     <DatePicker onChange={handleDatePickerChange} />
                     <DropdownButton options={sortOptions} onChange={(e) => setSortedBy(e)} defaultOption={'bydate'}></DropdownButton>
-                    <DropdownButton options={orderOptions} onChange={(e) => setOrderBy(e)} defaultOption={'ASC'}></DropdownButton>
+                    <DropdownButton options={orderOptions} onChange={(e) => setOrderBy(e)} defaultOption={'DESC'}></DropdownButton>
                 </div>
                 <div className="transaction-list">
                     {transactions.map((transaction) => (

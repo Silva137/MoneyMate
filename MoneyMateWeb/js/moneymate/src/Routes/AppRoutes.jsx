@@ -25,7 +25,10 @@ const AppRoutes = () => {
                         <Route path='/profile' element={<Profile/>}/>
                         <Route path='/transactions' element={<Transactions/>}/>
                         <Route path='/categories' element={<Categories/>}/>
-                        <Route path='/statistics' element={<Statistics/>}/>
+                        <Route path='/statistics/wallets/graphics/:walletId' element={<Statistics type="graphics" />} />
+                        <Route path='/statistics/wallets/list/:walletId' element={<Statistics type="list" />} />
+                        <Route path='/statistics/sharedWallets/list/:walletId' element={<Statistics type="list" />} />
+
                         <Route path='/overview' element={<Overview/>}/>
                         <Route path='/logout' element={<Logout/>}/>
                     </Route>

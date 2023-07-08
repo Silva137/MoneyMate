@@ -44,20 +44,19 @@ object Uris {
          * Private - Given a userId and a Name
          * Shared - Given a userId and a Name, after associating otherUsers, userId becomes a "systemUser"
          */
-        const val CREATE = "/wallets"
+        const val CREATE_PW = "/wallets"// TODO AFTER CHANGE URI, for now avoid confilcts
 
-        const val GET_WALLETS_OF_USER = "/wallets"
-        const val GET_BY_ID = "/wallets/{walletId}"
+        const val CREATE_SW = "/wallets/shared"
+
+        const val GET_PW_OF_USER = "/wallets"// TODO AFTER CHANGE URI, for now avoid confilcts
+        const val GET_SW_OF_USER = "/wallets/shared"
+        //const val GET_BY_ID = "/wallets/{walletId}"
+
+        const val DELETE_USER_FROM_SW = "/wallets/{walletId}/removeUser"
 
         const val UPDATE_NAME = "/wallets/{walletId}"
 
         const val DELETE_BY_ID = "/wallets/{walletId}"
-    }
-
-    object Association{
-        const val ASSOCIATE_USER = "/wallets/associate{walletId}/users{userId}"
-        const val DESSASOCIATE_USER = "/wallets/dessacoiate{walletId}/users{userId}"
-
     }
 
     object Transactions {
@@ -96,7 +95,11 @@ object Uris {
         const val GET_OVERALL_BALANCE = "/transactions/amount}"
         const val GET_ALL_WALLETS_BALANCE = "/transactions/walletAmounts}"         // Soma de todas as transacoes de cada wallet
 
+    }
 
-
+    object Invites {
+        const val CREATE = "invitations/wallets/{walletId}"
+        const val UPDATE = "invitations/{inviteId}"
+        const val GET_ALL = "invitations"
     }
 }

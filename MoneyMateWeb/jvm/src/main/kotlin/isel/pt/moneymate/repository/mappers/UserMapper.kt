@@ -17,3 +17,20 @@ class UserMapper : RowMapper<User> {
         )
     }
 }
+
+class UserMapperWithParams(
+    private val userIdColumn: String,
+    private val usernameColumn: String,
+    private val emailColumn: String,
+    private val passwordColumn: String
+) : RowMapper<User> {
+    @Throws(SQLException::class)
+    override fun map(rs: ResultSet, ctx: StatementContext?): User {
+        val userId = rs.getInt(userIdColumn)
+        val username = rs.getString(usernameColumn)
+        val email = rs.getString(emailColumn)
+        val password = rs.getString(passwordColumn)
+
+        return User(userId, username, email, password)
+    }
+}

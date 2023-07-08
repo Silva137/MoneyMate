@@ -1,1 +1,2 @@
-rootProject.name = "MoneyMate"
+rootProject.name = "MoneyMateWeb"
+
