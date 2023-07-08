@@ -143,11 +143,73 @@ class TransactionService(
     */
     /** ----------------------------------- PW --------------------------------   */
 
+    /** Pedidos relativos ao click de uma parcela dos graficos */
+
     fun getByCategory(user: User, walletId: Int, categoryId: Int, startDate: Date, endDate: Date, offset: Int, limit: Int): TransactionsDTO {
         return if(walletId == OVER_ALL)
             getByCategoryOfAllWallets(user, categoryId, startDate, endDate, offset, limit)
         else getByCategoryOfWallet(user, walletId, categoryId, startDate, endDate, offset, limit)
     }
+
+    fun getPosByCategory(user: User, walletId: Int, categoryId: Int, startDate: Date, endDate: Date, offset: Int, limit: Int): TransactionsDTO {
+        return if(walletId == OVER_ALL)
+            getPosByCategoryOfAllWallets(user, categoryId, startDate, endDate, offset, limit)
+        else getPosByCategoryOfWallet(user, walletId, categoryId, startDate, endDate, offset, limit)
+    }
+
+    fun getNegByCategory(user: User, walletId: Int, categoryId: Int, startDate: Date, endDate: Date, offset: Int, limit: Int): TransactionsDTO {
+        return if(walletId == OVER_ALL)
+            getNegByCategoryOfAllWallets(user, categoryId, startDate, endDate, offset, limit)
+        else getNegByCategoryOfWallet(user, walletId, categoryId, startDate, endDate, offset, limit)
+    }
+
+
+    fun getByCategoryOfWallet(user: User, walletId: Int, categoryId: Int, startDate: Date, endDate: Date, offset: Int, limit: Int): TransactionsDTO {
+        verifyUserOnWallet(user.id, walletId)
+        val transactionsOfCategory = transactionRepository.getByCategory(walletId, categoryId, startDate, endDate, offset, limit)
+            ?: throw NotFoundException("Transactions Of Category not Found")
+
+        return transactionsOfCategory.toDTO()
+    }
+
+    fun getPosByCategoryOfWallet(user: User, walletId: Int, categoryId: Int, startDate: Date, endDate: Date, offset: Int, limit: Int): TransactionsDTO {
+        verifyUserOnWallet(user.id, walletId)
+        val transactionsOfCategory = transactionRepository.getPosByCategory(walletId, categoryId, startDate, endDate, offset, limit)
+            ?: throw NotFoundException("Transactions Of Category not Found")
+
+        return transactionsOfCategory.toDTO()
+    }
+
+    fun getNegByCategoryOfWallet(user: User, walletId: Int, categoryId: Int, startDate: Date, endDate: Date, offset: Int, limit: Int): TransactionsDTO {
+        verifyUserOnWallet(user.id, walletId)
+        val transactionsOfCategory = transactionRepository.getNegByCategory(walletId, categoryId, startDate, endDate, offset, limit)
+            ?: throw NotFoundException("Transactions Of Category not Found")
+
+        return transactionsOfCategory.toDTO()
+    }
+
+    fun getByCategoryOfAllWallets(user: User, categoryId: Int, startDate: Date, endDate: Date, offset: Int, limit: Int): TransactionsDTO {
+        val transactionsOfCategory = transactionRepository.getByCategoryOfAllWallets(categoryId, user.id, startDate, endDate, offset, limit)
+            ?: throw NotFoundException("Transactions Of Category not Found")
+
+        return transactionsOfCategory.toDTO()
+    }
+
+    fun getNegByCategoryOfAllWallets(user: User, categoryId: Int, startDate: Date, endDate: Date, offset: Int, limit: Int): TransactionsDTO {
+        val transactionsOfCategory = transactionRepository.getNegByCategoryOfAllWallets(categoryId, user.id, startDate, endDate, offset, limit)
+            ?: throw NotFoundException("Transactions Of Category not Found")
+
+        return transactionsOfCategory.toDTO()
+    }
+
+    fun getPosByCategoryOfAllWallets(user: User, categoryId: Int, startDate: Date, endDate: Date, offset: Int, limit: Int): TransactionsDTO {
+        val transactionsOfCategory = transactionRepository.getPosByCategoryOfAllWallets(categoryId, user.id, startDate, endDate, offset, limit)
+            ?: throw NotFoundException("Transactions Of Category not Found")
+
+        return transactionsOfCategory.toDTO()
+    }
+
+    /** Pedidos relativos a apresentação informacao dos graficos */
 
     fun getBalanceByCategory(user:User, walletId: Int, startDate: Date, endDate: Date,): CategoriesBalanceDTO {
         return if (walletId == OVER_ALL)
@@ -161,13 +223,6 @@ class TransactionService(
         else getPosAndNegBalanceByCategoryOfWallet(user, walletId, startDate, endDate)
     }
 
-    fun getByCategoryOfWallet(user: User, walletId: Int, categoryId: Int, startDate: Date, endDate: Date, offset: Int, limit: Int): TransactionsDTO {
-        verifyUserOnWallet(user.id, walletId)
-        val transactionsOfCategory = transactionRepository.getByCategory(walletId, categoryId, startDate, endDate, offset, limit)
-            ?: throw NotFoundException("Transactions Of Category not Found")
-
-        return transactionsOfCategory.toDTO()
-    }
 
     fun getBalanceByCategoryOfWallet(user:User, walletId: Int, startDate: Date, endDate: Date,): CategoriesBalanceDTO {
         verifyUserOnWallet(user.id, walletId)
@@ -189,13 +244,6 @@ class TransactionService(
         return PosAndNegCategoryBalanceDTO(negDTO,posDTO)
     }
 
-    fun getByCategoryOfAllWallets(user: User, categoryId: Int, startDate: Date, endDate: Date, offset: Int, limit: Int): TransactionsDTO {
-        val transactionsOfCategory = transactionRepository.getByCategoryOfAllWallets(categoryId, user.id, startDate, endDate, offset, limit)
-            ?: throw NotFoundException("Transactions Of Category not Found")
-
-        return transactionsOfCategory.toDTO()
-    }
-
     fun getBalanceByCategoryOfAllWallets(user:User, startDate: Date, endDate: Date,): CategoriesBalanceDTO {
         val balanceOfCategories = transactionRepository.getBalanceByCategoryOfAllWallets(user.id, startDate, endDate)
             ?: throw NotFoundException("Balance of Categories not Found")
@@ -213,7 +261,8 @@ class TransactionService(
         val posDTO = positiveBalanceOfCategories.toDTO()
         return PosAndNegCategoryBalanceDTO(negDTO,posDTO)
     }
-    /** ----------------------------------- OverView --------------------------------   */
+
+    /** ----------------------------------- DEPRECATED --------------------------------   */
 
     fun getAllByCategory(categoryId: Int, offset: Int, limit: Int): TransactionsDTO {
         val transactionsOfCategory = transactionRepository.getAllByCategory(categoryId, offset, limit)

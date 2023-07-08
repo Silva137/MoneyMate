@@ -257,6 +257,74 @@ class TransactionController(private val transactionService: TransactionService) 
             .body(transactions)
     }
 
+
+    /**
+     * Handles the request to get all positive transactions of a wallet of a user
+     * that belongs to a certain category
+     *
+     * @param walletId the wallet to consult the transactions
+     * @param categoryId the category of the transactions to search
+     *
+     * @return the response to the request with a map of transactions organized by date
+     */
+    @GetMapping(Uris.Transactions.GET_POS_BY_CATEGORY)
+    fun getPosByCategory(
+        @AuthenticationPrincipal user: User,
+        @PathVariable walletId: Int,
+        @PathVariable categoryId: Int,
+        @RequestParam startDate: Date,
+        @RequestParam endDate: Date,
+        @RequestParam(defaultValue = "0") offset: Int,
+        @RequestParam(defaultValue = "10") limit: Int
+    ): ResponseEntity<*> {
+        val transactions = transactionService.getPosByCategory(
+            user,
+            walletId,
+            categoryId,
+            startDate,
+            endDate,
+            offset,
+            limit
+        )
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(transactions)
+    }
+
+
+    /**
+     * Handles the request to get all negative transactions of a wallet of a user
+     * that belongs to a certain category
+     *
+     * @param walletId the wallet to consult the transactions
+     * @param categoryId the category of the transactions to search
+     *
+     * @return the response to the request with a map of transactions organized by date
+     */
+    @GetMapping(Uris.Transactions.GET_NEG_BY_CATEGORY)
+    fun getNegByCategory(
+        @AuthenticationPrincipal user: User,
+        @PathVariable walletId: Int,
+        @PathVariable categoryId: Int,
+        @RequestParam startDate: Date,
+        @RequestParam endDate: Date,
+        @RequestParam(defaultValue = "0") offset: Int,
+        @RequestParam(defaultValue = "10") limit: Int
+    ): ResponseEntity<*> {
+        val transactions = transactionService.getNegByCategory(
+            user,
+            walletId,
+            categoryId,
+            startDate,
+            endDate,
+            offset,
+            limit
+        )
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(transactions)
+    }
+
     /**
      * Handles the request to get the sum of all transactions by category belongign to a private wallet
      *

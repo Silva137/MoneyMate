@@ -66,20 +66,25 @@ object Uris {
         const val UPDATE = "/transactions/{transactionId}"
         const val DELETE_BY_ID = "/transactions/{transactionId}"
 
-        /**Requets of transactions Page (Common to both wallet types) */
-        const val GET_ALL = "/transactions/wallets/{walletId}"
-        const val GET_INCOMES = "/transactions/wallets/{walletId}/incomes"
-        const val GET_EXPENSES = "/transactions/wallets/{walletId}/expenses"
 
-        /**Requests of a PW Insights Page */
+        /**Requests of a PW and Overview Insights Page */
+        // Pedidos pagina List em statsics
+        const val GET_ALL = "/transactions/wallets/{walletId}"
+
+        // Pedidos click no grafico
         const val GET_BY_CATEGORY = "/transactions/wallets/{walletId}/categories/{categoryId}"
+        const val GET_NEG_BY_CATEGORY = "/transactions/wallets/{walletId}/categories/{categoryId}/neg"
+        const val GET_POS_BY_CATEGORY = "/transactions/wallets/{walletId}/categories/{categoryId}/pos"
+
+        // Pedidos amostragem de grafico
         const val GET_BALANCE_BY_CATEGORY = "/transactions/wallets/{walletId}/categories/balance"
         const val GET_POS_AND_NEG_BALANCE_BY_CATEGORY = "/transactions/wallets/{walletId}/categories/posneg/balance"
 
-        // TODO Requests Below not tested
-        /**Requests of overViewPage */
+        // TODO Deprecated not used
         const val GET_ALL_BY_CATEGORY = "/transactions/categories/{categoryId}"
         const val GET_ALL_BALANCE_BY_CATEGORY = "/transactions/categoryAmounts"
+        const val GET_INCOMES = "/transactions/wallets/{walletId}/incomes"
+        const val GET_EXPENSES = "/transactions/wallets/{walletId}/expenses"
 
         /**Requests of a SW Insights Page */
         const val GET_BY_USER = "/transactions/wallets/{shId}/users/{userId}"

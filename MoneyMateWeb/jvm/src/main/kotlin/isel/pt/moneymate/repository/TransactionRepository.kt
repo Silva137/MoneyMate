@@ -216,6 +216,50 @@ interface TransactionRepository {
             JOIN Moneymate.users users ON transactions.user_id = users.user_id
             JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
             JOIN Moneymate.category category ON transactions.category_id = category.category_id
+        WHERE transactions.wallet_id = :wallet_id 
+            AND transactions.amount < 0
+            AND transactions.category_id = :category_id 
+            AND transactions.date_of_creation BETWEEN :start_date AND :end_date
+        ORDER BY transactions.date_of_creation DESC
+        LIMIT :limit OFFSET :offset
+    """)
+    fun getNegByCategory(
+        @Bind("wallet_id") walletId: Int,
+        @Bind("category_id") categoryId: Int,
+        @Bind("start_date") startDate: Date,
+        @Bind("end_date") endDate: Date,
+        @Bind("offset") offset: Int,
+        @Bind("limit") limit: Int
+    ): List<Transaction>?
+
+    @SqlQuery("""
+        SELECT *
+        FROM MoneyMate.transactions transactions 
+            JOIN Moneymate.users users ON transactions.user_id = users.user_id
+            JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
+            JOIN Moneymate.category category ON transactions.category_id = category.category_id
+        WHERE transactions.wallet_id = :wallet_id 
+            AND transactions.amount > 0
+            AND transactions.category_id = :category_id 
+            AND transactions.date_of_creation BETWEEN :start_date AND :end_date
+        ORDER BY transactions.date_of_creation DESC
+        LIMIT :limit OFFSET :offset
+    """)
+    fun getPosByCategory(
+        @Bind("wallet_id") walletId: Int,
+        @Bind("category_id") categoryId: Int,
+        @Bind("start_date") startDate: Date,
+        @Bind("end_date") endDate: Date,
+        @Bind("offset") offset: Int,
+        @Bind("limit") limit: Int
+    ): List<Transaction>?
+
+    @SqlQuery("""
+        SELECT *
+        FROM MoneyMate.transactions transactions 
+            JOIN Moneymate.users users ON transactions.user_id = users.user_id
+            JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
+            JOIN Moneymate.category category ON transactions.category_id = category.category_id
         WHERE transactions.user_id = :user_id 
             AND transactions.category_id = :category_id 
             AND transactions.date_of_creation BETWEEN :start_date AND :end_date
@@ -223,6 +267,50 @@ interface TransactionRepository {
         LIMIT :limit OFFSET :offset
     """)
     fun getByCategoryOfAllWallets(
+        @Bind("category_id") categoryId: Int,
+        @Bind("user_id") userId: Int,
+        @Bind("start_date") startDate: Date,
+        @Bind("end_date") endDate: Date,
+        @Bind("offset") offset: Int,
+        @Bind("limit") limit: Int
+    ): List<Transaction>?
+
+    @SqlQuery("""
+        SELECT *
+        FROM MoneyMate.transactions transactions 
+            JOIN Moneymate.users users ON transactions.user_id = users.user_id
+            JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
+            JOIN Moneymate.category category ON transactions.category_id = category.category_id
+        WHERE transactions.user_id = :user_id 
+            AND transactions.amount > 0
+            AND transactions.category_id = :category_id 
+            AND transactions.date_of_creation BETWEEN :start_date AND :end_date
+        ORDER BY transactions.date_of_creation DESC
+        LIMIT :limit OFFSET :offset
+    """)
+    fun getPosByCategoryOfAllWallets(
+        @Bind("category_id") categoryId: Int,
+        @Bind("user_id") userId: Int,
+        @Bind("start_date") startDate: Date,
+        @Bind("end_date") endDate: Date,
+        @Bind("offset") offset: Int,
+        @Bind("limit") limit: Int
+    ): List<Transaction>?
+
+    @SqlQuery("""
+        SELECT *
+        FROM MoneyMate.transactions transactions 
+            JOIN Moneymate.users users ON transactions.user_id = users.user_id
+            JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
+            JOIN Moneymate.category category ON transactions.category_id = category.category_id
+        WHERE transactions.user_id = :user_id 
+            AND transactions.amount < 0
+            AND transactions.category_id = :category_id 
+            AND transactions.date_of_creation BETWEEN :start_date AND :end_date
+        ORDER BY transactions.date_of_creation DESC
+        LIMIT :limit OFFSET :offset
+    """)
+    fun getNegByCategoryOfAllWallets(
         @Bind("category_id") categoryId: Int,
         @Bind("user_id") userId: Int,
         @Bind("start_date") startDate: Date,
