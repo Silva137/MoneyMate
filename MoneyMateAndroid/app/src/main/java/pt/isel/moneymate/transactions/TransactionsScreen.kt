@@ -237,8 +237,9 @@ fun TransactionItem(
                 .fillMaxSize()
                 .padding(horizontal = 15.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.End)
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            /*
             Box(
                 modifier = Modifier
                     .size(45.dp)
@@ -250,7 +251,7 @@ fun TransactionItem(
                     contentDescription = "Category Icon",
                     modifier = Modifier.size(32.dp)
                 )
-            }
+            }*/
             Column(
                 modifier = Modifier.weight(1f),
             ) {
@@ -276,55 +277,6 @@ fun TransactionItem(
                 fontFamily = poppins,
                 fontWeight = FontWeight.SemiBold,
             )
-        }
-    }
-}
-
-@Composable
-fun BottomSheetContent(selectedTransaction: MutableState<Transaction?>) {
-    var editedTransaction by remember { mutableStateOf(selectedTransaction.value) }
-
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text("Edit transaction")
-        Spacer(modifier = Modifier.height(16.dp))
-
-        TextField(
-            value = editedTransaction?.description.orEmpty(),
-            onValueChange = { editedTransaction = editedTransaction?.copy(description = it) },
-            label = { Text("Description") }
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        TextField(
-            value = editedTransaction?.amount?.toString().orEmpty(),
-            onValueChange = {
-                editedTransaction = editedTransaction?.copy(amount = it.toDoubleOrNull() ?: 0.0)
-            },
-            label = { Text("Amount") }
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Button(
-                onClick = { selectedTransaction.value = null },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Delete")
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Button(
-                onClick = {
-                    selectedTransaction.value = editedTransaction
-                },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Save")
-            }
         }
     }
 }
@@ -402,8 +354,9 @@ fun TransactionsListPreview() {
     )
 }
 
+
 fun formatDate(localDateTime: LocalDateTime): String {
-    val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH)
+    val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm", Locale.ENGLISH)
     return localDateTime.format(formatter)
 }
 

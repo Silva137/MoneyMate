@@ -175,7 +175,7 @@ fun BankCard(
             horizontalAlignment = Alignment.Start
         ) {
             Text(
-                text = selectedWallet?.name ?: "No wallets created",
+                text = selectedWallet?.name ?: "No wallets",
                 fontWeight = FontWeight.Normal,
                 fontSize = 24.sp,
                 color = Color.White,
