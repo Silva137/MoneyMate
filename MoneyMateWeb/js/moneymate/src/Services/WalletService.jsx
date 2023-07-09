@@ -51,6 +51,13 @@ class WalletService {
             })
     }
 
+    getUsersOfSW(walletId) {
+        return instance.get(`/api/wallets/${walletId}/users`, {headers: authHeader()})
+            .then(response => {
+                return response.data
+            })
+    }
+
     removeUserFromSW(walletId) {
         return instance.delete(`/api/wallets/${walletId}/removeUser`, {headers: authHeader()})
             .then(response => {

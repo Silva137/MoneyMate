@@ -3,14 +3,16 @@ import './WalletCard.css';
 import '../../App.css';
 import { RiPencilFill } from "react-icons/ri";
 import WalletService from "../../Services/WalletService.jsx";
-import {FaChartPie, FaShare, FaShareAlt} from "react-icons/fa";
+import {FaChartPie, FaShare, FaShareAlt, FaUsers} from "react-icons/fa";
 import {useNavigate} from "react-router-dom";
 import InviteService from "../../Services/InviteService.jsx";
 import WalletCardEditModal from "./WalletCardEditModal.jsx";
 import WalletCardShareModal from "./WalletCardShareModal.jsx";
+import {FiUsers} from "react-icons/all.js";
+import WalletCardUsers from "./WalletCardUsers.jsx";
 
 function WalletCard({wallet, getWallets}) {
-    const [modal, setModal] = useState(null); // null means no modal ;false means editModal; true means shareModal
+    const [modal, setModal] = useState(null); // null means no modal ;false means editModal; true means shareModal; users means UsersOF SW
     const [walletName, setWalletName] = useState(wallet.name);
     const [userName, setUserName] = useState("");
     const navigate = useNavigate();
@@ -23,6 +25,11 @@ function WalletCard({wallet, getWallets}) {
 
     function handleShareButtonClick() {
         setModal(true)
+    }
+
+    function handleViewUsersClick(){
+        setModal("users")
+
     }
 
     function handleEditButtonClick() {
@@ -119,10 +126,17 @@ function WalletCard({wallet, getWallets}) {
                 </button>
 
                 { isSharedWallet()?
-                    (<button className="edit-button-wallet" onClick={handleShareButtonClick}>
+                    <button className="edit-button-wallet" onClick={handleViewUsersClick}>
+                        <FaUsers/>
+                    </button>
+                    :("")
+                }
+
+                { isSharedWallet()?
+                    <button className="edit-button-wallet" onClick={handleShareButtonClick}>
                         <FaShareAlt/>
-                    </button>):
-                    ("")
+                    </button>
+                    :("")
                 }
             </div>
             {
@@ -136,12 +150,23 @@ function WalletCard({wallet, getWallets}) {
                             onDeleteClick={handleDeleteWalletClick}
                         />
                     ) : (
-                        <WalletCardShareModal
+                        modal === true ? (
+
+                            <WalletCardShareModal
                             userName={userName}
                             onModalClose={handleModalClose}
                             onSendInviteClick={handleInviteButtonClick}
                             onChange={e => setUserName(e.target.value)}
-                        />
+                            />
+                        ): (
+                            modal === "users" ? (
+                                <WalletCardUsers
+                                    walletId={wallet.id}
+                                    walletName={walletName}
+                                    onModalClose={handleModalClose}
+                                />
+                            ):("")
+                        )
                     )
                 )
             }

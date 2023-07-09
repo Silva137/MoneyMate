@@ -81,6 +81,53 @@
     margin-bottom: 2rem;
 }
 
+.modal-title-1 {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+}
+
+.modal-title-2 {
+    font-size: 18px;
+    color: white;
+    padding-left: 75px;
+    margin-bottom: 2rem;
+}
+
+.user-cards {
+    padding-left: 25px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.user-card {
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 4px;
+    width: 250px;
+}
+
+.user-name {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-email {
+    font-size: 14px;
+    color: #555555;
+}
+
+.user-avatar {
+    margin-left: auto;
+}
+
+
 .edit-button-wallet {
     width: 33px;
     height: 33px;
