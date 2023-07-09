@@ -39,9 +39,7 @@ function Invites({loggedUser, username, handleEditButtonClick, image }) {
         setSelectedInviteType(type)
     }
 
-    const onInviteUpdateStatus = async (newStatus) => {
 
-    }
 
     return (
         <div className="content-container">
