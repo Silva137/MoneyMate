@@ -74,6 +74,8 @@ interface InviteRepository {
             JOIN MoneyMate.users u2 ON i.sender_id = u2.user_id
             JOIN Moneymate.wallet w ON i.sw_id = w.wallet_id
         WHERE i.receiver_id = :id
+        ORDER BY i.state = 'PENDING' DESC, i.date_of_creation DESC
+
    """)
     fun getAllReceivedInvites(@Bind("id") userId: Int): List<Invite>?
 
@@ -85,6 +87,7 @@ interface InviteRepository {
             JOIN MoneyMate.users u2 ON i.sender_id = u2.user_id
             JOIN Moneymate.wallet w ON i.sw_id = w.wallet_id
         WHERE i.sender_id = :id
+        ORDER BY i.state = 'PENDING' DESC, i.date_of_creation DESC
    """)
     fun getAllSendInvites(@Bind("id") userId: Int): List<Invite>?
 

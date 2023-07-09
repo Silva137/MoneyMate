@@ -19,11 +19,16 @@ class TransactionService {
             endDate: selectedDates[1]
         };
 
+        console.log(params.startDate)
+        console.log(params.endDate)
+
         return instance.get(`/api/transactions/wallets/${walletId}`, {
             headers: authHeader(),
             params: params
         })
             .then(response => {
+                console.log("response")
+                console.log(response)
                 return response.data;
             });
     }

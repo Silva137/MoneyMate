@@ -5,6 +5,8 @@ import isel.pt.moneymate.domain.Wallet
 import isel.pt.moneymate.exceptions.AlreadyExistsException
 import isel.pt.moneymate.exceptions.NotFoundException
 import isel.pt.moneymate.exceptions.UnauthorizedException
+import isel.pt.moneymate.http.models.users.UsersDTO
+import isel.pt.moneymate.http.models.users.toDTO
 import isel.pt.moneymate.http.models.wallets.*
 import isel.pt.moneymate.http.utils.Consts.SHARED_WALLET_USER
 import isel.pt.moneymate.repository.WalletRepository
@@ -92,6 +94,13 @@ class WalletService(
             ?: throw NotFoundException("No shared wallets found for user with id $userId")
         val map = wallets.associateWith { wallet -> getWalletBalance(wallet.id) }
         return map.toDTO()
+    }
+
+    fun getMembersOfSW (user: User, sharedWalletId: Int): UsersDTO{
+        verifyUserInSW(user.id, sharedWalletId)
+        val users = walletRepository.getUsersOfSW(sharedWalletId)
+            ?: throw NotFoundException("Users of wallet $sharedWalletId not found")
+        return users.toDTO() // Ordenados por ordem de entrada na sharedWallet
     }
 
     fun updateSharedWallet(user: User, walletInput: UpdateWalletDTO, walletId : Int) : WalletWithBalanceDTO {

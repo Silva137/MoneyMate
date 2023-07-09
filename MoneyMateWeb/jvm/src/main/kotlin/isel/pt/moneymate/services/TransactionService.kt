@@ -25,7 +25,6 @@ class TransactionService(
     private final val OVER_ALL = -1
     /** ----------------------------------- Transactions --------------------------------   */
 
-
     fun createTransaction(
         transactionData: CreateTransactionDTO,
         user: User,

@@ -72,7 +72,9 @@ interface TransactionRepository {
         JOIN Moneymate.users users ON transactions.user_id = users.user_id
         JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
         JOIN Moneymate.category category ON transactions.category_id = category.category_id
-        WHERE transactions.wallet_id = :wallet_id AND transactions.date_of_creation BETWEEN :start_date AND :end_date
+        WHERE transactions.wallet_id = :wallet_id 
+            AND transactions.date_of_creation >= :start_date::date
+            AND transactions.date_of_creation < (:end_date::date + INTERVAL '1 day')
         ORDER BY 
             CASE WHEN :sortedBy = 'bycategory' THEN category.category_name END,
             CASE WHEN :sortedBy = 'bydate' AND :orderBy = 'DESC' THEN transactions.date_of_creation END DESC,
@@ -98,7 +100,9 @@ interface TransactionRepository {
         JOIN Moneymate.users users ON transactions.user_id = users.user_id
         JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
         JOIN Moneymate.category category ON transactions.category_id = category.category_id
-        WHERE transactions.user_id = :user_id AND transactions.date_of_creation BETWEEN :start_date AND :end_date
+        WHERE transactions.user_id = :user_id 
+            AND transactions.date_of_creation >= :start_date::date
+            AND transactions.date_of_creation < (:end_date::date + INTERVAL '1 day')
         ORDER BY 
             CASE WHEN :sortedBy = 'bycategory' THEN category.category_name END,
             CASE WHEN :sortedBy = 'bydate' AND :orderBy = 'DESC' THEN transactions.date_of_creation END DESC,
@@ -123,7 +127,10 @@ interface TransactionRepository {
         JOIN Moneymate.users users ON transactions.user_id = users.user_id
         JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
         JOIN Moneymate.category category ON transactions.category_id = category.category_id
-        WHERE transactions.wallet_id = :wallet_id AND transactions.amount > 0 AND transactions.date_of_creation BETWEEN :start_date AND :end_date
+        WHERE transactions.wallet_id = :wallet_id 
+            AND transactions.amount > 0 
+            AND transactions.date_of_creation >= :start_date::date
+            AND transactions.date_of_creation < (:end_date::date + INTERVAL '1 day')
         ORDER BY 
             CASE WHEN :sortedBy = 'bycategory' THEN category.category_name END,
             CASE WHEN :sortedBy = 'bydate' AND :orderBy = 'DESC' THEN transactions.date_of_creation END DESC,
@@ -148,7 +155,9 @@ interface TransactionRepository {
         JOIN Moneymate.users users ON transactions.user_id = users.user_id
         JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
         JOIN Moneymate.category category ON transactions.category_id = category.category_id
-        WHERE transactions.wallet_id = :wallet_id AND transactions.amount <= 0 AND transactions.date_of_creation BETWEEN :start_date AND :end_date
+        WHERE transactions.wallet_id = :wallet_id AND transactions.amount <= 0 
+            AND transactions.date_of_creation >= :start_date::date
+            AND transactions.date_of_creation < (:end_date::date + INTERVAL '1 day')
         ORDER BY 
             CASE WHEN :sortedBy = 'bycategory' THEN category.category_name END,
             CASE WHEN :sortedBy = 'bydate' AND :orderBy = 'DESC' THEN transactions.date_of_creation END DESC,
@@ -197,7 +206,8 @@ interface TransactionRepository {
             JOIN Moneymate.category category ON transactions.category_id = category.category_id
         WHERE transactions.wallet_id = :wallet_id 
             AND transactions.category_id = :category_id 
-            AND transactions.date_of_creation BETWEEN :start_date AND :end_date
+            AND transactions.date_of_creation >= :start_date::date
+            AND transactions.date_of_creation < (:end_date::date + INTERVAL '1 day')
         ORDER BY transactions.date_of_creation DESC
         LIMIT :limit OFFSET :offset
     """)
@@ -219,7 +229,8 @@ interface TransactionRepository {
         WHERE transactions.wallet_id = :wallet_id 
             AND transactions.amount < 0
             AND transactions.category_id = :category_id 
-            AND transactions.date_of_creation BETWEEN :start_date AND :end_date
+            AND transactions.date_of_creation >= :start_date::date
+            AND transactions.date_of_creation < (:end_date::date + INTERVAL '1 day')
         ORDER BY transactions.date_of_creation DESC
         LIMIT :limit OFFSET :offset
     """)
@@ -241,7 +252,8 @@ interface TransactionRepository {
         WHERE transactions.wallet_id = :wallet_id 
             AND transactions.amount > 0
             AND transactions.category_id = :category_id 
-            AND transactions.date_of_creation BETWEEN :start_date AND :end_date
+            AND transactions.date_of_creation >= :start_date::date
+            AND transactions.date_of_creation < (:end_date::date + INTERVAL '1 day')
         ORDER BY transactions.date_of_creation DESC
         LIMIT :limit OFFSET :offset
     """)
@@ -262,7 +274,8 @@ interface TransactionRepository {
             JOIN Moneymate.category category ON transactions.category_id = category.category_id
         WHERE transactions.user_id = :user_id 
             AND transactions.category_id = :category_id 
-            AND transactions.date_of_creation BETWEEN :start_date AND :end_date
+            AND transactions.date_of_creation >= :start_date::date
+            AND transactions.date_of_creation < (:end_date::date + INTERVAL '1 day')
         ORDER BY transactions.date_of_creation DESC
         LIMIT :limit OFFSET :offset
     """)
@@ -284,7 +297,8 @@ interface TransactionRepository {
         WHERE transactions.user_id = :user_id 
             AND transactions.amount > 0
             AND transactions.category_id = :category_id 
-            AND transactions.date_of_creation BETWEEN :start_date AND :end_date
+            AND transactions.date_of_creation >= :start_date::date
+            AND transactions.date_of_creation < (:end_date::date + INTERVAL '1 day')
         ORDER BY transactions.date_of_creation DESC
         LIMIT :limit OFFSET :offset
     """)
@@ -306,7 +320,8 @@ interface TransactionRepository {
         WHERE transactions.user_id = :user_id 
             AND transactions.amount < 0
             AND transactions.category_id = :category_id 
-            AND transactions.date_of_creation BETWEEN :start_date AND :end_date
+            AND transactions.date_of_creation >= :start_date::date
+            AND transactions.date_of_creation < (:end_date::date + INTERVAL '1 day')
         ORDER BY transactions.date_of_creation DESC
         LIMIT :limit OFFSET :offset
     """)
@@ -326,7 +341,8 @@ interface TransactionRepository {
             JOIN Moneymate.users users ON transactions.user_id = users.user_id
             JOIN MoneyMate.category categories ON transactions.category_id = categories.category_id
         WHERE transactions.wallet_id = :wallet_id 
-            AND transactions.date_of_creation BETWEEN :start_date AND :end_date
+            AND transactions.date_of_creation >= :start_date::date
+            AND transactions.date_of_creation < (:end_date::date + INTERVAL '1 day')
         GROUP BY categories.category_id, categories.category_name, users.user_id, users.username, users.email, users.password
     """)
     fun getBalanceByCategory(
@@ -341,7 +357,8 @@ interface TransactionRepository {
             JOIN Moneymate.users users ON transactions.user_id = users.user_id
             JOIN MoneyMate.category categories ON transactions.category_id = categories.category_id
         WHERE transactions.user_id = :user_id 
-            AND transactions.date_of_creation BETWEEN :start_date AND :end_date
+            AND transactions.date_of_creation >= :start_date::date
+            AND transactions.date_of_creation < (:end_date::date + INTERVAL '1 day')
         GROUP BY categories.category_id, categories.category_name, users.user_id, users.username, users.email, users.password
     """)
     fun getBalanceByCategoryOfAllWallets(
@@ -358,7 +375,8 @@ interface TransactionRepository {
             JOIN MoneyMate.category categories ON transactions.category_id = categories.category_id
         WHERE transactions.wallet_id = :wallet_id 
             AND transactions.amount >=0 
-            AND transactions.date_of_creation BETWEEN :start_date AND :end_date
+            AND transactions.date_of_creation >= :start_date::date
+            AND transactions.date_of_creation < (:end_date::date + INTERVAL '1 day')
         GROUP BY categories.category_id, categories.category_name, users.user_id, users.username, users.email, users.password
     """)
     fun getPositiveBalanceByCategory(
@@ -374,7 +392,8 @@ interface TransactionRepository {
             JOIN MoneyMate.category categories ON transactions.category_id = categories.category_id
         WHERE transactions.user_id = :user_id 
             AND transactions.amount >=0 
-            AND transactions.date_of_creation BETWEEN :start_date AND :end_date
+            AND transactions.date_of_creation >= :start_date::date
+            AND transactions.date_of_creation < (:end_date::date + INTERVAL '1 day')
         GROUP BY categories.category_id, categories.category_name, users.user_id, users.username, users.email, users.password
     """)
     fun getNegativeBalanceByCategoryOfAllWallets(
@@ -390,7 +409,8 @@ interface TransactionRepository {
             JOIN MoneyMate.category categories ON transactions.category_id = categories.category_id
         WHERE transactions.wallet_id = :wallet_id 
             AND transactions.amount < 0
-            AND transactions.date_of_creation BETWEEN :start_date AND :end_date
+            AND transactions.date_of_creation >= :start_date::date
+            AND transactions.date_of_creation < (:end_date::date + INTERVAL '1 day')
         GROUP BY categories.category_id, categories.category_name, users.user_id, users.username, users.email, users.password
     """)
     fun getNegativeBalanceByCategory(
@@ -406,7 +426,8 @@ interface TransactionRepository {
             JOIN MoneyMate.category categories ON transactions.category_id = categories.category_id
         WHERE transactions.user_id = :user_id 
             AND transactions.amount < 0
-            AND transactions.date_of_creation BETWEEN :start_date AND :end_date
+            AND transactions.date_of_creation >= :start_date::date
+            AND transactions.date_of_creation < (:end_date::date + INTERVAL '1 day')
         GROUP BY categories.category_id, categories.category_name, users.user_id, users.username, users.email, users.password
     """)
     fun getPositiveBalanceByCategoryOfAllWallets(
@@ -539,7 +560,8 @@ interface TransactionRepository {
             SUM( CASE WHEN transactions.amount < 0 THEN transactions.amount ELSE 0 END) AS expense_sum
         FROM MoneyMate.transactions transactions
         WHERE transactions.wallet_id = :wallet_id
-        AND transactions.date_of_creation BETWEEN :start_date AND :end_date
+            AND transactions.date_of_creation >= :start_date::date
+            AND transactions.date_of_creation < (:end_date::date + INTERVAL '1 day')
     """)
     fun getWalletBalance(
         @Bind("wallet_id")walletId: Int,

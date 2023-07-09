@@ -91,6 +91,17 @@ class WalletController(private val walletsService: WalletService) {
             .body(wallets)
     }
 
+    @GetMapping(Uris.Wallets.GET_USERS_OF_SW)
+    fun getMembersOfSW(
+        @AuthenticationPrincipal user: User,
+        @PathVariable walletId: Int
+    ): ResponseEntity<*> {
+        val users = walletsService.getMembersOfSW(user, walletId)
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(users)
+    }
+
     @DeleteMapping(Uris.Wallets.DELETE_USER_FROM_SW)
     fun deleteUserFromSharedWallet(
         @AuthenticationPrincipal user: User,

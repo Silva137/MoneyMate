@@ -52,6 +52,7 @@ object Uris {
         const val GET_SW_OF_USER = "/wallets/shared"
         //const val GET_BY_ID = "/wallets/{walletId}"
 
+        const val GET_USERS_OF_SW = "/wallets/{walletId}/users"
         const val DELETE_USER_FROM_SW = "/wallets/{walletId}/removeUser"
 
         const val UPDATE_NAME = "/wallets/{walletId}"
