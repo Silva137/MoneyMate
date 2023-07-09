@@ -208,7 +208,7 @@ fun SearchButtons(
 @Composable
 fun TransactionsList(
     transactions: List<Transaction>,
-    onEditClick: (Int) -> Unit
+    onEditClick: (Int) -> Unit = {}
 ) {
     if (transactions.isEmpty()) {
         Text(
@@ -236,8 +236,8 @@ fun TransactionsList(
 @Composable
 fun TransactionItem(
     transaction: Transaction,
-    onEditClick: (Int) -> Unit,
-    index: Int
+    onEditClick: (Int) -> Unit = {},
+    index: Int = 0
 ) {
 
     val imageResource = if (transaction.type == TransactionType.EXPENSE) R.drawable.expense_item else R.drawable.income_item

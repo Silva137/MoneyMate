@@ -72,7 +72,7 @@ const SideNavBar = ({ children }) => {
             {hideNavBar ? null : (
                 <div className={`sidebar ${isExpanded ? "expanded" : ""}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
                     <div className="top_section">
-                        <img src="../../assets/logo.png" className="logo" alt="logo" />
+                        <img src="../../../public/logo.png" className="logo" alt="logo" />
                         {isExpanded && (<h1 className="logo-text">MoneyMate</h1>)}
                     </div>
                     {navItems.map((item, index) => (

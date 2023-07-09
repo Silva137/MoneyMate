@@ -81,6 +81,7 @@ class StatisticsViewModel(
                     responsePos is APIResult.Success && responseNeg is APIResult.Success -> {
                         _categoryTransactionPos = responsePos.data.transactions.map { transactionDTO ->
                             Transaction(
+                                transactionDTO.id,
                                 convertType(transactionDTO.amount),
                                 transactionDTO.title,
                                 transactionDTO.amount.toDouble(),
@@ -94,6 +95,7 @@ class StatisticsViewModel(
                         }
                         _categoryTransactionNeg = responseNeg.data.transactions.map { transactionDTO ->
                             Transaction(
+                                transactionDTO.id,
                                 convertType(transactionDTO.amount),
                                 transactionDTO.title,
                                 transactionDTO.amount.toDouble(),

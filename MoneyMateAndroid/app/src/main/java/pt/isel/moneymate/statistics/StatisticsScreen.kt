@@ -239,7 +239,7 @@ fun CategoryTransactionsList(
         verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
         items(transactions) { item ->
-            TransactionItem(item, selectedTransaction)
+            TransactionItem(item)
         }
     }
 }
