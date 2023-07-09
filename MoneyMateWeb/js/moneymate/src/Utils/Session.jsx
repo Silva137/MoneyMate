@@ -3,9 +3,9 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 export const SessionContext = createContext({
     isAuthenticated: null,
     setIsAuthenticated: () => {},
-    selectedWallet: -1,
+    selectedWallet: null,
     setSelectedWallet: () => {},
-    selectedStatistic: "list",
+    selectedStatistic: null,
     setSelectedStatistic: () => {},
 
 });
@@ -16,10 +16,14 @@ export const SessionProvider = ({ children }) => {
     });
 
     const [selectedWallet, setSelectedWallet] = useState(() => {
+        const wallet = localStorage.getItem("selectedWallet");
+        if(wallet == null) localStorage.setItem("selectedWallet", -1);
         return localStorage.getItem("selectedWallet");
     });
 
     const [selectedStatistic, setSelectedStatistic] = useState(() => {
+        const statistic = localStorage.getItem("selectedStatistic");
+        if(statistic == null) localStorage.setItem("selectedStatistic", "graphics");
         return localStorage.getItem("selectedStatistic");
     });
 

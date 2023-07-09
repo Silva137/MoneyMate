@@ -1,33 +1,23 @@
 import React, {useContext, useState} from 'react';
 import './WalletCard.css';
+import '../../App.css';
 import { RiPencilFill } from "react-icons/ri";
-import { GoTrashcan } from "react-icons/go";
-import { MdDoneOutline } from "react-icons/md";
-import { CgClose } from "react-icons/cg";
 import WalletService from "../../Services/WalletService.jsx";
 import {FaChartPie, FaShare, FaShareAlt} from "react-icons/fa";
 import {useNavigate} from "react-router-dom";
-import {SessionContext} from "../../Utils/Session.jsx";
 import InviteService from "../../Services/InviteService.jsx";
 import WalletCardEditModal from "./WalletCardEditModal.jsx";
 import WalletCardShareModal from "./WalletCardShareModal.jsx";
 
 function WalletCard({wallet, getWallets}) {
-    const [modal, setModal] = useState(null); // null means no modal false means editModal true means shareModal
-
-    // Info about the modals
+    const [modal, setModal] = useState(null); // null means no modal ;false means editModal; true means shareModal
     const [walletName, setWalletName] = useState(wallet.name);
     const [userName, setUserName] = useState("");
-
-    // Used to get session information about wht was previsoly selected
-    const { selectedWallet, selectedStatistic } = useContext(SessionContext);
     const navigate = useNavigate();
 
     const systemUser = 0
 
-    function isSharedWallet(){
-        return wallet.user.id === systemUser
-    }
+    function isSharedWallet(){return wallet.user.id === systemUser}
 
     /** Button click */
 
@@ -36,8 +26,10 @@ function WalletCard({wallet, getWallets}) {
     }
 
     function handleEditButtonClick() {
-        setModal(false)
+        setWalletName(wallet.name);
+        setModal(false);
     }
+
 
     function modalClose(){
         setModal(null)
@@ -46,9 +38,9 @@ function WalletCard({wallet, getWallets}) {
     function handleStatisticsButtonClick(walletId) {
         // NAVIGATE
         if(isSharedWallet())
-            navigate(`/statistics/sharedWallets/${selectedStatistic}/${selectedWallet}`)
+            navigate(`/statistics/sharedWallets/graphics/${walletId}`)
         else
-            navigate(`/statistics/wallets/${selectedStatistic}/${selectedWallet}`)
+            navigate(`/statistics/wallets/graphics/${walletId}`)
     }
 
     async function handleInviteButtonClick(event) {
@@ -86,21 +78,7 @@ function WalletCard({wallet, getWallets}) {
         modalClose()
     }
 
-    /** Others */
 
-
-    // To support nomral text input
-    const onEditModalWalletChange = (e) => {
-        setUserName(e.target.value);
-    };
-
-    // To support dropDown
-    const onShareModalUserChange = (selectedUser) => {
-        console.log("USERNAME RECEIVED")
-        console.log(selectedUser)
-
-        setUserName(selectedUser);
-    };
     async function onDeleteWallet(){
         try {
             const response = await WalletService.deleteWallet(wallet.id);
@@ -126,9 +104,12 @@ function WalletCard({wallet, getWallets}) {
 
     return (
         <div className="wallet-container">
-            <div className="wallet-header">
+            <div className="wallet-details">
                 <div className="wallet-name">{wallet.name}</div>
-
+                <p className="balance-txt">Balance</p>
+                <div className="wallet-balance">${wallet.balance.toFixed(2)}</div>
+            </div>
+            <div className="wallet-buttons">
                 <button className="edit-button-wallet" onClick={() => handleStatisticsButtonClick(wallet.id)}>
                     <FaChartPie/>
                 </button>
@@ -143,11 +124,7 @@ function WalletCard({wallet, getWallets}) {
                     </button>):
                     ("")
                 }
-
             </div>
-            <p className="balance-txt">Balance</p>
-            <div className="wallet-balance">${wallet.balance.toFixed(2)}</div>
-
             {
                 modal !== null && (
                     modal === false ? (
@@ -155,7 +132,7 @@ function WalletCard({wallet, getWallets}) {
                             walletName={walletName}
                             onModalClose={handleModalClose}
                             onUpdateClick={handleUpdateButtonClick}
-                            onChange={e => onEditModalWalletChange(e)}
+                            onChange={e => setWalletName(e.target.value)}
                             onDeleteClick={handleDeleteWalletClick}
                         />
                     ) : (
@@ -163,7 +140,7 @@ function WalletCard({wallet, getWallets}) {
                             userName={userName}
                             onModalClose={handleModalClose}
                             onSendInviteClick={handleInviteButtonClick}
-                            onChange={e => onEditModalWalletChange(e)}
+                            onChange={e => setUserName(e.target.value)}
                         />
                     )
                 )

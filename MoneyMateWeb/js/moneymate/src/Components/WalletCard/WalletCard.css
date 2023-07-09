@@ -9,6 +9,12 @@
     padding-top: 1rem;
     margin-bottom: 30px;
     display: flex;
+    flex-direction: row;
+}
+
+.wallet-details {
+    flex: 1;
+    display: flex;
     flex-direction: column;
 }
 
@@ -34,6 +40,16 @@
     font-size: 20px;
     font-weight: bold;
     color: #ffffff;
+}
+
+.wallet-buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.wallet-buttons button {
+    margin-top: 0.5rem;
 }
 
 .modal-overlay {

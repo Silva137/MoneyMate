@@ -11,7 +11,7 @@ VALUES
     ('Refeições', 0),
     ('Lazer', 0),
     ('Transportes', 0),
-    ('Apostas Desportivas', 0),
+    ('Apostas', 0),
     ('Saúde', 0),
     ('Presentes', 0),
     ('Roupa', 0),

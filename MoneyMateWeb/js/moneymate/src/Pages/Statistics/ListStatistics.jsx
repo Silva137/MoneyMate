@@ -1,9 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import '../../App.css';
-import DatePicker from "../../Components/DatePicker/DatePicker.jsx";
 import DropdownButton from "../../Components/DropdownButton/DropdownButton.jsx";
 import { SessionContext } from "../../Utils/Session.jsx";
-import dayjs from "dayjs";
 import TransactionService from "../../Services/TransactionService.jsx";
 import TransactionItem from "../../Components/TransactionItem/TransactionItem.jsx";
 
@@ -45,7 +43,6 @@ function ListStatistics({selectedDates}) {
     ];
 
     return (
-        <div className="bg-container">
             <div className="content-container">
                 <div className="row">
                     <DropdownButton options={sortOptions} onChange={(e) => setSortedBy(e)} defaultOption={'bydate'}></DropdownButton>
@@ -53,11 +50,10 @@ function ListStatistics({selectedDates}) {
                 </div>
                 <div className="transaction-list">
                     {transactions.map((transaction) => (
-                        <TransactionItem key={transaction.id} transaction={transaction} />
+                        <TransactionItem key={transaction.id} transaction={transaction}/>
                     ))}
                 </div>
             </div>
-        </div>
     );
 }
 

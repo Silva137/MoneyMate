@@ -3,15 +3,11 @@ import '../../App.css';
 import './Statistics.css';
 import PieChart from "../../Components/PieChart/PieChart.jsx";
 import ColumnChart from "../../Components/ColumnChart/ColumnChart.jsx";
-import WalletService from "../../Services/WalletService.jsx";
 import TransactionService from "../../Services/TransactionService.jsx";
 import { SessionContext } from "../../Utils/Session.jsx";
-import DatePicker from "../../Components/DatePicker/DatePicker.jsx";
-import dayjs from "dayjs";
 import { SyncLoader } from 'react-spinners';
 import DisplayPage from "../../Components/DisplayPage/DisplayPage.jsx";
-import {useNavigate, useParams} from 'react-router-dom';
-import StatisticsSelector from "../../Components/SelectorBox/StatisticsSelector.jsx";
+
 
 function GraphicStatistics({selectedDates}) {
     const { selectedWallet, setSelectedWallet } = useContext(SessionContext)
@@ -75,8 +71,7 @@ function GraphicStatistics({selectedDates}) {
     }
 
     return (
-        <div className="bg-container">
-
+        <div>
             <div className="content-container-statistics">
                 <div className="chart-column">
                     <div className="card-income">
@@ -114,7 +109,7 @@ function GraphicStatistics({selectedDates}) {
                             </div>
                         ) : (
                             balanceList !== null && balanceList.length > 0? (
-                                <ColumnChart balanceList={balanceList} onClick={(index) => onClick(index)} title={`Balance: ${sumArray(balanceList.map(item => item.balance))}€`} />
+                                <ColumnChart balanceList={balanceList} onClick={(index) => onClick(index)} title={`Total Balance: ${sumArray(balanceList.map(item => item.balance))}€`} />
                             ) : (
                                 <p>No Results Found</p>
                             )

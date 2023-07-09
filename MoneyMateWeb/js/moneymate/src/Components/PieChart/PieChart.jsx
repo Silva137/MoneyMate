@@ -23,6 +23,8 @@ function PieChart ({ balance, category, title}) {
         return {
             chart: {
                 type: 'donut',
+                width: '100%',
+                height: '100%',
                 foreColor: '#f3f3f3',
                 events: {
                     dataPointSelection: dataPointSelectionHandler,
@@ -31,6 +33,7 @@ function PieChart ({ balance, category, title}) {
             title: {
                 text: title,
                 align: 'left',
+                offsetX: 15,
                 style: {
                     fontSize: '24px',
                     fontWeight: 'bold',
@@ -48,11 +51,11 @@ function PieChart ({ balance, category, title}) {
                 fontSize: '14px',
                 fontWeight: 'bold',
                 fontFamily: "'Poppins', sans-serif",
-                width: 125,
-                offsetX: 0,
-                offsetY: 20,
+                width: 175,
+                offsetX: -15,
+                offsetY: 0,
                 itemMargin: {
-                    horizontal: 10,
+                    horizontal: -10,
                     vertical: 5,
                 },
             },

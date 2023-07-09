@@ -1,15 +1,13 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import './SelectorBox.css';
 import { MdArrowForwardIos } from 'react-icons/md';
-import {MdArrowBackIos} from 'react-icons/md';
-import {SessionContext} from "../../Utils/Session.jsx";
-import {useNavigate, useParams} from 'react-router-dom';
+import { MdArrowBackIos } from 'react-icons/md';
+import { SessionContext } from "../../Utils/Session.jsx";
 
 function WalletSelector({ wallets, handleWalletChange, selectedWallet }) {
     const { setSelectedWallet } = useContext(SessionContext);
     const [startIndex, setStartIndex] = useState(0);
 
-    // Whts the need of this??
     useEffect(() => {
         const storedWallet = localStorage.getItem('selectedWallet');
         if (storedWallet) {
@@ -27,37 +25,38 @@ function WalletSelector({ wallets, handleWalletChange, selectedWallet }) {
             <MdArrowBackIos className="arrow-left" onClick={handlePrevious}></MdArrowBackIos>
 
             <div className="radio-inputs">
-                <>
-                    {selectedWallet !== null && visibleWallets.map((wallet) => (
-                        <label
-                            key={wallet.id}
-                            className={`radio ${selectedWallet === wallet.id ? 'selected' : ''}`}
-                        >
-                            <input
-                                type="radio"
-                                name="wallet"
-                                value={wallet.id}
-                                checked={Number(selectedWallet) === wallet.id}
-                                onChange={() => handleWalletChange(wallet.id)}
-                                onClick={handleClick}
-                            />
-                            <span className="name">{wallet.name}</span>
-                        </label>
-                    ))}
-                    <div className="space-between"></div>
-                </>
-
-                <label className={`radio ${selectedWallet === -1 ? 'selected' : 'overAllRadio'}`}>
+                <label
+                    className={`radio ${selectedWallet === -1 ? 'selected' : ''} overAllRadio`}
+                    onClick={() => handleWalletChange(-1)}
+                >
                     <input
                         type="radio"
                         name="wallet"
-                        value={-1}
+                        value="overall"
                         checked={selectedWallet === -1}
-                        onChange={() => handleWalletChange(-1)}
+                        onChange={() => {}}
                         onClick={handleClick}
                     />
-                    <span className="name">OverAll</span>
+                    <span className="name button">Overall</span>
                 </label>
+
+                {selectedWallet !== null && visibleWallets.map((wallet) => (
+                    <label
+                        key={wallet.id}
+                        className={`radio ${selectedWallet === wallet.id ? 'selected' : ''}`}
+                    >
+                        <input
+                            type="radio"
+                            name="wallet"
+                            value={wallet.id}
+                            checked={Number(selectedWallet) === wallet.id}
+                            onChange={() => handleWalletChange(wallet.id)}
+                            onClick={handleClick}
+                        />
+                        <span className="name">{wallet.name}</span>
+                    </label>
+                ))}
+                <div className="space-between"></div>
             </div>
 
             <MdArrowForwardIos className="arrow-right" onClick={handleNext} />
@@ -65,4 +64,4 @@ function WalletSelector({ wallets, handleWalletChange, selectedWallet }) {
     );
 }
 
-export default WalletSelector
+export default WalletSelector;

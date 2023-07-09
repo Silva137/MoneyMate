@@ -1,9 +1,9 @@
 import React from 'react';
 import './TransactionItem.css';
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
 
 function TransactionItem({ transaction }) {
-    const formattedDate = dayjs(transaction.createdAt).format("MMMM D, YYYY");
+    const formattedDate = dayjs(transaction.createdAt).format('MMMM D YYYY, HH:mm');
     const dayOfWeek = dayjs(transaction.createdAt).format('dddd');
 
     return (
@@ -18,8 +18,6 @@ function TransactionItem({ transaction }) {
             </div>
         </div>
     );
-
-
 }
 
 export default TransactionItem;

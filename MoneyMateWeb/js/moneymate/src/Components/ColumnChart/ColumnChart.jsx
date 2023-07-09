@@ -2,16 +2,7 @@ import React from 'react';
 import ReactApexChart from 'react-apexcharts';
 
 const ColumnChart = ({ balanceList, onClick, title }) => {
-
-    console.log("balanceList")
-    console.log(balanceList)
-    function onClickColumn(columnIndex, event, chartContext, config){
-        console.log(columnIndex)
-        console.log(balanceList[columnIndex])
-        console.log(event)
-        console.log(chartContext)
-        console.log(config)
-    }
+    function onClickColumn(columnIndex, event, chartContext, config){}
 
     const seriesData = [
         {
@@ -24,6 +15,8 @@ const ColumnChart = ({ balanceList, onClick, title }) => {
         chart: {
             type: 'bar',
             foreColor: '#f3f3f3',
+            width: '100%',
+            height: '100%',
             toolbar: {
                 show: false, // Hide the toolbar with export buttons
             },
@@ -50,18 +43,18 @@ const ColumnChart = ({ balanceList, onClick, title }) => {
                 colors: {
                     ranges: [
                         {
-                            from: -9999,
+                            from: -99999999999,
                             to: -1,
                             color: '#ff5151', // Red color for negative values
                         },
                         {
                             from: 1,
-                            to: 9999,
+                            to: 99999999999,
                             color: '#77eca6', // Green color for positive values
                         },
                     ],
                 },
-                columnWidth: '65%',
+                columnWidth: '75%',
             },
         },
         dataLabels: {
@@ -71,17 +64,9 @@ const ColumnChart = ({ balanceList, onClick, title }) => {
             },
         },
         yaxis: {
-            title: {
-                text: 'Total Balance',
-                style: {
-                    fontSize: '14px',
-                    fontWeight: 'bold',
-                    fontFamily: "'Poppins', sans-serif",
-                },
-            },
             labels: {
                 formatter: function (y) {
-                    return y.toFixed(0) + '$';
+                    return y.toFixed(0) + '€';
                 },
                 style: {
                     fontSize: '12px',
@@ -91,14 +76,6 @@ const ColumnChart = ({ balanceList, onClick, title }) => {
             },
         },
         xaxis: {
-            title: {
-                text: 'Categories',
-                style: {
-                    fontSize: '14px',
-                    fontWeight: 'bold',
-                    fontFamily: "'Poppins', sans-serif",
-                },
-            },
             categories: balanceList.map(item => item.category.name),
             labels: {
                 rotate: -90,
@@ -107,13 +84,21 @@ const ColumnChart = ({ balanceList, onClick, title }) => {
                     fontWeight: 'bold',
                     fontFamily: "'Poppins', sans-serif",
                 },
+                offsetY: -5,
             },
         },
+        tooltip: {
+            theme: "dark",
+            style: {
+                fontSize: "14px",
+                fontFamily: "'Poppins', sans-serif",
+            }
+        }
     };
 
     return (
         <div id="chart">
-            <ReactApexChart options={options} series={seriesData} type="bar" height={400} />
+            <ReactApexChart options={options} series={seriesData} type="bar" height={500} />
         </div>
     );
 };

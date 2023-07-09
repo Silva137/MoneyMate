@@ -8,12 +8,14 @@ function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const navigate = useNavigate()
-    const { isAuthenticated, setIsAuthenticated } = useContext(SessionContext);
+    const { isAuthenticated, setIsAuthenticated, setSelectedStatistic, setSelectedWallet } = useContext(SessionContext);
 
     console.log("Authenticated", isAuthenticated)
 
     useEffect(() => {
         if (isAuthenticated) {
+            setSelectedStatistic("graphics")
+            setSelectedWallet(-1)
             navigate('/profile');
         }
     }, [isAuthenticated]);

@@ -1,15 +1,7 @@
-import React, {useContext, useState} from 'react';
+import React from 'react';
 import './WalletCard.css';
-import { RiPencilFill } from "react-icons/ri";
-import { GoTrashcan } from "react-icons/go";
 import { MdDoneOutline } from "react-icons/md";
 import { CgClose } from "react-icons/cg";
-import WalletService from "../../Services/WalletService.jsx";
-import {FaChartPie} from "react-icons/fa";
-import {useNavigate} from "react-router-dom";
-import {SessionContext} from "../../Utils/Session.jsx";
-import InviteService from "../../Services/InviteService.jsx";
-import CategoriesDropdownButton from "../CategoriesDropdownButton/CategoriesDropdownButton.jsx";
 
 function WalletCardShareModal({userName, onModalClose, onSendInviteClick, onChange}) {
 

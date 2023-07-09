@@ -34,11 +34,6 @@ export const navItems = [
         link: null
     },
     {
-        icon: <TbArrowsExchange />,
-        text: "Transactions",
-        link: "/transactions"
-    },
-    {
         icon: <TbCategory2 />,
         text: "Categories",
         link: "/categories"

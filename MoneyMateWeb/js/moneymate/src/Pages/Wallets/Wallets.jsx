@@ -22,26 +22,24 @@ function Wallets() {
     }, []);
 
     async function getWallets(){
+        setIsLoading(true);
         await fetchPrivateWallets();
         await fetchSharedWallets();
+        setIsLoading(false);
     }
 
     async function fetchPrivateWallets() {
         try {
-            setIsLoading(true);
             const response = await WalletService.getWalletsOfUser();
-            console.log(response)
             setWallets(response.wallets);
         } catch (error) {
             console.error('Error fetching private wallets of user:', error);
-        } finally {
-            setIsLoading(false);
         }
     }
 
     async function fetchSharedWallets() {
         try {
-            const response = await WalletService.getSharedWalletsOfUser() //TODO change to getSharedWalletsOfUser
+            const response = await WalletService.getSharedWalletsOfUser()
             setSharedWallets(response.wallets)
         } catch (error) {
             console.error('Error fetching shared wallets of user:', error)
@@ -127,7 +125,7 @@ function Wallets() {
                     ) : (
                         <div className={`wallet-list ${sharedWallets.length > 4 ? 'scrollable' : ''}`}>
                             {sharedWallets.map((wallet, index) => (
-                                <WalletCard key={index} wallet={wallet} getWallets={getWallets}  />  //TODO add setSharedWallets
+                                <WalletCard key={index} wallet={wallet} getWallets={getWallets}  />
                             ))}
                         </div>
                     )}

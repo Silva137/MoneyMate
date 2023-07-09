@@ -69,22 +69,20 @@ function Statistics({type}) {
                     <div className="row">
                         <h1 className="page-title">Statistics</h1>
                         <DatePicker onChange={handleDatePickerChange} />
+                        <WalletSelector className="wallet-selector" wallets={wallets} selectedWallet={selectedWallet} handleWalletChange={handleWalletChange}/>
+                        <StatisticsSelector className="wallet-selector" selectedStatistic={selectedStatistic} handleStaticChange={handleStatisticChange} />
                     </div>
-                    <WalletSelector className="wallet-selector" wallets={wallets} selectedWallet={selectedWallet} handleWalletChange={handleWalletChange}/>
-                    <StatisticsSelector className="wallet-selector" selectedStatistic={selectedStatistic} handleStaticChange={handleStatisticChange} />
-                </div>
 
+                </div>
                 {selectedStatistic === 'graphics' ? (
                     <GraphicStatistics selectedDates={selectedDates} />
                 ) : (
                     <ListStatistics selectedDates={selectedDates} />
                 )}
-
             </div>
         </div>
     );
 }
-//                 <GraphicStatistics selectedDates={selectedDates} />
 /**
  return (
  <div>

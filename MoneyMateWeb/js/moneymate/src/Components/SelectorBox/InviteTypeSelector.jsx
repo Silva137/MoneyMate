@@ -44,7 +44,6 @@ function InviteTypeSelector({handleInviteTypeChanged, selectedInviteType}) {
                         />
                         <span className="name">Send</span>
                     </label>
-                ))
             </div>
 
         </div>

@@ -1,14 +1,9 @@
-import React, {useContext, useState} from 'react';
+import React from 'react';
 import './WalletCard.css';
-import { RiPencilFill } from "react-icons/ri";
 import { GoTrashcan } from "react-icons/go";
 import { MdDoneOutline } from "react-icons/md";
 import { CgClose } from "react-icons/cg";
-import WalletService from "../../Services/WalletService.jsx";
-import {FaChartPie} from "react-icons/fa";
-import {useNavigate} from "react-router-dom";
-import {SessionContext} from "../../Utils/Session.jsx";
-import InviteService from "../../Services/InviteService.jsx";
+
 
 function WalletCardEditModal({walletName, onModalClose, onUpdateClick, onChange, onDeleteClick}) {
 
@@ -30,6 +25,7 @@ function WalletCardEditModal({walletName, onModalClose, onUpdateClick, onChange,
                             placeholder="Wallet name"
                             value={walletName}
                             onChange={e => onChange(e)}
+                            maxLength={14}
                             required>
                         </input>
                         <label htmlFor="Wallet Name" className="form-label">Wallet Name</label>

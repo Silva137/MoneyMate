@@ -72,7 +72,7 @@ function InviteCard({invite, fetchInvites, selectedType}) {
         if (selectedType === "received") {
             return (<div className="invite-name"> Invite Sent By {invite.sender.username}</div>)
         } else if (selectedType === "send") {
-            return (<div className="invite-name"> Invite Sent TO {invite.receiver.username}</div>)
+            return (<div className="invite-name"> Invite Sent To {invite.receiver.username}</div>)
         } else {
             return null;
         }

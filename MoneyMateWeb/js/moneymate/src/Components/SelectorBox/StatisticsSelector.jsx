@@ -24,10 +24,7 @@ function StatisticsSelector({handleStaticChange, selectedStatistic}) {
         <div className="wallet-selector">
 
             <div className="radio-inputs">
-                    <label
-                        key={graphic}
-                        className={`radio ${selectedStatistic === graphic ? 'selected' : ''}`}
-                    >
+                    <label key={graphic} className={`radio ${selectedStatistic === graphic ? 'selected' : ''}`}>
                         <input
                             type="radio"
                             name="statistics"
@@ -39,10 +36,7 @@ function StatisticsSelector({handleStaticChange, selectedStatistic}) {
                         <span className="name">Graphic</span>
                     </label>
 
-                    <label
-                        key={list}
-                        className={`radio ${selectedStatistic === list ? 'selected' : ''}`}
-                    >
+                    <label key={list} className={`radio ${selectedStatistic === list ? 'selected' : ''}`}>
                         <input
                             type="radio"
                             name="statistics"
@@ -53,9 +47,7 @@ function StatisticsSelector({handleStaticChange, selectedStatistic}) {
                         />
                         <span className="name">List</span>
                     </label>
-                ))
             </div>
-
         </div>
     );
 }
