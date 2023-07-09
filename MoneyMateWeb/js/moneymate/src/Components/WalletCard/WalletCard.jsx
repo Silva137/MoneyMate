@@ -151,7 +151,6 @@ function WalletCard({wallet, getWallets}) {
                         />
                     ) : (
                         modal === true ? (
-
                             <WalletCardShareModal
                             userName={userName}
                             onModalClose={handleModalClose}

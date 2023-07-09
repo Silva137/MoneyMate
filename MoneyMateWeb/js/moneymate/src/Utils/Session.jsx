@@ -12,27 +12,27 @@ export const SessionContext = createContext({
 
 export const SessionProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(() => {
-        return !!localStorage.getItem("user");
+        return !!sessionStorage.getItem("user");
     });
 
     const [selectedWallet, setSelectedWallet] = useState(() => {
-        const wallet = localStorage.getItem("selectedWallet");
-        if(wallet == null) localStorage.setItem("selectedWallet", -1);
-        return localStorage.getItem("selectedWallet");
+        const wallet = sessionStorage.getItem("selectedWallet");
+        if(wallet == null) sessionStorage.setItem("selectedWallet", -1);
+        return sessionStorage.getItem("selectedWallet");
     });
 
     const [selectedStatistic, setSelectedStatistic] = useState(() => {
-        const statistic = localStorage.getItem("selectedStatistic");
-        if(statistic == null) localStorage.setItem("selectedStatistic", "graphics");
-        return localStorage.getItem("selectedStatistic");
+        const statistic = sessionStorage.getItem("selectedStatistic");
+        if(statistic == null) sessionStorage.setItem("selectedStatistic", "graphics");
+        return sessionStorage.getItem("selectedStatistic");
     });
 
     useEffect(() => {
-        localStorage.setItem("selectedWallet", selectedWallet);
+        sessionStorage.setItem("selectedWallet", selectedWallet);
     }, [selectedWallet]);
 
     useEffect(() => {
-        localStorage.setItem("selectedStatistic", selectedStatistic);
+        sessionStorage.setItem("selectedStatistic", selectedStatistic);
     }, [selectedStatistic]);
 
 
