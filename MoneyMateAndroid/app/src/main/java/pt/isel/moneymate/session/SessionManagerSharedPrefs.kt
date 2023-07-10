@@ -2,7 +2,7 @@ package pt.isel.moneymate.session
 
 import android.content.Context
 
-class SessionManagerSharedPrefs(private val context: Context) : SessionManager {
+class SessionManagerSharedPrefs(val context: Context) : SessionManager {
 
     private val prefs by lazy {
         context.getSharedPreferences(SESSION_PREFS, Context.MODE_PRIVATE)

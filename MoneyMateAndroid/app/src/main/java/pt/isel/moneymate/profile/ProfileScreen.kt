@@ -1,34 +1,26 @@
 package pt.isel.moneymate.profile
 
-import android.app.Dialog
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Blue
-import androidx.compose.ui.graphics.Color.Companion.Green
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,7 +28,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import kotlinx.coroutines.launch
 import pt.isel.moneymate.R
 import pt.isel.moneymate.background.poppins
 import pt.isel.moneymate.theme.dialogBackground
@@ -47,7 +38,7 @@ fun ProfileScreen(
     username : String?,
     onAddButtonClick: (String) -> Unit = {},
     onCreateSharedWalletClick: () -> Unit = {},
-    onSettingsClick: () -> Unit = {}
+    onLogoutClick: () -> Unit = {}
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -66,7 +57,7 @@ fun ProfileScreen(
             AddWallet(onAddButtonClick = onAddButtonClick)
             ProfileButton(icon = R.drawable.shared_icon, text = "Create Shared Wallet", onClick = onCreateSharedWalletClick)
             Spacer(modifier = Modifier.height(20.dp))
-            ProfileButton(icon = R.drawable.settings_icon, text = "Settings", onClick = onSettingsClick)
+            ProfileButton(icon = R.drawable.logout, text = "Logout", onClick = onLogoutClick)
         }
     }
 }

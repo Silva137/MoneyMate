@@ -1,5 +1,6 @@
 package pt.isel.moneymate.profile
 
+import android.content.Intent
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -7,8 +8,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import pt.isel.moneymate.login.LoginActivity
 import pt.isel.moneymate.services.MoneyMateService
 import pt.isel.moneymate.session.SessionManager
+import pt.isel.moneymate.session.SessionManagerSharedPrefs
 import pt.isel.moneymate.utils.APIResult
 
 class ProfileViewModel(
@@ -53,6 +56,21 @@ class ProfileViewModel(
         }
     }
 
+
+    fun logout(){
+        viewModelScope.launch {
+            sessionManager.clearSession()
+            navigateToLogin()
+        }
+    }
+
+
+    private fun navigateToLogin() {
+        val context = (sessionManager as SessionManagerSharedPrefs).context
+        val intent = Intent(context, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        context.startActivity(intent)
+    }
 
 }
 

@@ -267,16 +267,23 @@ fun TransactionItem(
                 modifier = Modifier.weight(1f),
             ) {
                 Text(
-                    text = transaction.category.name,
+                    text = transaction.description,
                     color = Color.White,
                     fontSize = 20.sp,
+                    fontFamily = poppins,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = transaction.category.name,
+                    color = Color.White,
+                    fontSize = 12.sp,
                     fontFamily = poppins,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
                     text = formatDate(transaction.createdAt),
                     color = Color.White,
-                    fontSize = 14.sp,
+                    fontSize = 8.sp,
                     fontFamily = poppins,
                     fontWeight = FontWeight.SemiBold
                 )

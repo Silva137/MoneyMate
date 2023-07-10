@@ -102,7 +102,11 @@ fun BottomNavGraph(
                 username = "teste",
                 onAddButtonClick = { walletName ->
                     profileViewModel.createWallet(walletName)
+                },
+                onLogoutClick = {
+                    profileViewModel.logout()
                 }
+
             )
         }
 
