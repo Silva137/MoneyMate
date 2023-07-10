@@ -1,6 +1,5 @@
 package isel.pt.moneymate.controller.models
 
-import isel.pt.moneymate.domain.Transaction
 import jakarta.validation.constraints.Digits
 import jakarta.validation.constraints.NotBlank
 

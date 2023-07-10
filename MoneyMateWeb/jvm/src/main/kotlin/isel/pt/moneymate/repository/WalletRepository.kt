@@ -67,8 +67,8 @@ interface WalletRepository {
     @SqlUpdate("INSERT INTO MoneyMate.user_shared_wallet(wallet_id, user_id, sh_name) VALUES (:wallet_id, :user_id, :name)")
     @GetGeneratedKeys("sh_id")
     fun createWalletUserAssociation(
-        @Bind("user_id") userId: Int,
         @Bind("wallet_id") walletId: Int,
+        @Bind("user_id") userId: Int,
         @Bind("name") walletName: String
     ): Int
 

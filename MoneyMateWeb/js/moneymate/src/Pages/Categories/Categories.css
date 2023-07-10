@@ -35,3 +35,12 @@
     align-items: center;
     margin-bottom: 10px;
 }
+
+.alert-container {
+    width: 600px;
+    position: fixed;
+    top: 50px;
+    z-index: 1;
+    height: 85px;
+}
+

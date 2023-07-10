@@ -10,7 +10,7 @@ import DisplayPage from "../../Components/DisplayPage/DisplayPage.jsx";
 
 
 function GraphicStatistics({selectedDates}) {
-    const { selectedWallet, setSelectedWallet } = useContext(SessionContext)
+    const { selectedWallet} = useContext(SessionContext)
 
     const [balance, setBalance] = useState(null)
     const [category, setCategory] = useState(null)
@@ -21,9 +21,9 @@ function GraphicStatistics({selectedDates}) {
 
     useEffect(() => {
         console.log('Selected WalletId: ' + selectedWallet)
-        //if (selectedDates.length !== 0) {
         getChartsData()
     }, [selectedWallet, selectedDates])
+
     async function onClick(index){
         // index represents the column clicked
         const categoryId = balanceList[index].category.id
@@ -76,27 +76,23 @@ function GraphicStatistics({selectedDates}) {
                 <div className="chart-column">
                     <div className="card-income">
                         {loading ? (
-                            <div className="loader-container">
-                                <SyncLoader size={50} color={'#ffffff'} loading={loading} />
-                            </div>
+                            <SyncLoader size={50} color={'#ffffff'} loading={loading} />
                         ) : (
                             balance !== null && category !== null && balance[0].length > 0 && category[0].length > 0 ? (
                                 <PieChart balance={balance[0]} category={category[0]} title={`Income: ${sumArray(balance[0])}€`} />
                             ) : (
-                                <p>No Results Found</p>
+                                <h2>No Results Found</h2>
                             )
                         )}
                     </div>
                     <div className="card-expense">
                         {loading ? (
-                            <div className="loader-container">
-                                <SyncLoader size={50} color={'#ffffff'} loading={loading} />
-                            </div>
+                            <SyncLoader size={50} color={'#ffffff'} loading={loading} />
                         ) : (
-                            balance !== null && category !== null && balance[1].length > 1 && category[1].length > 1 ? (
+                            balance !== null && category !== null && balance[1].length > 0 && category[1].length > 0 ? (
                                 <PieChart balance={balance[1]} category={category[1]} title={`Expenses: -${sumArray(balance[1])}€`} />
                             ) : (
-                                <p>No Results Found</p>
+                                <h2>No Results Found</h2>
                             )
                         )}
                     </div>
@@ -104,14 +100,12 @@ function GraphicStatistics({selectedDates}) {
                 <div className="chart-column">
                     <div className="card-sum">
                         {loading ? (
-                            <div className="loader-container">
-                                <SyncLoader size={50} color={'#ffffff'} loading={loading} />
-                            </div>
+                            <SyncLoader size={50} color={'#ffffff'} loading={loading} />
                         ) : (
                             balanceList !== null && balanceList.length > 0? (
                                 <ColumnChart balanceList={balanceList} onClick={(index) => onClick(index)} title={`Total Balance: ${sumArray(balanceList.map(item => item.balance))}€`} />
                             ) : (
-                                <p>No Results Found</p>
+                                <h2>No Results Found</h2>
                             )
                         )}
                     </div>

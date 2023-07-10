@@ -1,12 +1,15 @@
 import React, {useContext, useEffect, useState} from 'react';
 import './Login.css';
+import './../../App.css';
 import {NavLink, useNavigate} from 'react-router-dom';
 import AuthService from "../../Services/AuthService.jsx";
 import {SessionContext} from "../../Utils/Session.jsx";
+import { Alert} from '@mui/material';
 
 function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [error, setError] = useState('');
     const navigate = useNavigate()
     const { isAuthenticated, setIsAuthenticated, setSelectedStatistic, setSelectedWallet } = useContext(SessionContext);
 
@@ -27,7 +30,12 @@ function Login() {
             const response = await AuthService.login(email, password, setIsAuthenticated)
             console.log(response)
         } catch (error) {
-            console.log('Error occurred:', error.response)
+            if (error.response) {
+                console.log('Error occurred:', error.response)
+                setError(error.response.data.name);
+            } else {
+                setError('An error occurred. Please try again.');
+            }
         }
     }
 
@@ -49,6 +57,13 @@ function Login() {
                     Don't have an account?
                     <NavLink className="nav-link" to="/users/register"> Register here</NavLink>
                 </div>
+                {error && (
+                    <div className="alert-container">
+                        <Alert variant="outlined" severity="error">
+                            <strong className="error-text">{error}</strong>
+                        </Alert>
+                    </div>
+                )}
             </div>
         </div>
     );

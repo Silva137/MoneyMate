@@ -83,8 +83,16 @@ class TransactionService {
         }
     }
 
-    deleteWallet(walletId) {
-        return instance.delete(`/api/wallets/${walletId}`, {headers: authHeader()})
+    async editTransaction(transactionId,categoryId, amount, title){
+        const form = { categoryId, amount, title }
+        return instance.put(`/api/transactions/${transactionId}`, form, {headers: authHeader()})
+            .then(response => {
+                return response.data
+            })
+    }
+
+    async deleteTransaction(transactionId) {
+        return instance.delete(`/api/transactions/${transactionId}`, {headers: authHeader()})
             .then(response => {
                 return response.data
             })

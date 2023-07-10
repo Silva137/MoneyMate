@@ -8,6 +8,7 @@ import {HiPlus} from "react-icons/hi";
 import {CgClose} from "react-icons/cg";
 import {MdDoneOutline} from "react-icons/md";
 import WalletService from "../../Services/WalletService.jsx";
+import {Alert} from "@mui/material";
 
 function Wallets() {
     const [modal, setModal] = useState(false)
@@ -16,6 +17,11 @@ function Wallets() {
     const [walletName, setWalletName] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [request, setRequest] = useState('');
+    const [alert, setAlert] = useState({
+        show: false,
+        message: '',
+        severity: 'success'
+    });
 
     useEffect( () => {
         getWallets()
@@ -41,6 +47,7 @@ function Wallets() {
         try {
             const response = await WalletService.getSharedWalletsOfUser()
             setSharedWallets(response.wallets)
+            console.log(response)
         } catch (error) {
             console.error('Error fetching shared wallets of user:', error)
         }
@@ -76,9 +83,11 @@ function Wallets() {
         try {
             const response = await WalletService.createWallet(walletName)
             console.log(response)
+            showSuccessAlert('Wallet created successfully!')
             await fetchPrivateWallets()
         } catch (error) {
             console.error('Error creating a new wallet:', error)
+            showErrorAlert('Failed to create a wallet. Please try again.');
         }
         setModal(false)
     }
@@ -89,13 +98,19 @@ function Wallets() {
         try {
             const response = await WalletService.createSharedWallet(walletName)
             console.log(response)
+            showSuccessAlert('Shared wallet created successfully!')
             await fetchSharedWallets()
         } catch (error) {
             console.error('Error creating a new wallet:', error)
+            showErrorAlert('Failed to create a shared wallet. Please try again.');
         }
         setModal(false)
     }
 
+
+    function showSuccessAlert(message) {setAlert({show: true, message: message, severity: 'success'})}
+    function showErrorAlert(message) {setAlert({ show: true, message: message, severity: 'error' });}
+    function closeAlert() {setAlert({show: false, message: '', severity: 'success'})}
 
     return (
         <div className="bg-container">
@@ -105,12 +120,12 @@ function Wallets() {
                 <div className="list-container">
                     {isLoading ? (
                         <div className="loader-container">
-                            <SyncLoader size={50} color={'#67d9a0'} loading={isLoading} />
+                            <SyncLoader size={50} color={'#ffffff'} loading={isLoading} />
                         </div>
                     ) : (
                         <div className={`wallet-list ${wallets.length > 4 ? 'scrollable' : ''}`}>
                             {wallets.map((wallet, index) => (
-                                <WalletCard key={index} wallet={wallet} getWallets={getWallets} />
+                                <WalletCard key={index} wallet={wallet} getWallets={getWallets} setAlert={setAlert} />
                             ))}
                         </div>
                     )}
@@ -120,12 +135,12 @@ function Wallets() {
                 <div className="list-container">
                     {isLoading ? (
                         <div className="loader-container">
-                            <SyncLoader size={50} color={'#67d9a0'} loading={isLoading} />
+                            <SyncLoader size={50} color={'#ffffff'} loading={isLoading} />
                         </div>
                     ) : (
                         <div className={`wallet-list ${sharedWallets.length > 4 ? 'scrollable' : ''}`}>
                             {sharedWallets.map((wallet, index) => (
-                                <WalletCard key={index} wallet={wallet} getWallets={getWallets}  />
+                                <WalletCard key={index} wallet={wallet} getWallets={getWallets} setAlert={setAlert}/>
                             ))}
                         </div>
                     )}
@@ -139,12 +154,19 @@ function Wallets() {
                         <h2 className="modal-title">Create Wallet</h2>
                         <form onSubmit={handleSubmit}>
                             <div className="form-group field">
-                                <input type="input" className="form-field" placeholder="Wallet name" value={walletName} onChange={e => setWalletName(e.target.value)} required/>
+                                <input type="input" className="form-field" placeholder="Wallet name" onChange={e => setWalletName(e.target.value)} maxLength={18} required/>
                                 <label htmlFor="Wallet Name" className="form-label">Wallet Name</label>
                             </div>
                             <button type="submit" className="save-button"> <MdDoneOutline/> Save</button>
                         </form>
                     </div>
+                </div>
+            )}
+            {alert.show && (
+                <div className="alert-container">
+                    <Alert variant="outlined" severity={alert.severity} onClose={closeAlert}>
+                        <strong className="error-text">{alert.message}</strong>
+                    </Alert>
                 </div>
             )}
         </div>

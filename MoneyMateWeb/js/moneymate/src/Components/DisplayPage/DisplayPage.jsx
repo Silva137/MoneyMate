@@ -17,7 +17,6 @@ const DisplayPage = ({transactions, balance, categoryName, close, onClickElement
                 </div>
             </div>
         </div>
-
     );
 };
 

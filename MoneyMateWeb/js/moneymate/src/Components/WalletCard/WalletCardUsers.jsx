@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import './WalletCard.css';
-import { MdDoneOutline } from "react-icons/md";
 import { CgClose } from "react-icons/cg";
 import WalletService from "../../Services/WalletService.jsx";
 import Avatar from "@mui/material/Avatar";

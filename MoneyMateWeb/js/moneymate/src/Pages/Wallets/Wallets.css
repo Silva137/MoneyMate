@@ -1,6 +1,3 @@
-.loader-container {
-    padding-top: 50px;
-}
 
 .list-title {
     font-size: 26px;
@@ -14,6 +11,7 @@
     flex-wrap: nowrap;
     white-space: nowrap;
     gap: 30px;
+
 }
 
 .wallet-list::-webkit-scrollbar {
@@ -62,4 +60,12 @@
 .add-button svg {
     font-size: 30px;
     color: #77eca6;
+}
+
+.alert-container {
+    width: 600px;
+    position: relative;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
 }

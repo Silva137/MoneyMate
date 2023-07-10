@@ -10,6 +10,7 @@ class CategoryService {
             return response.data
         } catch (error) {
             console.error('Error createing category', error);
+            throw error
         }
     }
 
@@ -34,6 +35,7 @@ class CategoryService {
             return response.data
         } catch (error) {
             console.error('Error updating category with Id: '+ categoryId, error);
+            throw error
         }
     }
 
@@ -44,6 +46,7 @@ class CategoryService {
             return response.data
         } catch (error) {
             console.error('Error deleting category with Id: '+ categoryId, error);
+            throw error
         }
     }
     async basicGet(url){
@@ -54,13 +57,6 @@ class CategoryService {
         } catch (error) {
             console.error('Error getting categories of user:', error);
         }
-        /*
-        return instance.get(url, {headers: authHeader()})
-            .then(response => {
-                return response.data
-            })
-
-         */
     }
 }
 

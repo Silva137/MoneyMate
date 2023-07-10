@@ -71,19 +71,10 @@ function Profile() {
     return (
         <div className="bg-container">
             <div className="content-profile-container">
-                <div className="profile-info-container">
-                    <div className="invite-info-left">
-                        <ProfileInfo loggedUser={loggedUser} username={username} handleEditButtonClick={handleEditButtonClick} image={image} />
-                    </div>
-
-                    <div className="vertical-line"></div>
-
-                    <div className="invite-info-left">
-                        <Invites />
-                    </div>
-
-                    <div className="vertical-line-2"></div>
-
+                <div className="profile-invite-container">
+                    <ProfileInfo loggedUser={loggedUser} handleEditButtonClick={handleEditButtonClick} image={image} />
+                    <span className="spacer"></span>
+                    <div className="invites-container"><Invites /></div>
                 </div>
             </div>
 

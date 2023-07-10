@@ -9,16 +9,13 @@
     padding-top: 1rem;
     margin-bottom: 30px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
 }
 
 .invite-header{
     display: flex;
-}
-
-.spacer {
-    height: 0.5rem;
-    width: 0.5rem;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
 .horizontal-div {
@@ -30,34 +27,45 @@
     background-color: #f2f2f2;
     border: 1px solid #ccc;
 }
+
 .invite-name {
     font-size: 22px;
-    font-weight: normal;
+    font-weight: bold;
     color: white;
 }
 
 .accept-button-invite {
     width: 35px;
     height: 35px;
-    background-color: #3abe71;
+    background-color: #4ccc82;
     border-radius: 10px;
-    color: #020000;
+    color: #ffffff;
     cursor: pointer;
     padding: 4px;
     border: none;
     margin-left: auto;
 }
+.accept-button-invite svg {
+    font-size: 25px;
+}
 
 .decline-button-invite {
     width: 35px;
     height: 35px;
-    background-color: #d73b2f;
+    background-color: #d7625a;
     border-radius: 10px;
-    color: #020000;
+    color: #ffffff;
     cursor: pointer;
     padding: 4px;
     border: none;
-    margin-left: auto;
+}
+
+.decline-button-invite svg {
+    font-size: 25px;
+}
+
+.button-spacer {
+    margin-left: 20px;
 }
 
 .invite-text {
@@ -66,32 +74,28 @@
     font-size: 18px;
     color: white;
     margin-bottom: 0.5rem;
-
-
 }
 
 .accepted-status-message{
     width: 100px;
     height: 35px;
-    background-color: #3abe71;
+    background-color: #4ccc82;
     border-radius: 10px;
-    color: #020000;
-    cursor: pointer;
+    color: #ffffff;
+    cursor: default;
     padding: 4px;
     border: none;
-    margin-left: auto;
 }
 
 .declined-status-message{
     width: 100px;
     height: 35px;
-    background-color: #d73b2f;
+    background-color: #d7625a;
     border-radius: 10px;
-    color: #020000;
-    cursor: pointer;
+    color: #ffffff;
+    cursor: default;
     padding: 4px;
     border: none;
-    margin-left: auto;
 }
 
 
@@ -101,30 +105,22 @@
     background-color: #c5f0f5;
     border-radius: 10px;
     color: #020000;
-    cursor: pointer;
-    padding: 4px;
+    cursor: default;
+    padding: 6px;
+    margin-top: auto;
+    margin-bottom: 10px;
     border: none;
-    margin-left: auto;
 }
 
-
-.pending-button-invite {
-    width: 35px;
-    height: 35px;
-    background-color: #c5f0f5;
-    border-radius: 10px;
-    color: #020000;
-    cursor: pointer;
-    padding: 4px;
-    border: none;
-    margin-left: auto;
-}
 
 .invite-date {
-    margin-top: 0.5rem;
+    margin-top: 0.3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
     font-family: 'Poppins', sans-serif;
-    font-size: 18px;
+    font-size: 16px;
     color: white;
-
+    margin-left: auto;
 }
 

@@ -50,8 +50,7 @@ class InviteService(
 
         if (newInviteState == InviteState.ACCEPTED)
             // Nova Associação fica com o nome da wallet de quem convidou
-            walletRepository.createWalletUserAssociation(receiverUser.id,
-                updatedInvite.sharedWallet.id,  updatedInvite.sharedWallet.name )
+            walletRepository.createWalletUserAssociation(updatedInvite.sharedWallet.id, receiverUser.id, updatedInvite.sharedWallet.name )
 
         return updatedInvite
     }

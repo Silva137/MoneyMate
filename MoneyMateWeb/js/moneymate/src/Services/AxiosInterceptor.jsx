@@ -57,15 +57,15 @@ instance.interceptors.response.use(
                     return instance(originalConfig)
                 } catch (_error) {
                     console.log("inside error")
-                    TokenService.removeUser()
+                    sessionStorage.clear()
+                    window.location.href = "/users/login";
                     return Promise.reject(_error)
                 }
             }
             else if (err.response.status === 403) {   // Refresh token expired
-
                 console.log("Refresh token expired");
-                TokenService.removeUser();
-                navigateToLogout();
+                sessionStorage.clear()
+                window.location.href = "/users/login";
             }
         }
         return Promise.reject(err)
@@ -73,8 +73,3 @@ instance.interceptors.response.use(
 )
 
 export default instance
-
- const navigateToLogout = () => {
-    const navigate = useNavigate();
-    navigate("/logout");
-}

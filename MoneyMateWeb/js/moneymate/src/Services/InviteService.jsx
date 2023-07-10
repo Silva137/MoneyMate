@@ -2,7 +2,6 @@ import {authHeader} from "./AuthHeader.jsx";
 import instance from "./AxiosInterceptor.jsx";
 
 class InviteService {
-
     /** PW */
     createInvite(userName, walletId) {
         const form = { receiverUserName: userName }
@@ -29,7 +28,6 @@ class InviteService {
                 return response.data
             })
     }
-
 }
 
 export default new InviteService();

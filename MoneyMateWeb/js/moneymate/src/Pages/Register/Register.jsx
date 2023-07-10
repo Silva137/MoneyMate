@@ -2,24 +2,30 @@ import React, {useState} from 'react';
 import './Register.css';
 import {NavLink, useNavigate} from 'react-router-dom';
 import AuthService from "../../Services/AuthService.jsx";
+import {Alert} from "@mui/material";
 
 
 function Register() {
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [error, setError] = useState('');
+
     const navigate = useNavigate()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-
-        AuthService.register(username, email, password)
-            .then(response => {
-                navigate('/users/login')
-            })
-            .catch(error => {
-                console.log(error.response)
-            })
+        try {
+            await AuthService.register(username, email, password)
+            navigate('/users/login')
+        } catch (error) {
+            if (error.response) {
+                console.log('Error occurred:', error.response)
+                setError(error.response.data.name);
+            } else {
+                setError('An error occurred. Please try again.');
+            }
+        }
     }
 
     return (
@@ -41,6 +47,11 @@ function Register() {
                     Already have an account?
                     <NavLink className="nav-link" to="/users/login"> Log in here</NavLink>
                 </div>
+                {error && (
+                    <div className="alert-container">
+                        <Alert variant="outlined" severity="error"><strong className="error-text">{error}</strong></Alert>
+                    </div>
+                )}
             </div>
         </div>
     );

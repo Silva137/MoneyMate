@@ -88,10 +88,10 @@ class TransactionService(
         if (sortedBy !in validSortByValues || orderBy !in validOrderByValues)
             throw InvalidParameterException("Invalid parameters for sorting or ordering")
 
-        val sortedTransactions = transactionRepository.getAllTransactionsOfAllWallets(userId, sortedBy, orderBy, startDate, endDate, offset, limit)
+        var sortedTransactions = transactionRepository.getAllTransactionsOfAllWallets(userId, sortedBy, orderBy, startDate, endDate, offset, limit)
 
         if(sortedTransactions.isNullOrEmpty())
-            throw NotFoundException("Transactions not found")
+            sortedTransactions = emptyList()
 
         return sortedTransactions.toDTO()
     }
@@ -328,10 +328,10 @@ class TransactionService(
         // Verify if user as permitions in this wallet
         verifyUserOnWallet(userId, walletId)
 
-        val sortedTransactions = getTransactionsFunction(walletId, sortedBy, orderBy, startDate, endDate, offset, limit)
+        var sortedTransactions = getTransactionsFunction(walletId, sortedBy, orderBy, startDate, endDate, offset, limit)
 
         if(sortedTransactions.isNullOrEmpty())
-            throw NotFoundException("Transactions of Wallet with id $walletId not found")
+            sortedTransactions = emptyList()
 
         return sortedTransactions.toDTO()
     }

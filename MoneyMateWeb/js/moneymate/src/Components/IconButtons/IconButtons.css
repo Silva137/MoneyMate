@@ -23,14 +23,16 @@
     font-size: 20px;
 }
 
+
+
 .round-button-add {
     margin-left: 10px;
-    margin-top: 10px;
+    margin-bottom: 5px;
     width: 50px;
     height: 50px;
-    border-radius: 47%;
-    background-color: #50dfff;
-    color: #020000;
+    border-radius: 100%;
+    background-color: #4ccc82;
+    color: #282828;
     font-size: 20px;
     display: flex;
     justify-content: center;

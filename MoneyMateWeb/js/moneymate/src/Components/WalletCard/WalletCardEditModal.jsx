@@ -25,7 +25,7 @@ function WalletCardEditModal({walletName, onModalClose, onUpdateClick, onChange,
                             placeholder="Wallet name"
                             value={walletName}
                             onChange={e => onChange(e)}
-                            maxLength={14}
+                            maxLength={18}
                             required>
                         </input>
                         <label htmlFor="Wallet Name" className="form-label">Wallet Name</label>

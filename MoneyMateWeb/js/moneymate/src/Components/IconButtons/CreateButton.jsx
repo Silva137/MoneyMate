@@ -43,7 +43,7 @@ const createButton = ({createEntity, fetchEntities}) => {
                         <h2 className="modal-title">Create Category</h2>
                         <form onSubmit={handleSaveClick}>
                             <div className="form-group field">
-                                <input type="input" className="form-field" placeholder="Category name" value={entityName} onChange={e => setEntityName(e.target.value)} required/>
+                                <input type="input" className="form-field" placeholder="Category name"  onChange={e => setEntityName(e.target.value)} required/>
                                 <label htmlFor="Category Name" className="form-label">Category Name</label>
                             </div>
                             <button type="submit" className="save-button"> <MdDoneOutline/> Save</button>

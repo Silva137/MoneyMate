@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import './InviteCard.css';
 import {RiPencilFill} from "react-icons/ri";
-import {AiOutlineCheck, RxCross2, RxDividerHorizontal} from "react-icons/all.js";
+import {AiOutlineCheck, RxCross2} from "react-icons/all";
 import InviteService from "../../Services/InviteService.jsx";
 
 
@@ -30,13 +30,13 @@ function InviteCard({invite, fetchInvites, selectedType}) {
     function renderText(invite) {
         if (invite.state === "ACCEPTED") {
             return (
-                <button className="accepted-status-message" onClick={() => {}}>
+                <button className="accepted-status-message">
                     Accepted
                 </button>
             );
         } else if (invite.state === "REJECTED") {
             return (
-                <button className="declined-status-message" onClick={() => {}}>
+                <button className="declined-status-message">
                     Declined
                 </button>
             );
@@ -48,18 +48,19 @@ function InviteCard({invite, fetchInvites, selectedType}) {
     function renderButtons(selectedType) {
         if (selectedType === "received") {
             return (
-                <>
+                <div>
                     <button className="accept-button-invite" onClick={() => onUpdateInviteStatus("ACCEPTED")}>
                         <AiOutlineCheck/>
                     </button>
+                    <span className="button-spacer"></span>
                     <button className="decline-button-invite" onClick={() => onUpdateInviteStatus("REJECTED")}>
                         <RxCross2/>
                     </button>
-                </>
+                </div>
             );
         } else if (selectedType === "send") {
             return (
-                <button className="pending-status-message" onClick={() => {}}>
+                <button className="pending-status-message" >
                     Pending
                 </button>
             );
@@ -80,19 +81,17 @@ function InviteCard({invite, fetchInvites, selectedType}) {
 
     return (
         <div className="invite-container">
-            <div>
-                <div className="invite-header">
-                    {renderTitleText(invite)}
-                </div>
-                <div>
-                    <div className="invite-date">{invite.createdAt}</div>
-                    <div className="invite-text"> Message: Join Wallet {invite.sharedWallet.name} ?</div>
-                </div>
+            <div className="invite-header">
+                {renderTitleText(invite)}
+                <div className="invite-text"> Join Wallet {invite.sharedWallet.name} ?</div>
+                {invite.onFinished ? renderText(invite) : renderButtons(selectedType)}
+            </div>
 
-                <div>
-                    {invite.onFinished ? renderText(invite) : renderButtons(selectedType)}
-                </div>
-        </div>
+            <div className="invite-date">
+                {invite.createdAt}
+            </div>
+
+
     </div>
     )
 }

@@ -8,10 +8,9 @@ import {useNavigate} from "react-router-dom";
 import InviteService from "../../Services/InviteService.jsx";
 import WalletCardEditModal from "./WalletCardEditModal.jsx";
 import WalletCardShareModal from "./WalletCardShareModal.jsx";
-import {FiUsers} from "react-icons/all.js";
 import WalletCardUsers from "./WalletCardUsers.jsx";
 
-function WalletCard({wallet, getWallets}) {
+function WalletCard({wallet, getWallets, setAlert}) {
     const [modal, setModal] = useState(null); // null means no modal ;false means editModal; true means shareModal; users means UsersOF SW
     const [walletName, setWalletName] = useState(wallet.name);
     const [userName, setUserName] = useState("");
@@ -53,23 +52,26 @@ function WalletCard({wallet, getWallets}) {
     async function handleInviteButtonClick(event) {
         event.preventDefault();
         try {
-            console.log("INSIDE SEND INVITE")
             const response = await InviteService.createInvite(userName, wallet.id);
             console.log(response);
-            await getWallets()
+            showSuccessAlert('Invite sent successfully!')
         } catch (error) {
             console.error('Error updating wallet name:', error);
+            showErrorAlert('Failed to send invite. Please try again.')
         }
         modalClose();
     }
+
     async function handleUpdateButtonClick(event) {
         event.preventDefault();
         try {
             const response = await WalletService.updateWalletName(wallet.id, walletName);
             console.log(response);
-            await getWallets()
+            showSuccessAlert('Wallet name updated successfully!')
+            await getWallets();
         } catch (error) {
             console.error('Error updating wallet name:', error);
+            showErrorAlert('Failed to update wallet name. Please try again.')
         }
         modalClose();
     }
@@ -90,9 +92,11 @@ function WalletCard({wallet, getWallets}) {
         try {
             const response = await WalletService.deleteWallet(wallet.id);
             console.log(response);
+            showSuccessAlert('Wallet deleted successfully!')
             await getWallets()
         } catch (error) {
             console.error('Error deleting wallet:', error);
+            showErrorAlert('Failed to delete wallet. Please try again.')
         }
         modalClose()
     }
@@ -101,12 +105,17 @@ function WalletCard({wallet, getWallets}) {
         try {
             const response = await WalletService.removeUserFromSW(wallet.id);
             console.log(response);
+            showSuccessAlert('Shared wallet deleted successfully!')
             await getWallets()
         } catch (error) {
             console.error('Error deleting wallet:', error);
+            showErrorAlert('Failed to delete shared wallet. Please try again.')
         }
         modalClose()
     }
+
+    function showSuccessAlert(message) {setAlert({show: true, message: message, severity: 'success'});}
+    function showErrorAlert(message) {setAlert({ show: true, message: message, severity: 'error' });}
 
 
     return (

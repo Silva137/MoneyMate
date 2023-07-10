@@ -42,19 +42,18 @@ function Invites({loggedUser, username, handleEditButtonClick, image }) {
 
 
     return (
-        <div className="content-container">
+        <div className="content-invites-container">
             <h1 className="page-title">Invites</h1>
-                <InviteTypeSelector selectedInviteType={selectedInviteType} handleInviteTypeChanged={handleInviteTypeChanged} selectedType={selectedInviteType}/>
+            <InviteTypeSelector selectedInviteType={selectedInviteType} handleInviteTypeChanged={handleInviteTypeChanged} selectedType={selectedInviteType}/>
+            {selectedInviteType === "received" ?
+                (receivedInvites.map((invite, index) => (
+                    <InviteCard key={index} invite={invite} fetchInvites={fetchInvites} selectedType={selectedInviteType}/>
+                ))):
 
-                {selectedInviteType === "received" ?
-                    (receivedInvites.map((invite, index) => (
-                        <InviteCard key={index} invite={invite} fetchInvites={fetchInvites} selectedType={selectedInviteType}/>
-                    ))):
-
-                    (sendInvites.map((invite, index) => (
-                        <InviteCard key={index} invite={invite} fetchInvites={fetchInvites} selectedType={selectedInviteType}/>
-                    )))
-                }
+                (sendInvites.map((invite, index) => (
+                    <InviteCard key={index} invite={invite} fetchInvites={fetchInvites} selectedType={selectedInviteType}/>
+                )))
+            }
         </div>
     )
 }

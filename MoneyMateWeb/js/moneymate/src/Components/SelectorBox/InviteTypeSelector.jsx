@@ -1,7 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
-import { MdArrowForwardIos } from 'react-icons/md';
-import {MdArrowBackIos} from 'react-icons/md';
-import {SessionContext} from "../../Utils/Session.jsx";
+import React from 'react';
 import './SelectorBox.css';
 
 
@@ -13,7 +10,6 @@ function InviteTypeSelector({handleInviteTypeChanged, selectedInviteType}) {
 
     return (
         <div className="wallet-selector">
-
             <div className="radio-inputs">
                     <label
                         key={received}
@@ -42,7 +38,7 @@ function InviteTypeSelector({handleInviteTypeChanged, selectedInviteType}) {
                             onChange={() => handleInviteTypeChanged(send)}
                             onClick={handleClick}
                         />
-                        <span className="name">Send</span>
+                        <span className="name">Sent</span>
                     </label>
             </div>
 
