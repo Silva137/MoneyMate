@@ -16,11 +16,9 @@ const SideNavBar = ({ children }) => {
     const [title, setTitle] = useState("")
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [selectedTransactionWallet, setSelectedTransactionWallet] = useState(null);
-    const { selectedStatistic, selectedWallet } = useContext(SessionContext);
+    const { selectedStatistic, selectedWallet, selectedSharedWallet } = useContext(SessionContext);
 
     const [selectedStatisticInfo, setSelectedStatisticInfo] = useState([]);
-
-    //const {selectedWallet} = useContext(SessionContext)
 
 
     const location = useLocation();
@@ -77,14 +75,20 @@ const SideNavBar = ({ children }) => {
                     </div>
                     {navItems.map((item, index) => (
                         <NavLink
-                            to={index === 1 || index === 2? `${item.link}/${selectedStatistic}/${selectedWallet}` : item.link}
+                            to={
+                                index === 1
+                                    ? `${item.link}/${selectedStatistic}/${selectedWallet}`
+                                    : index === 2
+                                        ? `${item.link}/${selectedStatistic}/${selectedSharedWallet}`
+                                        : item.link
+                            }
                             key={index}
-                            className={item.link === null ? "link-add" : "link"}
-                            activeclassname={item.link === null ? "active" : "active-add"}
+                            className={item.link === null ? 'link-add' : 'link'}
+                            activeclassname={item.link === null ? 'active' : 'active-add'}
                             onClick={item.link === null ? handleCreateTransactionNavItemClick : null}
                         >
                             <div className="icon">{item.icon}</div>
-                            {isExpanded && (<div className="icon_text">{item.text}</div>)}
+                            {isExpanded && <div className="icon_text">{item.text}</div>}
                         </NavLink>
                     ))}
                 </div>

@@ -3,7 +3,6 @@ import { IoMdCube } from "react-icons/io";
 import {RiUserFill, RiShutDownLine, RiCheckboxMultipleBlankLine} from "react-icons/ri";
 import { FaChartPie } from "react-icons/fa";
 import { BsCreditCardFill } from "react-icons/bs";
-import createTransactionIcon from "../../assets/CreateButton.png";
 import {HiOutlinePlusSm} from "react-icons/all.js";
 
 

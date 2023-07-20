@@ -64,7 +64,6 @@ class WalletService {
                 return response.data
             })
     }
-
 }
 
 export default new WalletService();

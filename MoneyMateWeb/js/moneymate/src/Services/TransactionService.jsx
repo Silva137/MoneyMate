@@ -34,7 +34,6 @@ class TransactionService {
     }
 
     async getPosNegBalanceByCategory(walletId, selectedDates) {
-
         const params = {
             startDate: selectedDates[0],
             endDate: selectedDates[1]
@@ -47,7 +46,6 @@ class TransactionService {
             .then(response => {
                 return response.data;
             });
-
     }
 
     getSumBalanceByCategory(walletId, selectedDates) {
@@ -78,7 +76,60 @@ class TransactionService {
             return response.data
 
         }catch (error){
-            console.error('Error getting transactions');
+            console.error('Error getting transactions by category');
+
+        }
+    }
+
+    async getTransactionsByUser(shId, userId, selectedDates){
+        try{
+            const params = {
+                startDate: selectedDates[0],
+                endDate: selectedDates[1]
+            }
+            const response = await instance.get(`/api/transactions/wallets/${shId}/users/${userId}`, {
+                headers: authHeader(),
+                params: params
+            })
+            return response.data
+        }catch (error){
+            console.error('Error getting transactions by user');
+
+        }
+    }
+
+    //TODO - do backend method
+    async getPosNegBalanceByUser(shId, selectedDates) {
+        const params = {
+            startDate: selectedDates[0],
+            endDate: selectedDates[1]
+        };
+
+        return instance.get(`/api/transactions/wallets/${shId}/users/posneg/balance`, {
+            headers: authHeader(),
+            params: params
+        })
+            .then(response => {
+                return response.data;
+            });
+    }
+
+    //TODO - do backend method
+    async getBalanceByUser(shId, selectedDates){
+        try{
+            const params = {
+                startDate: selectedDates[0],
+                endDate: selectedDates[1]
+            }
+            const response = await instance.get(`/api/transactions/wallets/${shId}/users/userAmounts`, {
+                headers: authHeader(),
+                params: params
+            })
+
+            return response.data
+
+        }catch (error){
+            console.error('Error getting balance by user' + error);
 
         }
     }

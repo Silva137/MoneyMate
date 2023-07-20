@@ -11,7 +11,7 @@ function Login() {
     const [password, setPassword] = useState('')
     const [error, setError] = useState('');
     const navigate = useNavigate()
-    const { isAuthenticated, setIsAuthenticated, setSelectedStatistic, setSelectedWallet } = useContext(SessionContext);
+    const { isAuthenticated, setIsAuthenticated, setSelectedStatistic, setSelectedWallet, setSelectedSharedWallet } = useContext(SessionContext);
 
     console.log("Authenticated", isAuthenticated)
 
@@ -19,6 +19,7 @@ function Login() {
         if (isAuthenticated) {
             setSelectedStatistic("graphics")
             setSelectedWallet(-1)
+            setSelectedSharedWallet(-1)
             navigate('/profile');
         }
     }, [isAuthenticated]);

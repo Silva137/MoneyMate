@@ -10,6 +10,7 @@ import Statistics from "../Pages/Statistics/Statistics.jsx"
 import Overview from "../Pages/Overview/Overview.jsx"
 import Logout from "../Pages/Logout/Logout.jsx"
 import PrivateRoutes from "./PrivateRoutes.jsx";
+import SharedStatistics from "../Pages/SharedStatistics/SharedStatistics.jsx";
 
 
 const AppRoutes = () => {
@@ -27,7 +28,7 @@ const AppRoutes = () => {
                         <Route path='/categories' element={<Categories/>}/>
                         <Route path='/statistics/wallets/graphics/:walletId' element={<Statistics type="graphics" />} />
                         <Route path='/statistics/wallets/list/:walletId' element={<Statistics type="list" />} />
-                        <Route path='/statistics/sharedWallets/list/:walletId' element={<Statistics type="list" />} />
+                        <Route path='/statistics/sharedWallets/graphics/:sharedWalletId' element={<SharedStatistics />} />
 
                         <Route path='/overview' element={<Overview/>}/>
                         <Route path='/logout' element={<Logout/>}/>

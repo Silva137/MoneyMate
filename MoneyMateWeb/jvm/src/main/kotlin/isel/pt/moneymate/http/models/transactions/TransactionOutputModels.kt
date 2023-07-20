@@ -85,6 +85,7 @@ data class UsersBalanceDTO(
    @field:Digits(integer = 10, fraction = 0, message = "Total count must be a number")
    val totalCount: Int = balanceList.size
 )
+
 fun List<UserBalance>.toDTO(): UsersBalanceDTO {
    val balances = this.map { it.toDTO() }
    return UsersBalanceDTO(balances)

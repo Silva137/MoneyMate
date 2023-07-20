@@ -5,6 +5,8 @@ export const SessionContext = createContext({
     setIsAuthenticated: () => {},
     selectedWallet: null,
     setSelectedWallet: () => {},
+    selectedSharedWallet: null,
+    setSelectedSharedWallet: () => {},
     selectedStatistic: null,
     setSelectedStatistic: () => {},
 
@@ -21,6 +23,12 @@ export const SessionProvider = ({ children }) => {
         return sessionStorage.getItem("selectedWallet");
     });
 
+    const [selectedSharedWallet, setSelectedSharedWallet] = useState(() => {
+        const sharedWallet = sessionStorage.getItem("selectedSharedWallet");
+        if(sharedWallet == null) sessionStorage.setItem("selectedSharedWallet", -1);
+        return sessionStorage.getItem("selectedSharedWallet");
+    });
+
     const [selectedStatistic, setSelectedStatistic] = useState(() => {
         const statistic = sessionStorage.getItem("selectedStatistic");
         if(statistic == null) sessionStorage.setItem("selectedStatistic", "graphics");
@@ -29,7 +37,8 @@ export const SessionProvider = ({ children }) => {
 
     useEffect(() => {
         sessionStorage.setItem("selectedWallet", selectedWallet);
-    }, [selectedWallet]);
+        sessionStorage.setItem("selectedSharedWallet", selectedSharedWallet);
+    }, [selectedWallet, selectedSharedWallet]);
 
     useEffect(() => {
         sessionStorage.setItem("selectedStatistic", selectedStatistic);
@@ -38,7 +47,7 @@ export const SessionProvider = ({ children }) => {
 
 
     return (
-        <SessionContext.Provider value={{ isAuthenticated, setIsAuthenticated, selectedWallet, setSelectedWallet, selectedStatistic, setSelectedStatistic }}>
+        <SessionContext.Provider value={{ isAuthenticated, setIsAuthenticated, selectedWallet, setSelectedWallet,selectedSharedWallet, setSelectedSharedWallet, selectedStatistic, setSelectedStatistic }}>
             {children}
         </SessionContext.Provider>
     );
