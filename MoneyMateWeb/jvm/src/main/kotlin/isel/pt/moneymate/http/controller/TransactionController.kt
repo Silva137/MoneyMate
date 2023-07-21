@@ -433,14 +433,20 @@ class TransactionController(private val transactionService: TransactionService) 
      */
     @GetMapping(Uris.Transactions.GET_BY_USER)
     fun getByUser(
-        @PathVariable shId: Int,
+        @AuthenticationPrincipal user: User,
+        @PathVariable walletId: Int,
         @PathVariable userId: Int,
+        @RequestParam startDate: Date,
+        @RequestParam endDate: Date,
         @RequestParam(defaultValue = "0") offset: Int,
         @RequestParam(defaultValue = "10") limit: Int
     ): ResponseEntity<*> {
         val transactions = transactionService.getByUser(
-            shId,
+            user,
+            walletId,
             userId,
+            startDate,
+            endDate,
             offset,
             limit
         )
@@ -458,9 +464,60 @@ class TransactionController(private val transactionService: TransactionService) 
      */
     @GetMapping(Uris.Transactions.GET_BALANCE_BY_USER)
     fun getBalanceByUser(
-        @PathVariable shId: Int,
+        @AuthenticationPrincipal user: User,
+        @PathVariable walletId: Int,
+        @RequestParam startDate: Date,
+        @RequestParam endDate: Date,
     ): ResponseEntity<*> {
-        val transactions = transactionService.getBalanceByUser(shId)
+        val transactions = transactionService.getBalanceByUser(user, walletId, startDate, endDate)
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(transactions)
+    }
+
+    /**
+     * Handles the request to get the sum of all positive transactions by category belongign to a shared wallet
+     * and negative transactions
+     *
+     * @param walletId the wallet to consult the transactions
+     *
+     * @return the response to the request with a map with the sum of each category
+     */
+    @GetMapping(Uris.Transactions.GET_POS_AND_NEG_BALANCE_BY_USER)
+    fun getPositiveBalanceByUser(
+        @AuthenticationPrincipal user: User,
+        @PathVariable walletId: Int,
+        @RequestParam startDate: Date,
+        @RequestParam endDate: Date,
+    ): ResponseEntity<*> {
+        val transactions = transactionService.getPosAndNegBalanceByUser(
+            user,
+            walletId,
+            startDate,
+            endDate,
+        )
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(transactions)
+    }
+
+    /**
+     * Handles the request to get the sum of all positive transactions by category belongign to a shared wallet
+     * and negative transactions
+     *
+     * @param walletId the wallet to consult the transactions
+     *
+     * @return the response to the request with a map with the sum of each category
+     */
+    @GetMapping(Uris.Transactions.CALCULATE_EQUAL_PAYMENTS)
+    fun calculateEqualPayments(
+        @AuthenticationPrincipal user: User,
+        @PathVariable walletId: Int,
+    ): ResponseEntity<*> {
+        val transactions = transactionService.calculateEqualPayments(
+            user,
+            walletId,
+        )
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(transactions)

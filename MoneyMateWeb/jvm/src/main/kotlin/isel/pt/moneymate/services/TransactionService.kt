@@ -1,8 +1,7 @@
 package isel.pt.moneymate.services
 
 import isel.pt.moneymate.controller.models.*
-import isel.pt.moneymate.domain.Transaction
-import isel.pt.moneymate.domain.User
+import isel.pt.moneymate.domain.*
 import isel.pt.moneymate.exceptions.InvalidParameterException
 import isel.pt.moneymate.exceptions.NotFoundException
 import isel.pt.moneymate.exceptions.UnauthorizedException
@@ -278,18 +277,91 @@ class TransactionService(
 
     /** ----------------------------------- SW --------------------------------   */
 
-    fun getByUser(walletId: Int, userId: Int, offset: Int, limit: Int): TransactionsDTO {
-        val transactionsOfUser = transactionRepository.getByUser(walletId, userId, offset, limit)
+    fun getByUser(user: User, walletId: Int, userId: Int, startDate: Date, endDate: Date, offset: Int, limit: Int): TransactionsDTO {
+        verifyUserInSW(user.id, walletId)
+
+        val transactionsOfUser = transactionRepository.getByUser(walletId, userId, startDate, endDate, offset, limit)
             ?: throw NotFoundException("Transactions Of User not Found")
         return transactionsOfUser.toDTO()
     }
 
-    fun getBalanceByUser(walletId: Int): UsersBalanceDTO {
-        val balanceOfCategories = transactionRepository.getBalanceByUser(walletId)
+    fun getBalanceByUser(user:User, walletId: Int, startDate: Date, endDate: Date): UsersBalanceDTO {
+        verifyUserInSW(user.id, walletId)
+        val balanceOfCategories = transactionRepository.getBalanceByUser(walletId, startDate, endDate)
             ?: throw NotFoundException("Balance of Categories not Found")
         return balanceOfCategories.toDTO()
     }
 
+    fun getPosAndNegBalanceByUser(user: User, walletId: Int, startDate: Date, endDate: Date): PosAndNegUserBalanceDTO {
+        verifyUserInSW(user.id, walletId)
+        val negativeBalanceOfCategories = transactionRepository.getNegativeBalanceByUser(walletId, startDate, endDate)
+            ?: throw NotFoundException("Balance of Categories not Found")
+        val positiveBalanceOfCategories = transactionRepository.getPositiveBalanceByUser(walletId, startDate, endDate)
+            ?: throw NotFoundException("Balance of Categories not Found")
+
+        val negDTO = negativeBalanceOfCategories.toDTO()
+        val posDTO = positiveBalanceOfCategories.toDTO()
+        return PosAndNegUserBalanceDTO(negDTO,posDTO)
+    }
+
+    fun calculateAverageExpenses(user: User, walletId: Int): List<UserBalance> {
+        verifyUserInSW(user.id, walletId)
+        return transactionRepository.getBalanceByUserInSw(walletId)
+            ?: throw NotFoundException("Balance of Categories not Found")
+    }
+
+    fun calculateEqualPayments(user: User, walletId: Int): Pair<Int, Map<User, Payments>> {
+        val userBalances = calculateAverageExpenses(user, walletId)
+        val totalAmount = userBalances.sumOf { it.amount }
+        val numberOfMembers = userBalances.size
+        val averageBalance = totalAmount/numberOfMembers
+
+        val usersAboveAverage = userBalances
+            .filter { it.amount > averageBalance }
+            .map { UserBalance(it.user, it.amount - averageBalance) }
+            .sortedByDescending { it.amount }
+
+        val usersBelowAverage = userBalances.
+            filter { it.amount < averageBalance }
+            .map { UserBalance(it.user, it.amount - averageBalance) }
+            .sortedBy { it.amount }
+
+        val paymentsList = mutableMapOf<User, Payments>()
+
+        for (userBelow in usersBelowAverage){
+            for (userAbove in usersAboveAverage) {
+                if (userBelow.amount == 0) // Change userBelow
+                    break
+                if (userAbove.amount == 0){ // Change userAbove
+                    if (userBelow.amount + userAbove.amount > 0) {  // Case money is more than necessary
+                        val diff = userAbove.amount - userBelow.amount
+                        val moneyToSend = userAbove.amount - diff
+                        addPayments(paymentsList, userAbove.user, userBelow.user, moneyToSend)
+                        userAbove.amount = diff
+                        userBelow.amount = 0
+                    }
+                    else{  // Case money to send is enough or lesser than needed
+                        val moneyToSend = userAbove.amount
+                        addPayments(paymentsList, userAbove.user, userBelow.user, moneyToSend)
+                        userAbove.amount = 0
+                        userBelow.amount += moneyToSend
+                    }
+                }
+            }
+        }
+        return Pair(averageBalance, paymentsList)
+    }
+
+    // paymetsList[userAbove.user]?.paymentsToSend?.set(userBelow.user, moneyToSend)
+    // paymetsList[userBelow.user]?.paymentsToReceive?.set(userAbove.user, moneyToSend)
+    fun addPayments(paymetsList: MutableMap<User, Payments>, userAbove: User, userBelow: User, moneyToSend: Int){
+        paymetsList.getOrPut(userAbove) { Payments(mutableMapOf(), mutableMapOf()) }
+            .paymentsToSend[userBelow] = moneyToSend
+
+        paymetsList.getOrPut(userBelow) { Payments(mutableMapOf(), mutableMapOf()) }
+            .paymentsToSend[userAbove] = moneyToSend
+
+    }
     /** ----------------------------------- Regular --------------------------------   */
 
     fun getPeriodicalTransactions(offset: Int, limit: Int): TransactionsDTO {
@@ -347,6 +419,16 @@ class TransactionService(
         if(userOfWallet != userId)
             throw UnauthorizedException("User does not have permission to perform this action on Wallet $walletId")
     }
+
+    fun verifyUserInSW(userId: Int, walletId: Int) {
+        val userOfWallet = walletRepository.getUserOfSW(userId, walletId)
+            ?: throw NotFoundException("Wallet with id $walletId not found or User Has no Permitions")
+
+        if(userOfWallet != userId)
+            throw UnauthorizedException("User does not have permission to perform this action on Wallet $walletId")
+    }
+
+
 
     fun getWalletBalance(user: User,walletId: Int,startDate: Date, endDate: Date): WalletBalanceDTO{
         verifyUserOnWallet(user.id,walletId)

@@ -88,8 +88,13 @@ object Uris {
         const val GET_EXPENSES = "/transactions/wallets/{walletId}/expenses"
 
         /**Requests of a SW Insights Page */
-        const val GET_BY_USER = "/transactions/wallets/{shId}/users/{userId}"
-        const val GET_BALANCE_BY_USER = "/transactions/wallets/{shId}/users/userAmounts"
+        // Pedidos click no grafico da direita
+        const val GET_BY_USER = "/transactions/wallets/{walletId}/users/{userId}"
+
+        // Pedidos amostragem de grafico
+        const val GET_BALANCE_BY_USER = "/transactions/wallets/{walletId}/users/balance"
+        const val GET_POS_AND_NEG_BALANCE_BY_USER = "/transactions/wallets/{walletId}/users/posneg/balance"
+        const val CALCULATE_EQUAL_PAYMENTS = "/transactions/wallets/{walletId}/payments"
 
         /**Requests of a Regular Transactions */
         const val GET_PERIODICAL = "/transactions/periodical"

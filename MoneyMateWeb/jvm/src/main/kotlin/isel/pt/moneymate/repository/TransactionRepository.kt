@@ -471,10 +471,13 @@ interface TransactionRepository {
     @SqlQuery("""
         SELECT *
         FROM MoneyMate.transactions transactions 
-        JOIN Moneymate.users users ON transactions.user_id = users.user_id
-        JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
-        JOIN Moneymate.category category ON transactions.category_id = category.category_id
-        WHERE transactions.wallet_id = :wallet_id AND transactions.user_id = :user_id
+            JOIN Moneymate.users users ON transactions.user_id = users.user_id
+            JOIN Moneymate.wallet wallet ON transactions.wallet_id = wallet.wallet_id
+            JOIN Moneymate.category category ON transactions.category_id = category.category_id
+        WHERE transactions.wallet_id = :wallet_id 
+            AND transactions.user_id = :user_id
+            AND transactions.date_of_creation >= :start_date::date
+            AND transactions.date_of_creation < (:end_date::date + INTERVAL '1 day')
         ORDER BY transactions.date_of_creation DESC
         LIMIT :limit OFFSET :offset
 
@@ -482,21 +485,78 @@ interface TransactionRepository {
     fun getByUser(
         @Bind("wallet_id") walletId: Int,
         @Bind("user_id") userId: Int,
+        @Bind("start_date") startDate: Date,
+        @Bind("end_date") endDate: Date,
         @Bind("offset") offset: Int,
         @Bind("limit") limit: Int
     ): List<Transaction>?
 
-
     @SqlQuery("""
         SELECT users.*, SUM(transactions.amount)
         FROM MoneyMate.transactions transactions
-        JOIN MoneyMate.users users ON transactions.user_id =  users.user_id
-        WHERE transactions.wallet_id = :wallet_id AND transactions.user_id = :user_id
+            JOIN MoneyMate.users users ON transactions.user_id =  users.user_id
+        WHERE transactions.wallet_id = :wallet_id 
+            AND transactions.date_of_creation >= :start_date::date
+            AND transactions.date_of_creation < (:end_date::date + INTERVAL '1 day')        
         GROUP BY users.user_id
     """)
     fun getBalanceByUser(
         @Bind("wallet_id") walletId: Int,
+        @Bind("start_date") startDate: Date,
+        @Bind("end_date") endDate: Date,
     ): List<UserBalance>?
+
+    @SqlQuery("""
+        SELECT users.*, SUM(transactions.amount) AS sum
+        FROM MoneyMate.transactions transactions
+            JOIN Moneymate.users users ON transactions.user_id = users.user_id
+        WHERE transactions.wallet_id = :wallet_id 
+            AND transactions.amount < 0
+            AND transactions.date_of_creation >= :start_date::date
+            AND transactions.date_of_creation < (:end_date::date + INTERVAL '1 day')
+        GROUP BY users.user_id
+    """)
+    fun getNegativeBalanceByUser(
+        @Bind("wallet_id") walletId: Int,
+        @Bind("start_date") startDate: Date,
+        @Bind("end_date") endDate: Date,
+    ): List<UserBalance>?
+
+    @SqlQuery("""
+        SELECT users.*, SUM(transactions.amount) AS sum
+        FROM MoneyMate.transactions transactions
+            JOIN Moneymate.users users ON transactions.user_id = users.user_id
+        WHERE transactions.wallet_id = :wallet_id 
+            AND transactions.amount >= 0
+            AND transactions.date_of_creation >= :start_date::date
+            AND transactions.date_of_creation < (:end_date::date + INTERVAL '1 day')
+        GROUP BY users.user_id
+    """)
+    fun getPositiveBalanceByUser(
+        @Bind("wallet_id") walletId: Int,
+        @Bind("start_date") startDate: Date,
+        @Bind("end_date") endDate: Date,
+    ): List<UserBalance>?
+
+    @SqlQuery("""
+        SELECT users.*, SUM(transactions.amount)
+        FROM MoneyMate.transactions transactions
+            JOIN MoneyMate.users users ON transactions.user_id =  users.user_id
+        WHERE transactions.wallet_id = :wallet_id 
+        GROUP BY users.user_id
+    """)
+    fun getBalanceByUserInSw(
+        @Bind("wallet_id") walletId: Int,
+    ): List<UserBalance>?
+
+    @SqlQuery("""
+        SELECT COUNT(usw.user_id)
+        FROM MoneyMate.user_shared_wallet usw
+        WHERE usw.wallet_id = :wallet_id
+    """)
+    fun getNumberOfMembers(
+        @Bind("wallet_id") walletId: Int,
+    ): Int
 
 
     /** ----------------------------------- Regular --------------------------------   */

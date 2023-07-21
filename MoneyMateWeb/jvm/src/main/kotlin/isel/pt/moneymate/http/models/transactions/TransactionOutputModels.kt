@@ -71,7 +71,7 @@ fun WalletBalance.toDTO(): WalletBalanceDTO = WalletBalanceDTO(this)
 
 data class UserBalanceDTO(
    val user: UserDTO,
-   val amount: Int
+   var amount: Int
 ){
    constructor(balance: UserBalance): this(
       balance.user.toDTO(),
@@ -90,6 +90,11 @@ fun List<UserBalance>.toDTO(): UsersBalanceDTO {
    val balances = this.map { it.toDTO() }
    return UsersBalanceDTO(balances)
 }
+
+data class PosAndNegUserBalanceDTO(
+   val neg: UsersBalanceDTO,
+   val pos: UsersBalanceDTO,
+)
 
 //////////////////////////////////////////////////////////7
 
