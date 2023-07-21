@@ -12,7 +12,6 @@ import DatePicker from "../../Components/DatePicker/DatePicker.jsx";
 import WalletSelector from "../../Components/SelectorBox/WalletSelector.jsx";
 import {useNavigate, useParams} from "react-router-dom";
 
-
 function SharedStatistics() {
     const { selectedSharedWallet, setSelectedSharedWallet} = useContext(SessionContext)
     const { selectedStatistic, setSelectedStatistic} = useContext(SessionContext)

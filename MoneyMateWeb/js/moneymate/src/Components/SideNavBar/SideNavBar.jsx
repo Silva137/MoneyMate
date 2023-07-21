@@ -8,6 +8,8 @@ import TransactionService from "../../services/TransactionService";
 import CategoriesDropdownButton from "../CategoriesDropdownButton/CategoriesDropdownButton.jsx";
 import WalletsDropdownButton from "../WalletsDropdownButton/WalletsDropdownButton.jsx";
 import { SessionContext } from "../../Utils/Session.jsx";
+import InviteTypeSelector from "../SelectorBox/InviteTypeSelector.jsx";
+import CreateTransactionSelector from "../SelectorBox/CreateTransactionSelector.jsx";
 
 const SideNavBar = ({ children }) => {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -17,8 +19,7 @@ const SideNavBar = ({ children }) => {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [selectedTransactionWallet, setSelectedTransactionWallet] = useState(null);
     const { selectedStatistic, selectedWallet, selectedSharedWallet } = useContext(SessionContext);
-
-    const [selectedStatisticInfo, setSelectedStatisticInfo] = useState([]);
+    const [selectedWalletType, setSelectedWalletType] = useState("Wallet")
 
 
     const location = useLocation();
@@ -52,8 +53,11 @@ const SideNavBar = ({ children }) => {
         setSelectedTransactionWallet(wallet)
     }
 
+    const handleWalletTypeChanged = async (type) => {
+        setSelectedWalletType(type)
+    }
+
     async function handleCreateTransactionClick(event) {
-        // Api call to create a new transaction
         event.preventDefault()
         try {
             console.log(selectedCategory)
@@ -101,6 +105,7 @@ const SideNavBar = ({ children }) => {
                             <CgClose />
                         </button>
                         <h2 className="modal-title">Create New Transaction</h2>
+                        <CreateTransactionSelector handleWalletTypeChanged={handleWalletTypeChanged} selectedWalletType={selectedWalletType}/>
                         <form onSubmit={handleCreateTransactionClick}>
                             <div className="form-group field">
                                 <input type="text" className="form-field" placeholder="Transaction title" value={title} onChange={(e) => setTitle(e.target.value)} required />
@@ -115,11 +120,10 @@ const SideNavBar = ({ children }) => {
                                 </label>
                             </div>
                             <div className="form-group field">
-                                <CategoriesDropdownButton onChange={handleSelectedCategoryChange} />
+                                <CategoriesDropdownButton onChange={handleSelectedCategoryChange} type={selectedWalletType} />
                             </div>
-
                             <div className="form-group field">
-                                <WalletsDropdownButton onChange={handleSelectedWalletChange} />
+                                <WalletsDropdownButton onChange={handleSelectedWalletChange} type={selectedWalletType}/>
                             </div>
                             <button type="submit" className="save-button">
                                 <MdDoneOutline /> Create Transaction
@@ -131,6 +135,5 @@ const SideNavBar = ({ children }) => {
         </div>
     );
 };
-
 
 export default SideNavBar;

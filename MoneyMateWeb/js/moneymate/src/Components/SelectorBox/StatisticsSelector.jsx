@@ -1,6 +1,4 @@
 import React, {useContext, useEffect, useState} from 'react';
-import { MdArrowForwardIos } from 'react-icons/md';
-import {MdArrowBackIos} from 'react-icons/md';
 import {SessionContext} from "../../Utils/Session.jsx";
 import './SelectorBox.css';
 
