@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.sql.Date
 import java.time.LocalDateTime
+import kotlin.math.abs
 
 @Service
 @Transactional(rollbackFor = [Exception::class])
@@ -310,7 +311,7 @@ class TransactionService(
             ?: throw NotFoundException("Balance of Categories not Found")
     }
 
-    fun calculateEqualPayments(user: User, walletId: Int): Pair<Int, Map<User, Payments>> {
+    fun calculateEqualPayments(user: User, walletId: Int): WalletPayments {
         val userBalances = calculateAverageExpenses(user, walletId)
         val totalAmount = userBalances.sumOf { it.amount }
         val numberOfMembers = userBalances.size
@@ -319,25 +320,25 @@ class TransactionService(
         val usersAboveAverage = userBalances
             .filter { it.amount > averageBalance }
             .map { UserBalance(it.user, it.amount - averageBalance) }
-            .sortedByDescending { it.amount }
+            .sortedByDescending { it.amount } // sort normal
 
         val usersBelowAverage = userBalances.
             filter { it.amount < averageBalance }
             .map { UserBalance(it.user, it.amount - averageBalance) }
             .sortedBy { it.amount }
 
-        val paymentsList = mutableMapOf<User, Payments>()
+        val paymentsList = mutableMapOf<User, UserPayments>()
 
         for (userBelow in usersBelowAverage){
             for (userAbove in usersAboveAverage) {
                 if (userBelow.amount == 0) // Change userBelow
                     break
-                if (userAbove.amount == 0){ // Change userAbove
+                if (userAbove.amount != 0){ // Change userAbove
                     if (userBelow.amount + userAbove.amount > 0) {  // Case money is more than necessary
                         val diff = userAbove.amount - userBelow.amount
                         val moneyToSend = userAbove.amount - diff
                         addPayments(paymentsList, userAbove.user, userBelow.user, moneyToSend)
-                        userAbove.amount = diff
+                        userAbove.amount += moneyToSend
                         userBelow.amount = 0
                     }
                     else{  // Case money to send is enough or lesser than needed
@@ -349,17 +350,18 @@ class TransactionService(
                 }
             }
         }
-        return Pair(averageBalance, paymentsList)
+        return WalletPayments(averageBalance, paymentsList)
+        //return Pair(averageBalance, paymentsList)
     }
 
     // paymetsList[userAbove.user]?.paymentsToSend?.set(userBelow.user, moneyToSend)
     // paymetsList[userBelow.user]?.paymentsToReceive?.set(userAbove.user, moneyToSend)
-    fun addPayments(paymetsList: MutableMap<User, Payments>, userAbove: User, userBelow: User, moneyToSend: Int){
-        paymetsList.getOrPut(userAbove) { Payments(mutableMapOf(), mutableMapOf()) }
-            .paymentsToSend[userBelow] = moneyToSend
+    fun addPayments(paymetsList: MutableMap<User, UserPayments>, userAbove: User, userBelow: User, moneyToSend: Int){
+        paymetsList.getOrPut(userAbove) { UserPayments(mutableMapOf(), mutableMapOf()) }
+            .paymentsToSend[userBelow] = abs(moneyToSend)
 
-        paymetsList.getOrPut(userBelow) { Payments(mutableMapOf(), mutableMapOf()) }
-            .paymentsToSend[userAbove] = moneyToSend
+        paymetsList.getOrPut(userBelow) { UserPayments(mutableMapOf(), mutableMapOf()) }
+            .paymentsToReceive[userAbove] = abs(moneyToSend)
 
     }
     /** ----------------------------------- Regular --------------------------------   */
