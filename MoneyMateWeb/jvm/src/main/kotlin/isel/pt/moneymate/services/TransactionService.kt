@@ -5,6 +5,7 @@ import isel.pt.moneymate.domain.*
 import isel.pt.moneymate.exceptions.InvalidParameterException
 import isel.pt.moneymate.exceptions.NotFoundException
 import isel.pt.moneymate.exceptions.UnauthorizedException
+import isel.pt.moneymate.http.models.users.toDTO
 import isel.pt.moneymate.repository.TransactionRepository
 import isel.pt.moneymate.repository.WalletRepository
 import org.springframework.stereotype.Service
@@ -311,7 +312,7 @@ class TransactionService(
             ?: throw NotFoundException("Balance of Categories not Found")
     }
 
-    fun calculateEqualPayments(user: User, walletId: Int): WalletPayments {
+    fun calculateEqualPayments(user: User, walletId: Int): UserPaymentsTemporary {
         val userBalances = calculateAverageExpenses(user, walletId)
         val totalAmount = userBalances.sumOf { it.amount }
         val numberOfMembers = userBalances.size
@@ -327,7 +328,10 @@ class TransactionService(
             .map { UserBalance(it.user, it.amount - averageBalance) }
             .sortedBy { it.amount }
 
-        val paymentsList = mutableMapOf<User, UserPayments>()
+        // TODO DELETE, test purpose only
+        val paymentsList = mutableMapOf<User, UserPaymentsMapper>()
+
+        val paymentsOfUser = UserPayments(averageBalance, mutableListOf(), mutableListOf())
 
         for (userBelow in usersBelowAverage){
             for (userAbove in usersAboveAverage) {
@@ -337,30 +341,48 @@ class TransactionService(
                     if (userBelow.amount + userAbove.amount > 0) {  // Case money is more than necessary
                         val diff = userAbove.amount - userBelow.amount
                         val moneyToSend = userAbove.amount - diff
-                        addPayments(paymentsList, userAbove.user, userBelow.user, moneyToSend)
+
+                        // TODO DELETE, test purpose only
+                        oldAddPaymentsToMapp(paymentsList, userAbove.user, userBelow.user, moneyToSend)
+
+                        addPaymentToList(user, paymentsOfUser, userAbove.user, userBelow.user, moneyToSend)
                         userAbove.amount += moneyToSend
                         userBelow.amount = 0
                     }
                     else{  // Case money to send is enough or lesser than needed
                         val moneyToSend = userAbove.amount
-                        addPayments(paymentsList, userAbove.user, userBelow.user, moneyToSend)
+
+                        // TODO DELETE, test purpose only
+                        oldAddPaymentsToMapp(paymentsList, userAbove.user, userBelow.user, moneyToSend)
+
+                        addPaymentToList(user, paymentsOfUser, userAbove.user, userBelow.user, moneyToSend)
                         userAbove.amount = 0
                         userBelow.amount += moneyToSend
                     }
                 }
             }
         }
-        return WalletPayments(averageBalance, paymentsList)
-        //return Pair(averageBalance, paymentsList)
+
+        //return paymentsOfUser
+        return UserPaymentsTemporary(paymentsOfUser.average, paymentsOfUser.paymentsToSend, paymentsOfUser.paymentsToReceive, paymentsList)
     }
 
-    // paymetsList[userAbove.user]?.paymentsToSend?.set(userBelow.user, moneyToSend)
-    // paymetsList[userBelow.user]?.paymentsToReceive?.set(userAbove.user, moneyToSend)
-    fun addPayments(paymetsList: MutableMap<User, UserPayments>, userAbove: User, userBelow: User, moneyToSend: Int){
-        paymetsList.getOrPut(userAbove) { UserPayments(mutableMapOf(), mutableMapOf()) }
+    // Only add to thr returno DTO the payments related with the logged User
+    fun addPaymentToList(loggedUser:User, paymentsOfUser: UserPayments, userAbove: User, userBelow: User, moneyToSend: Int){
+        val ammount = abs(moneyToSend)
+        if (loggedUser.id == userBelow.id)
+            paymentsOfUser.paymentsToReceive.add(Payment(userAbove.toDTO(),ammount))
+        else if (loggedUser.id == userAbove.id)
+            paymentsOfUser.paymentsToSend.add(Payment(userBelow.toDTO(),ammount))
+    }
+
+
+    // TODO DELETE, test purpose only
+    fun oldAddPaymentsToMapp(paymetsList: MutableMap<User, UserPaymentsMapper>, userAbove: User, userBelow: User, moneyToSend: Int){
+        paymetsList.getOrPut(userAbove) { UserPaymentsMapper(mutableMapOf(), mutableMapOf()) }
             .paymentsToSend[userBelow] = abs(moneyToSend)
 
-        paymetsList.getOrPut(userBelow) { UserPayments(mutableMapOf(), mutableMapOf()) }
+        paymetsList.getOrPut(userBelow) { UserPaymentsMapper(mutableMapOf(), mutableMapOf()) }
             .paymentsToReceive[userAbove] = abs(moneyToSend)
 
     }
