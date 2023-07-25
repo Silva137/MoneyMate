@@ -21,7 +21,8 @@ body {
     padding-top: 25px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    align-items: start;
+    justify-content: start;
     gap: 30px;
 }
 

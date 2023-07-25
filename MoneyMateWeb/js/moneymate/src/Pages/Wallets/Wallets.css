@@ -62,10 +62,9 @@
     color: #77eca6;
 }
 
-.alert-container {
+.alert-container-wallets {
     width: 600px;
-    position: relative;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+    position: absolute;
+    top: 25px;
+    left: 40%;
 }

@@ -76,7 +76,7 @@ function ListStatistics({selectedDates}) {
                 )}
             </div>
             {alert.show && (
-                <div className="alert-container">
+                <div className="alert-container-statistics">
                     <Alert variant="outlined" severity={alert.severity} onClose={closeAlert}>
                         <strong className="error-text">{alert.message}</strong>
                     </Alert>

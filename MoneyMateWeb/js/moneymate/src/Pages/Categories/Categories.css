@@ -36,11 +36,10 @@
     margin-bottom: 10px;
 }
 
-.alert-container {
+.alert-container-categories {
     width: 600px;
-    position: fixed;
-    top: 50px;
-    z-index: 1;
-    height: 85px;
+    position: absolute;
+    top: 25px;
+    left: 40%;
 }
 

@@ -1,7 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import '../../App.css';
-import PieChart from "../../Components/PieChart/PieChart.jsx";
-import ColumnChart from "../../Components/ColumnChart/ColumnChart.jsx";
 import TransactionService from "../../Services/TransactionService.jsx";
 import { SessionContext } from "../../Utils/Session.jsx";
 import { SyncLoader } from 'react-spinners';
@@ -11,6 +9,10 @@ import WalletService from "../../Services/WalletService.jsx";
 import DatePicker from "../../Components/DatePicker/DatePicker.jsx";
 import WalletSelector from "../../Components/SelectorBox/WalletSelector.jsx";
 import {useNavigate, useParams} from "react-router-dom";
+import SharedColumnChart from "../../Components/ColumnChart/SharedColumnChart.jsx";
+import SharedPieChart from "../../Components/PieChart/SharedPieChart.jsx";
+import SharedWalletSelector from "../../Components/SelectorBox/SharedWalletSelector.jsx";
+import SplitButton from "../../Components/SplitButton/SplitButton.jsx";
 
 function SharedStatistics() {
     const { selectedSharedWallet, setSelectedSharedWallet} = useContext(SessionContext)
@@ -49,8 +51,8 @@ function SharedStatistics() {
     async function onClick(index){
         // index represents the column clicked
         const userId = balanceList[index].user.id  // TODO ??????
-        const selectedBalance = balanceList[index].balance
-        const selectedUser = balanceList[index].user.name
+        const selectedBalance = balanceList[index].amount
+        const selectedUser = balanceList[index].user.username
         const response = await TransactionService.getTransactionsByUser(selectedSharedWallet, userId, selectedDates)
         setSelectedChartInfo([response.transactions, selectedBalance, selectedUser]);
         setModal(true)
@@ -70,6 +72,7 @@ function SharedStatistics() {
         try {
             setLoading(true)
             await fetchBalanceByUser(selectedSharedWallet, selectedDates)
+            await fetchPosNegBalanceByUser(selectedSharedWallet, selectedDates)
         } catch (error) {
             console.error('Error fetching charts data:', error)
         } finally {
@@ -78,22 +81,19 @@ function SharedStatistics() {
     }
 
     async function fetchBalanceByUser(){
-        /*
         const balanceResponse = await TransactionService.getBalanceByUser(selectedSharedWallet, selectedDates)
         const balanceList = balanceResponse.balanceList
         setBalanceList(balanceList)
         console.log(balanceResponse)
-         */
-
     }
 
-    async function fetchPosNegBalanceByUser(selectedWallet, selectedDates){
-        const posAndNegResponse = await TransactionService.getPosNegBalanceByCategory(selectedWallet, selectedDates)
+    async function fetchPosNegBalanceByUser(){
+        const posAndNegResponse = await TransactionService.getPosNegBalanceByUser(selectedSharedWallet, selectedDates)
 
         const negBalances = posAndNegResponse.neg.balanceList.map(item => Math.abs(item.amount))
-        const negUsers = posAndNegResponse.neg.balanceList.map(item => item.user.id)
+        const negUsers = posAndNegResponse.neg.balanceList.map(item => item.user.username)
         const posBalances = posAndNegResponse.pos.balanceList.map(item => item.amount)
-        const posUsers = posAndNegResponse.pos.balanceList.map(item => item.user.id)
+        const posUsers = posAndNegResponse.pos.balanceList.map(item => item.user.username)
 
         setBalance([posBalances, negBalances])
         setUser([posUsers, negUsers])
@@ -117,7 +117,7 @@ function SharedStatistics() {
                     <div className="row">
                         <h1 className="page-title">Shared Statistics</h1>
                         <DatePicker onChange={handleDatePickerChange} />
-                        <WalletSelector className="wallet-selector" wallets={sharedWallets} selectedWallet={selectedSharedWallet} handleWalletChange={handleSharedWalletChange}/>
+                        <SharedWalletSelector className="wallet-selector" wallets={sharedWallets} selectedWallet={selectedSharedWallet} handleWalletChange={handleSharedWalletChange}/>
                     </div>
 
                 </div>
@@ -129,7 +129,7 @@ function SharedStatistics() {
                                     <SyncLoader size={50} color={'#ffffff'} loading={loading} />
                                 ) : (
                                     balance !== null && user !== null && balance[0].length > 0 && user[0].length > 0 ? (
-                                        <PieChart balance={balance[0]} category={user[0]} title={`Income: ${sumArray(balance[0])}€`} />
+                                        <SharedPieChart balance={balance[0]} user={user[0]} title={`Income: ${sumArray(balance[0])}€`} />
                                     ) : (
                                         <h2>No Results Found</h2>
                                     )
@@ -140,7 +140,7 @@ function SharedStatistics() {
                                     <SyncLoader size={50} color={'#ffffff'} loading={loading} />
                                 ) : (
                                     balance !== null && user !== null && balance[1].length > 0 && user[1].length > 0 ? (
-                                        <PieChart balance={balance[1]} category={user[1]} title={`Expenses: -${sumArray(balance[1])}€`} />
+                                        <SharedPieChart balance={balance[1]} user={user[1]} title={`Expenses: -${sumArray(balance[1])}€`} />
                                     ) : (
                                         <h2>No Results Found</h2>
                                     )
@@ -153,12 +153,13 @@ function SharedStatistics() {
                                     <SyncLoader size={50} color={'#ffffff'} loading={loading} />
                                 ) : (
                                     balanceList !== null && balanceList.length > 0? (
-                                        <ColumnChart balanceList={balanceList} onClick={(index) => onClick(index)} title={`Total Balance: ${sumArray(balanceList.map(item => item.balance))}€`} />
+                                        <SharedColumnChart balanceList={balanceList} onClick={(index) => onClick(index)} title={`Total Balance: ${sumArray(balanceList.map(item => item.amount))}€`} />
                                     ) : (
                                         <h2>No Results Found</h2>
                                     )
                                 )}
                             </div>
+                            <SplitButton/>
                         </div>
                     </div>
 

@@ -1,9 +1,9 @@
-import React, {useState } from 'react';
+import React, { useState } from 'react';
 import './SelectorBox.css';
 import { MdArrowForwardIos } from 'react-icons/md';
 import { MdArrowBackIos } from 'react-icons/md';
 
-function WalletSelector({ wallets, handleWalletChange, selectedWallet }) {
+function SharedWalletSelector({ wallets, handleWalletChange, selectedWallet }) {
     const [startIndex, setStartIndex] = useState(0);
 
     const handlePrevious = () => { setStartIndex((prevIndex) => Math.max(prevIndex - 1, 0)) }
@@ -15,21 +15,7 @@ function WalletSelector({ wallets, handleWalletChange, selectedWallet }) {
             <MdArrowBackIos className="arrow-left" onClick={handlePrevious}></MdArrowBackIos>
 
             <div className="radio-inputs">
-                <label
-                    className={`radio ${selectedWallet === -1 ? 'selected' : ''} overAllRadio`}
-                    onClick={() => handleWalletChange(-1)}
-                >
-                    <input
-                        type="radio"
-                        name="wallet"
-                        value={-1}
-                        checked={Number(selectedWallet) === -1}
-                        onChange={() => handleWalletChange(-1)}
-                    />
-                    <span className="name button">Overall</span>
-                </label>
-
-                {selectedWallet !== null && visibleWallets.map((wallet) => (
+                {visibleWallets.map((wallet, index) => (
                     <label
                         key={wallet.id}
                         className={`radio ${selectedWallet === wallet.id ? 'selected' : ''}`}
@@ -38,7 +24,7 @@ function WalletSelector({ wallets, handleWalletChange, selectedWallet }) {
                             type="radio"
                             name="wallet"
                             value={wallet.id}
-                            checked={Number(selectedWallet) === wallet.id}
+                            checked={Number(selectedWallet) === wallet.id || (index === 0 && selectedWallet === null)}
                             onChange={() => handleWalletChange(wallet.id)}
                         />
                         <span className="name">{wallet.name}</span>
@@ -52,4 +38,4 @@ function WalletSelector({ wallets, handleWalletChange, selectedWallet }) {
     );
 }
 
-export default WalletSelector;
+export default SharedWalletSelector;

@@ -98,14 +98,13 @@ class TransactionService {
         }
     }
 
-    //TODO - do backend method
-    async getPosNegBalanceByUser(shId, selectedDates) {
+    async getPosNegBalanceByUser(walletId, selectedDates) {
         const params = {
             startDate: selectedDates[0],
             endDate: selectedDates[1]
         };
 
-        return instance.get(`/api/transactions/wallets/${shId}/users/posneg/balance`, {
+        return instance.get(`/api/transactions/wallets/${walletId}/users/posneg/balance`, {
             headers: authHeader(),
             params: params
         })
@@ -114,23 +113,20 @@ class TransactionService {
             });
     }
 
-    //TODO - do backend method
-    async getBalanceByUser(shId, selectedDates){
+    async getBalanceByUser(walletId, selectedDates){
         try{
             const params = {
                 startDate: selectedDates[0],
                 endDate: selectedDates[1]
             }
-            const response = await instance.get(`/api/transactions/wallets/${shId}/users/userAmounts`, {
+            const response = await instance.get(`/api/transactions/wallets/${walletId}/users/balance`, {
                 headers: authHeader(),
                 params: params
             })
-
             return response.data
 
         }catch (error){
             console.error('Error getting balance by user' + error);
-
         }
     }
 
@@ -147,6 +143,18 @@ class TransactionService {
             .then(response => {
                 return response.data
             })
+    }
+
+    async getEqualPayments(walletId){
+        try{
+            const response = await instance.get(`/api/transactions/wallets/${walletId}/payments`, {
+                headers: authHeader(),
+            })
+            return response.data
+
+        }catch (error){
+            console.error('Error calculating equal payments' + error);
+        }
     }
 }
 
