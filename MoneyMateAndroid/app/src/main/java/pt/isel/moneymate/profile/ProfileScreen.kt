@@ -37,7 +37,6 @@ import pt.isel.moneymate.theme.dialogBackground
 fun ProfileScreen(
     username : String?,
     onAddButtonClick: (String) -> Unit = {},
-    onCreateSharedWalletClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {}
 ) {
     Box(
@@ -55,7 +54,6 @@ fun ProfileScreen(
             }
             BalanceTexts()
             AddWallet(onAddButtonClick = onAddButtonClick)
-            ProfileButton(icon = R.drawable.shared_icon, text = "Create Shared Wallet", onClick = onCreateSharedWalletClick)
             Spacer(modifier = Modifier.height(20.dp))
             ProfileButton(icon = R.drawable.logout, text = "Logout", onClick = onLogoutClick)
         }
