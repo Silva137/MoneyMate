@@ -9,6 +9,7 @@ function SplitButton() {
     const { selectedSharedWallet } = useContext(SessionContext)
     const [paymentsToSend, setPaymentsToSend] = useState([]);
     const [paymentsToReceive, setPaymentsToReceive] = useState([]);
+    const [average, setAverage] = useState(null);
 
 
     async function handleButtonClick() {
@@ -17,6 +18,7 @@ function SplitButton() {
             const response = await TransactionService.getEqualPayments(selectedSharedWallet);
             setPaymentsToSend(response.paymentsToSend);
             setPaymentsToReceive(response.paymentsToReceive)
+            setAverage(response.average)
             console.log(response);
         } catch (error) {
             console.error('Error fetching users of wallet', error);
@@ -39,6 +41,7 @@ function SplitButton() {
                     <div className="modal">
                         <button className="close-button" onClick={() => setModal(false)}><CgClose/></button>
                         <h2 className="modal-title">Split Bills</h2>
+                        <h3 className="modal-subtitle">Average: {average}€</h3>
 
                         <h3 className="modal-subtitle">Payments to receive:</h3>
                         {paymentsToReceive.length === 0 ? (

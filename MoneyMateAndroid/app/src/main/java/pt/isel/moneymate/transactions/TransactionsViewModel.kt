@@ -67,10 +67,7 @@ class TransactionsViewModel(
                                     transactionDTO.category.name,
                                     transactionDTO.category.user
                                 ),
-                                LocalDateTime.parse(
-                                    transactionDTO.createdAt.substring(0, 23),
-                                    formatter
-                                )
+                                LocalDateTime.parse(transactionDTO.createdAt, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
                             )
                         }
                         _state = TransactionState.FINISHED

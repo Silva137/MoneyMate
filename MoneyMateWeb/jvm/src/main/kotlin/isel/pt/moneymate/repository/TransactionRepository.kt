@@ -391,7 +391,7 @@ interface TransactionRepository {
             JOIN Moneymate.users users ON transactions.user_id = users.user_id
             JOIN MoneyMate.category categories ON transactions.category_id = categories.category_id
         WHERE transactions.user_id = :user_id 
-            AND transactions.amount >=0 
+            AND transactions.amount < 0 
             AND transactions.date_of_creation >= :start_date::date
             AND transactions.date_of_creation < (:end_date::date + INTERVAL '1 day')
         GROUP BY categories.category_id, categories.category_name, users.user_id, users.username, users.email, users.password

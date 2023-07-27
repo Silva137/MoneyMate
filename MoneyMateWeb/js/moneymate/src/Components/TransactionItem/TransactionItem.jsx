@@ -18,11 +18,11 @@ function TransactionItem({ transaction, getTransactions, showSuccess, showError 
         try {
             const response = await TransactionService.editTransaction(transaction.id,transaction.category.id, transactionAmount, transactionTitle);
             console.log(response);
-            showSuccess('Transaction name updated successfully!')
+            //showSuccess('Transaction name updated successfully!')
             await getTransactions();
         } catch (error) {
             console.error('Error updating transaction name:', error);
-            showError('Failed to update transaction name. Please try again.')
+            //showError('Failed to update transaction name. Please try again.')
         }
         handleModalClose()
     }
@@ -32,11 +32,11 @@ function TransactionItem({ transaction, getTransactions, showSuccess, showError 
         try {
             const response = await TransactionService.deleteTransaction(transaction.id);
             console.log(response);
-            showSuccess('Transaction deleted successfully!')
+            //showSuccess('Transaction deleted successfully!')
             await getTransactions()
         } catch (error) {
             console.error('Error deleting transaction:', error);
-            showError('Failed to delete transaction. Please try again.')
+            //showError('Failed to delete transaction. Please try again.')
         }
         handleModalClose()
     }

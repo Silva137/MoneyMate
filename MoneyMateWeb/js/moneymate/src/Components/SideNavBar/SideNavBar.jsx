@@ -83,7 +83,7 @@ const SideNavBar = ({ children }) => {
                                 index === 1
                                     ? `${item.link}/${selectedStatistic}/${selectedWallet}`
                                     : index === 2
-                                        ? `${item.link}/${selectedStatistic}/${selectedSharedWallet}`
+                                        ? `${item.link}/graphics/${selectedSharedWallet}`
                                         : item.link
                             }
                             key={index}

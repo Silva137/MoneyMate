@@ -32,7 +32,6 @@ function SharedStatistics() {
     useEffect( () => {
         async function fetch(){
             await setSelectedSharedWallet(sharedWalletId); // Graphics Change when this value change
-            await setSelectedStatistic("graphics"); // Graphics Change when this value change
         }
         fetch()
     }, [navigate]);
@@ -50,7 +49,7 @@ function SharedStatistics() {
 
     async function onClick(index){
         // index represents the column clicked
-        const userId = balanceList[index].user.id  // TODO ??????
+        const userId = balanceList[index].user.id
         const selectedBalance = balanceList[index].amount
         const selectedUser = balanceList[index].user.username
         const response = await TransactionService.getTransactionsByUser(selectedSharedWallet, userId, selectedDates)
@@ -106,7 +105,7 @@ function SharedStatistics() {
 
     const handleSharedWalletChange = async (walletId) => {
         await setSelectedSharedWallet(walletId); // Graphics Change when this value change
-        navigate(`/statistics/sharedWallets/${selectedStatistic}/${walletId}`);
+        navigate(`/statistics/sharedWallets/graphics/${walletId}`);
     };
 
 

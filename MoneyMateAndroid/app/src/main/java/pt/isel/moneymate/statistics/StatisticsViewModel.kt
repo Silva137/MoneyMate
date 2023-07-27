@@ -90,8 +90,7 @@ class StatisticsViewModel(
                                     transactionDTO.category.name,
                                     transactionDTO.category.user
                                 ),
-                                LocalDateTime.parse(transactionDTO.createdAt.substring(0, 23), formatter)
-                            )
+                                LocalDateTime.parse(transactionDTO.createdAt, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))                            )
                         }
                         _categoryTransactionNeg = responseNeg.data.transactions.map { transactionDTO ->
                             Transaction(
@@ -104,7 +103,7 @@ class StatisticsViewModel(
                                     transactionDTO.category.name,
                                     transactionDTO.category.user
                                 ),
-                                LocalDateTime.parse(transactionDTO.createdAt.substring(0, 23), formatter)
+                                LocalDateTime.parse(transactionDTO.createdAt, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
                             )
                         }
                         _state = StatisticsState.FINISHED
